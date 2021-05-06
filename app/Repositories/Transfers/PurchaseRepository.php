@@ -1,0 +1,169 @@
+<?php
+
+namespace App\Repositories\Transfers;
+
+use App\StockTransfer;
+use Illuminate\Http\Request;
+use App\GodownProductsStock;
+use Illuminate\Support\Facades\DB;
+
+class PurchaseRepository
+{
+    public function fetchAll(Request $request)
+    {
+        $search = $request->get('query');
+        $limit = $request->get('limit');
+        $skip = $request->get('skip');
+        $sortBy = $request->get('sortBy');
+        $flow = $request->get('flow');
+
+        $records = DB::table('stock_transfers as st')
+            ->where('st.transfer_type_id', StockTransfer::PURCHASE)
+            ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
+            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
+            ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id')
+            ->where(function ($query) use ($search) {
+                $query->where('fg.name', 'like', '%' . $search . '%')
+                    ->orWhere('st.quantity', 'like', '%' . $search . '%')
+                    ->orWhere('tg.name', 'like', '%' . $search . '%')
+                    ->orWhere('pr.name', 'like', '%' . $search . '%')
+                    ->orWhere('pr.unit', 'like', '%' . $search . '%')
+                    ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
+            })->selectRaw('
+                st.id,
+                st.date,
+                st.quantity,
+                st.updated_at,
+                st.created_at,
+                st.remarks,
+                fg.name as fromName,
+                tg.name as toName,
+                pr.name as productName,
+                pr.unit as productUnit,
+                pr.lot_number as productLotNumber
+            ')->limit($limit)->skip($skip)
+            ->orderBy($sortBy, $flow);
+
+        return ['records' => $records->get(), 'total' => $records->count()];
+    }
+
+    public function fetchOne($id)
+    {
+        $record = DB::table('stock_transfers as st')->where('st.id', $id)
+            ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
+            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
+            ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id')
+            ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
+            ->selectRaw('
+                st.*,
+                DATE_FORMAT(st.date, "%d-%m-%Y") as dateRaw,
+                st.quantity div 100 as quantityRaw,
+                fg.name as fromName,
+                tg.name as toName,
+                pr.name as productName,
+                pr.unit as productUnit,
+                pr.lot_number as productLotNumber,
+                ag.name as agentName
+            ')->first();
+
+        return $record;
+    }
+
+    /**
+     * Create Purchase Entry
+     */
+    public function create(Request $request)
+    {
+        StockTransfer::create([
+            'transfer_type_id'  => $request->transfer_type,
+            'date'              => $request->date,
+            'from_godown_id'    => $request->from_godown_id,
+            'product_id'        => $request->product_id,
+            'quantity'          => $request->quantity,
+            'to_godown_id'      => $request->to_godown_id,
+            'order_no'          => strtoupper($request->order_no),
+            'invoice_no'        => strtoupper($request->invoice_no),
+            'eway_bill_no'      => strtoupper($request->eway_bill_no),
+            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
+            'transport_details' => strtoupper($request->transport_details),
+            'agent_id'          => $request->agent_id,
+            'remarks'           => $request->remarks
+        ]);
+    }
+
+    /**
+     * Update Purchase Entry
+     */
+    public function update(Request $request, $id)
+    {
+        $this->undoPreviousGPSChanges($id);
+
+        StockTransfer::find($id)->update([
+            'date'              => $request->date,
+            'from_godown_id'    => $request->from_godown_id,
+            'product_id'        => $request->product_id,
+            'quantity'          => $request->quantity,
+            'to_godown_id'      => $request->to_godown_id,
+            'order_no'          => strtoupper($request->order_no),
+            'invoice_no'        => strtoupper($request->invoice_no),
+            'eway_bill_no'      => strtoupper($request->eway_bill_no),
+            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
+            'transport_details' => strtoupper($request->transport_details),
+            'agent_id'          => $request->agent_id,
+            'remarks'           => $request->remarks
+        ]);
+    }
+
+    /**
+     * Delete record
+     */
+    public function destroy($id)
+    {
+        $this->undoPreviousGPSChanges($id);
+
+        StockTransfer::find($id)->delete();
+
+        $this->cleanNoStock();
+    }
+
+    /**
+     * Undo given changes
+     */
+    public function undoPreviousGPSChanges($id)
+    {
+        $stockTransfer = StockTransfer::find($id);
+
+        $oldGodownStock = GodownProductsStock::where('godown_id', $stockTransfer->to_godown_id)
+            ->where('product_id', $stockTransfer->product_id)
+            ->first();
+
+        $oldCurrentStock = $oldGodownStock->current_stock;
+        $oldGodownStock->current_stock = $oldCurrentStock - $stockTransfer->quantity;
+        $oldGodownStock->save();
+    }
+
+    public function createGPS(Request $request)
+    {
+        GodownProductsStock::create([
+            'product_id'    => $request->product_id,
+            'godown_id'     => $request->to_godown_id,
+            'current_stock' => $request->quantity
+        ]);
+
+        $this->cleanNoStock();
+    }
+
+    public function updateGPS(GodownProductsStock $godownStock, Request $request)
+    {
+        $currentStock = $godownStock->current_stock;
+        $godownStock->current_stock = $currentStock + $request->quantity;
+        $godownStock->save();
+
+        $this->cleanNoStock();
+    }
+
+    public function cleanNoStock()
+    {
+        GodownProductsStock::where('current_stock', 0)->delete();
+    }
+}

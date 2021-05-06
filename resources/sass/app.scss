@@ -1,0 +1,47 @@
+@import './fonts/roboto';
+@import './transition';
+
+html {
+    overflow: auto !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+
+    .content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    .v-text-field__details {
+        margin-bottom: 0 !important;
+
+        .v-messages__message {
+            padding: 0 0 4px 0;
+            line-height: 1.2em;
+            font-size: 0.9rem;
+        }
+    }
+
+    .sort-link {
+        &:focus, &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .view-record-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            border-bottom: 1px solid #CFD8DC;
+            padding: 10px 12px;
+        }
+    }
+}
+
