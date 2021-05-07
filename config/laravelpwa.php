@@ -58,20 +58,20 @@ return [
             '2048x2732' => '/images/icons/splash-2048x2732.png',
         ],
         'shortcuts' => [
-            [
-                'name' => 'Shortcut Link 1',
-                'description' => 'Shortcut Link 1 Description',
-                'url' => '/shortcutlink1',
-                'icons' => [
-                    "src" => "/images/icons/icon-72x72.png",
-                    "purpose" => "any"
-                ]
-            ],
-            [
-                'name' => 'Shortcut Link 2',
-                'description' => 'Shortcut Link 2 Description',
-                'url' => '/shortcutlink2'
-            ]
+            // [
+            //     'name' => 'Shortcut Link 1',
+            //     'description' => 'Shortcut Link 1 Description',
+            //     'url' => '/shortcutlink1',
+            //     'icons' => [
+            //         "src" => "/images/icons/icon-72x72.png",
+            //         "purpose" => "any"
+            //     ]
+            // ],
+            // [
+            //     'name' => 'Shortcut Link 2',
+            //     'description' => 'Shortcut Link 2 Description',
+            //     'url' => '/shortcutlink2'
+            // ]
         ],
         'custom' => []
     ]
