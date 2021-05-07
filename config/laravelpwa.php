@@ -59,18 +59,18 @@ return [
         ],
         'shortcuts' => [
             // [
-            //     'name' => 'Shortcut Link 1',
+            //     'name' => 'Open link 1',
             //     'description' => 'Shortcut Link 1 Description',
-            //     'url' => '/shortcutlink1',
+            //     'url' => '/',
             //     'icons' => [
             //         "src" => "/images/icons/icon-72x72.png",
             //         "purpose" => "any"
             //     ]
             // ],
             // [
-            //     'name' => 'Shortcut Link 2',
+            //     'name' => 'Open link 2',
             //     'description' => 'Shortcut Link 2 Description',
-            //     'url' => '/shortcutlink2'
+            //     'url' => '/'
             // ]
         ],
         'custom' => []
