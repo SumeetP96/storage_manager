@@ -15,7 +15,7 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255)->unique();
+            $table->string('name', 255);
             $table->string('lot_number', 100)->nullable();
             $table->string('alias', 10)->nullable()->default(null);
             $table->string('unit', 3)->default('UNT');

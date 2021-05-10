@@ -177,7 +177,7 @@ class ReportRepository
         $fromDate = $request->get('from');
         $productId = $request->get('product_id');
 
-        // If no date range selected
+        // If date range selected
         if (!is_null($fromDate) && !is_null($toDate)) {
             $records = DB::table('stock_transfers as st')
                 ->where('st.product_id', $productId)
@@ -257,7 +257,7 @@ class ReportRepository
 
         $accountId = $request->get('account_id');
 
-        // If no date range selected
+        // If date range selected
         if (!is_null($fromDate) && !is_null($toDate)) {
             $records = DB::table('stock_transfers as st')
                 ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
@@ -346,7 +346,7 @@ class ReportRepository
         $fromDate = $request->get('from');
         $agentId = $request->get('agent_id');
 
-        // If no date range selected
+        // If date range selected
         if (!is_null($fromDate) && !is_null($toDate)) {
             $records = DB::table('stock_transfers as st')
                 ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
@@ -432,7 +432,7 @@ class ReportRepository
         $toDate = $request->get('to');
         $fromDate = $request->get('from');
 
-        // If no date range selected
+        // If date range selected
         if (!is_null($fromDate) && !is_null($toDate)) {
             $records = DB::table('stock_transfers as st')
                 ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')

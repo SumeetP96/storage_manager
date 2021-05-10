@@ -10,11 +10,12 @@ class ProductService
     public function findDuplicateProductLot(Request $request, $id = NULL)
     {
         if (empty($request->lot_number)) {
-            if (!is_null($id)) {
-                $request->validate(['name' => 'required|max:255|unique:products,name,' . $id]);
-            } else {
-                $request->validate(['name' => 'required|max:255|unique:products,name']);
-            }
+            $productExist = Product::where($id, '!=', $id)
+                ->where('lot_number', NULL)
+                ->where('name', $request->name)
+                ->first();
+
+            if (!is_null($productExist)) return ['name' => ['Product name already taken.']];
         }
 
         $duplicate = FALSE;

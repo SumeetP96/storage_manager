@@ -13,8 +13,8 @@ export const TableMixin = {
       totalRecords: 0,
       currentCount: this.record ? this.records.length : 0,
 
-      sortBy: 'created_at',
       flow: 'desc',
+      sortBy: 'created_at',
     }
   },
 
@@ -24,30 +24,23 @@ export const TableMixin = {
     },
 
     refreshTable(sortBy) {
-      this.resetSort(sortBy)
+      this.sortBy = sortBy ? sortBy : 'created_at'
       this.query = ''
       this.recordsPerPage = this.defaultRecordsPerPage
+      this.clearFilters()
       this.loadRecords()
     },
 
-    resetSort(sortBy = undefined) {
-      this.sortBy = sortBy ? sortBy : 'created_at'
-      this.flow = 'desc'
-    },
-
-    sortRecords(field, sortBy) {
-      if (field == this.sortBy) {
-        if (this.flow == 'desc') this.resetSort(sortBy)
-        else {
-          this.sortBy = field
-          this.flow = 'desc'
-        }
-      } else {
+    sortRecords(field) {
+      if (this.flow == 'desc') {
         this.sortBy = field
         this.flow = 'asc'
+      } else {
+        this.sortBy = field
+        this.flow = 'desc'
       }
 
       this.loadRecords()
-    }
+    },
   }
 }

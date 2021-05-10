@@ -5,6 +5,7 @@ import { TableMixin } from './TableMixin'
 import { LoaderMixin } from './LoaderMixin'
 import { SearchMixin } from './SearchMixin'
 import { CrudHelperMixin } from './CrudHelperMixin'
+import { FilterMixin } from './FilterMixin'
 
 export const CommonMixin = {
   mixins: [
@@ -15,6 +16,7 @@ export const CommonMixin = {
     DateMixin,
     TableMixin,
     CrudHelperMixin,
+    FilterMixin,
   ],
 
   methods: {

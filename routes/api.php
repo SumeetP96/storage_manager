@@ -19,9 +19,10 @@ Route::prefix('godowns')->group(function () {
     Route::post('/store', 'GodownController@store');
     Route::post('/{id}/update', 'GodownController@update');
     Route::post('/{id}/destroy', 'GodownController@destroy');
+
+    Route::get('/{id}/details', 'GodownController@details');
     Route::get('/autocomplete/{type}', 'GodownController@autocomplete');
     Route::get('/autocomplete_with_stock', 'GodownController@autocompleteWithStock');
-    Route::get('/{id}/details', 'GodownController@details');
 });
 
 Route::prefix('products')->group(function () {
@@ -30,9 +31,10 @@ Route::prefix('products')->group(function () {
     Route::post('/store', 'ProductController@store');
     Route::post('/{id}/update', 'ProductController@update');
     Route::post('/{id}/destroy', 'ProductController@destroy');
+
+    Route::get('/{id}/details/{godownId?}', 'ProductController@details');
     Route::get('/autocomplete', 'ProductController@autocomplete');
     Route::get('/autocomplete_with_stock/{id}', 'ProductController@autocompleteWithStock');
-    Route::get('/{id}/details/{godownId?}', 'ProductController@details');
 });
 
 Route::prefix('agents')->group(function () {

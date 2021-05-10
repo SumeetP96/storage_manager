@@ -54,6 +54,26 @@ class ProductRepository
     /**
      * Fetch records for autocomplete
      */
+    public function fetchAutocompletesLot()
+    {
+        return Product::where('lot_number', '!=', NULL)
+            ->select('lot_number')
+            ->distinct()
+            ->orderBy('lot_number')
+            ->get();
+    }
+
+    /**
+     * Fetch records for autocomplete
+     */
+    public function fetchAutocompletesUnit()
+    {
+        return Product::select('unit')->distinct()->orderBy('unit')->get();
+    }
+
+    /**
+     * Fetch records for autocomplete
+     */
     public function fetchAutocompletesWithStock($id)
     {
         return DB::table('products as pr')

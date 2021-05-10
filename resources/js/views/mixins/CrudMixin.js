@@ -3,7 +3,12 @@ export const CrudMixin = {
     return {
       errors: {},
 
-      record: {},
+      record: {
+        onlyDate: '',
+        fromDate: '',
+        toDate: ''
+      },
+
       records: [],
 
       apiRoute: '',
@@ -22,7 +27,7 @@ export const CrudMixin = {
       this.refreshLoading = true
 
       if (payload.reset) this.records = []
-      if (payload.search) this.searchLoading = true
+      this.searchLoading = true
       if (payload.loadMore) this.loadMoreLoading = true
 
       this.axios
@@ -37,12 +42,14 @@ export const CrudMixin = {
           response.data.records.forEach(record => this.records.push(record))
           this.totalRecords = response.data.total
 
+          this.clearFilterVars()
+
           this[loader] = false
           this.refreshLoading = false
           if (payload.loadMore) this.loadMoreLoading = false
 
+          this.searchLoading = false
           if (payload.search) {
-            this.searchLoading = false
             setTimeout(() => { document.getElementById('searchInput').focus() }, 100);
           }
         })

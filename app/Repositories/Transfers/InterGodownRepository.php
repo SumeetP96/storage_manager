@@ -11,17 +11,24 @@ class InterGodownRepository
 {
     public function fetchAll(Request $request)
     {
-        $search = $request->get('query');
-        $limit = $request->get('limit');
         $skip = $request->get('skip');
-        $sortBy = $request->get('sortBy');
         $flow = $request->get('flow');
+        $limit = $request->get('limit');
+        $search = $request->get('query');
+        $sortBy = $request->get('sortBy');
 
-        $records = DB::table('stock_transfers as st')
+        $toDate = $request->get('to');
+        $fromDate = $request->get('from');
+
+        // If no date range selected
+        if (!is_null($fromDate) && !is_null($toDate)) {
+            $records = DB::table('stock_transfers as st')
             ->where('st.transfer_type_id', StockTransfer::INTER_GODOWN)
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
             ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id')
+            ->whereDate('st.date', '<=', $toDate)
+            ->whereDate('st.date', '>=', $fromDate)
             ->where(function ($query) use ($search) {
                 $query->where('fg.name', 'like', '%' . $search . '%')
                     ->orWhere('st.quantity', 'like', '%' . $search . '%')
@@ -29,7 +36,8 @@ class InterGodownRepository
                     ->orWhere('pr.name', 'like', '%' . $search . '%')
                     ->orWhere('pr.unit', 'like', '%' . $search . '%')
                     ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
-            })->selectRaw('
+            })
+            ->selectRaw('
                 st.id,
                 st.date,
                 st.quantity,
@@ -41,8 +49,39 @@ class InterGodownRepository
                 pr.name as productName,
                 pr.unit as productUnit,
                 pr.lot_number as productLotNumber
-            ')->limit($limit)->skip($skip)
+            ')
+            ->limit($limit)->skip($skip)
             ->orderBy($sortBy, $flow);
+        } else {
+            $records = DB::table('stock_transfers as st')
+            ->where('st.transfer_type_id', StockTransfer::INTER_GODOWN)
+            ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
+            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
+            ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id')
+            ->where(function ($query) use ($search) {
+                $query->where('fg.name', 'like', '%' . $search . '%')
+                    ->orWhere('st.quantity', 'like', '%' . $search . '%')
+                    ->orWhere('tg.name', 'like', '%' . $search . '%')
+                    ->orWhere('pr.name', 'like', '%' . $search . '%')
+                    ->orWhere('pr.unit', 'like', '%' . $search . '%')
+                    ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
+            })
+            ->selectRaw('
+                st.id,
+                st.date,
+                st.quantity,
+                st.updated_at,
+                st.created_at,
+                st.remarks,
+                fg.name as fromName,
+                tg.name as toName,
+                pr.name as productName,
+                pr.unit as productUnit,
+                pr.lot_number as productLotNumber
+            ')
+            ->limit($limit)->skip($skip)
+            ->orderBy($sortBy, $flow);
+        }
 
         return ['records' => $records->get(), 'total' => $records->count()];
     }

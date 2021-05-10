@@ -7,6 +7,7 @@ export const LoaderMixin = {
       },
 
       searchLoading: false,
+      filterLoading: false,
       loadMoreLoading: false,
 
       refreshLoading: false,

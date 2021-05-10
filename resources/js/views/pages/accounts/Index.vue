@@ -15,18 +15,12 @@
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
-            :loading="refreshLoading" :disabled="records.length == 0">
-              <v-icon class="mr-2">mdi-table-refresh</v-icon>
-              refresh
-          </v-btn>
-
           <!-- Column Menu -->
           <template>
             <div class="text-center">
               <v-menu offset-y :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn dark v-bind="attrs" v-on="on" class="ml-2"
+                  <v-btn dark v-bind="attrs" v-on="on"
                     :color="$vuetify.theme.dark ? '' : 'white purple--text'">
                       <v-icon class="mr-2">mdi-table-eye</v-icon>
                       Columns <v-icon class="ml-2">mdi-menu-down</v-icon>
@@ -43,8 +37,15 @@
         </v-col>
 
         <!-- Search -->
-        <v-col cols="12" sm="12" md="3" offset-md="3"
-          class="d-flex justify-end">
+        <v-col cols="12" sm="12" md="4" offset-md="2"
+          class="d-flex justify-end align-center">
+            <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
+              class="mr-2"
+              :loading="refreshLoading" :disabled="records.length == 0">
+                <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                refresh
+            </v-btn>
+
             <v-text-field
               id="searchInput"
               solo
