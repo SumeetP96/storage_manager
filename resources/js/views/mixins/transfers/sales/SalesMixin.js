@@ -1,39 +1,9 @@
 import { CrudMixin } from "./CrudMixin"
 import { DialogMixin } from "../DialogMixin"
+import { TransferMixin } from "../TransferMixin"
 
 export const SalesMixin = {
-  mixins: [DialogMixin, CrudMixin],
-
-  data() {
-    return {
-      transferTypes: {
-        interGodown: 1,
-        purchase: 2,
-        sales: 3
-      },
-
-      currentTransferType: '',
-
-      dialogRecord: {},
-      dialogErrors: {},
-
-      agentDialog: false,
-      godownDialog: false,
-      accountDialog: false,
-      productDialog: false,
-
-      agents: [],
-      accounts: [],
-      products: [],
-      godownsWithStock: [],
-
-      godownDetails: {},
-      accountDetails: {},
-      productDetails: {},
-
-      autocompleteLoading: false
-    }
-  },
+  mixins: [DialogMixin, CrudMixin, TransferMixin],
 
   methods: {
     /**
@@ -42,6 +12,10 @@ export const SalesMixin = {
      */
     customFetchRecord(id) {
       this.showRecordLoading = true
+      this.fromLoading = true
+      this.toLoading = true
+      this.productLoading = true
+      this.agentLoading = true
 
       this.record = {}
 
@@ -56,20 +30,34 @@ export const SalesMixin = {
             .then(response => {
               this.godownsWithStock = response.data.records
 
-              // Godown details
               this.axios.get(`/api/godowns/${this.record.from_godown_id}/details`)
                 .then(response => {
                   this.godownDetails = response.data
+                  this.fromLoading = false
+                })
+            })
 
-                  // Products with stock
-                  this.axios.get(`/api/products/autocomplete_with_stock/${this.record.from_godown_id}`)
-                    .then(response => {
-                      this.products = response.data.records
+          // Products with stock
+          this.axios.get(`/api/products/autocomplete_with_stock/${this.record.from_godown_id}`)
+            .then(response => {
+              this.products = response.data.records
 
-                      // Product details
-                      this.axios.get(`/api/products/${this.record.product_id}/details/${this.record.from_godown_id}`)
-                        .then(response => this.productDetails = response.data)
-                    })
+              this.axios.get(`/api/purchases/transfer_products/${id}`)
+                .then(response => {
+                  response.data.record.forEach((product, index) => {
+                    this.inputProducts.push({ id: '', quantity: '', quantityRaw: '' })
+                    this.productDetails.push({ unit: '', remarks: '' })
+
+                    this.inputProducts[index].id = product.productId
+                    this.inputProducts[index].quantity = product.quantity
+                    this.inputProducts[index].quantityRaw = product.quantityRaw
+
+                    this.fetchProductDetails(index)
+                  })
+
+                  this.clearUnusedInputs()
+
+                  this.productLoading = false
                 })
             })
 
@@ -80,16 +68,21 @@ export const SalesMixin = {
 
               // Account Details
               this.axios.get(`/api/godowns/${this.record.to_godown_id}/details`)
-                .then(response => this.accountDetails = response.data)
+                .then(response => {
+                  this.accountDetails = response.data
+                  this.toLoading = false
+                })
             })
 
           // Agents
           this.axios.get('/api/agents/autocomplete')
-            .then(response => this.agents = response.data.records)
+            .then(response => {
+              this.agents = response.data.records
+              this.agentLoading = false
+            })
 
+          this.showRecordLoading = false
         })
-
-        this.showRecordLoading = false
     },
 
 
@@ -97,21 +90,30 @@ export const SalesMixin = {
      * Fetch for Sales create mode
      */
     customFetchAll() {
-      this.showRecordLoading = true
+      this.fromLoading = true
+      this.toLoading = true
+      this.agentLoading = true
 
       // Godowns
       this.axios.get('/api/godowns/autocomplete_with_stock')
-        .then(response => this.godownsWithStock = response.data.records)
+        .then(response => {
+          this.godownsWithStock = response.data.records
+          this.fromLoading = false
+        })
 
       // Accounts
       this.axios.get('/api/godowns/autocomplete/1')
-        .then(response => this.accounts = response.data.records)
+        .then(response => {
+          this.accounts = response.data.records
+          this.toLoading = false
+        })
 
       // Agents
       this.axios.get('/api/agents/autocomplete')
-        .then(response => this.agents = response.data.records)
-
-      this.showRecordLoading = false
+        .then(response => {
+          this.agents = response.data.records
+          this.agentLoading = false
+        })
     },
 
 
@@ -119,21 +121,19 @@ export const SalesMixin = {
      * Fetch Godown with Products in it
      */
     fetchGodownWithStockDetails() {
+      this.productLoading = true
       this.axios.get(`/api/godowns/${this.record.from_godown_id}/details`)
         .then(response => {
           this.godownDetails = response.data
 
-          this.productDetails = {}
-          this.record.product_id = undefined
+          this.inputProducts = [{ id: '', quantity: '', quantityRaw: '' }]
+          this.productDetails = [{ unit: '', stock: '', remarks: '' }]
 
           // Products with stock
           this.axios.get(`/api/products/autocomplete_with_stock/${this.record.from_godown_id}`)
             .then(response => {
               this.products = response.data.records
-
-              // Product details
-              this.axios.get(`/api/products/${this.record.product_id}/details/${this.record.from_godown_id}`)
-                .then(response => this.productDetails = response.data)
+              this.productLoading = false
             })
         })
     },
@@ -142,18 +142,13 @@ export const SalesMixin = {
     /**
      * Fetch selected product's details
      */
-    fetchProductDetails() {
-      this.productDetails = {}
-
-      // Products with stock
-      this.axios.get(`/api/products/autocomplete_with_stock/${this.record.from_godown_id}`)
-      .then(response => {
-        this.products = response.data.records
-
-        // Product details
-        this.axios.get(`/api/products/${this.record.product_id}/details/${this.record.from_godown_id}`)
-          .then(response => this.productDetails = response.data)
-      })
+     fetchProductDetails(index) {
+      this.axios.get(`/api/products/${this.inputProducts[index].id}/details/${this.record.from_godown_id}`)
+        .then(response => {
+          this.productDetails[index].unit = response.data.unit
+          this.productDetails[index].stock = response.data.stock
+          this.productDetails[index].remarks = response.data.remarks
+        })
     },
 
 

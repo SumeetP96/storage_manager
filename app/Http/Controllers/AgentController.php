@@ -103,4 +103,13 @@ class AgentController extends Controller
         return $this->responseService
             ->autocomplete($this->agentRepository->fetchAutocompletes());
     }
+
+    /**
+     * Fetch records for autocomplete
+     */
+    public function autocompleteWithTransfer()
+    {
+        return $this->responseService
+            ->autocomplete($this->agentRepository->fetchAutocompletesWithTransfer());
+    }
 }

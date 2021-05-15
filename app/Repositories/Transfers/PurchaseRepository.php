@@ -5,6 +5,7 @@ namespace App\Repositories\Transfers;
 use App\StockTransfer;
 use Illuminate\Http\Request;
 use App\GodownProductsStock;
+use App\StockTransferProduct;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRepository
@@ -42,9 +43,9 @@ class PurchaseRepository
 
         $query = DB::table('stock_transfers as st')
             ->where('st.transfer_type_id', StockTransfer::PURCHASE)
+            ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
-            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
-            ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id');
+            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id');
 
         if (!is_null($fromDate) && !is_null($toDate)) {
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
@@ -74,24 +75,20 @@ class PurchaseRepository
 
         $records = $query->where(function ($query) use ($search) {
             $query->where('fg.name', 'like', '%' . $search . '%')
-                ->orWhere('st.quantity', 'like', '%' . $search . '%')
-                ->orWhere('tg.name', 'like', '%' . $search . '%')
-                ->orWhere('pr.name', 'like', '%' . $search . '%')
-                ->orWhere('pr.unit', 'like', '%' . $search . '%')
-                ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
+                ->orWhere('ag.name', 'like', '%' . $search . '%')
+                ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
+                ->orWhere('tg.name', 'like', '%' . $search . '%');
             })
             ->selectRaw('
                 st.id,
                 st.date,
-                st.quantity,
+                st.remarks,
+                st.invoice_no as invoiceNo,
                 st.updated_at,
                 st.created_at,
-                st.remarks,
                 fg.name as fromName,
                 tg.name as toName,
-                pr.name as productName,
-                pr.unit as productUnit,
-                pr.lot_number as productLotNumber
+                ag.name as agent
             ')
             ->skip($skip)
             ->limit($limit)
@@ -102,37 +99,46 @@ class PurchaseRepository
 
     public function fetchOne($id)
     {
-        $record = DB::table('stock_transfers as st')->where('st.id', $id)
+        return DB::table('stock_transfers as st')->where('st.id', $id)
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
-            ->leftJoin('products as pr', 'st.product_id', '=', 'pr.id')
             ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
             ->selectRaw('
                 st.*,
                 DATE_FORMAT(st.date, "%d-%m-%Y") as dateRaw,
-                st.quantity div 100 as quantityRaw,
                 fg.name as fromName,
                 tg.name as toName,
-                pr.name as productName,
-                pr.unit as productUnit,
-                pr.lot_number as productLotNumber,
                 ag.name as agentName
-            ')->first();
+            ')
+            ->first();
+    }
 
-        return $record;
+    public function fetchShowTransferProducts($purchaseId)
+    {
+        return DB::table('stock_transfer_products as stp')
+            ->where('stp.stock_transfer_id', $purchaseId)
+            ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
+            ->selectRaw('
+                stp.id,
+                stp.quantity,
+                stp.quantity div 100 as quantityRaw,
+                pr.id as productId,
+                pr.name as name,
+                pr.unit as unit,
+                pr.lot_number as lotNumber
+            ')
+            ->get();
     }
 
     /**
      * Create Purchase Entry
      */
-    public function create(Request $request)
+    public function create(Request $request, $purchaseService)
     {
-        StockTransfer::create([
+        $id = StockTransfer::create([
             'transfer_type_id'  => $request->transfer_type,
             'date'              => $request->date,
             'from_godown_id'    => $request->from_godown_id,
-            'product_id'        => $request->product_id,
-            'quantity'          => $request->quantity,
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
@@ -141,21 +147,33 @@ class PurchaseRepository
             'transport_details' => strtoupper($request->transport_details),
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
-        ]);
+        ])->id;
+
+        foreach($request->products as $product) {
+            StockTransferProduct::create([
+                'stock_transfer_id' => $id,
+                'product_id'        => $product['id'],
+                'quantity'          => $product['quantity']
+            ]);
+
+            if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
+                $this->updateGPS($existingGPS, $product['quantity']);
+            } else {
+                $this->createGPS($request, $product);
+            }
+        }
     }
 
     /**
      * Update Purchase Entry
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $purchaseService)
     {
         $this->undoPreviousGPSChanges($id);
 
         StockTransfer::find($id)->update([
             'date'              => $request->date,
             'from_godown_id'    => $request->from_godown_id,
-            'product_id'        => $request->product_id,
-            'quantity'          => $request->quantity,
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
@@ -165,6 +183,22 @@ class PurchaseRepository
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
         ]);
+
+        StockTransferProduct::where('stock_transfer_id', $id)->delete();
+
+        foreach($request->products as $product) {
+            StockTransferProduct::create([
+                'stock_transfer_id' => $id,
+                'product_id'        => $product['id'],
+                'quantity'          => $product['quantity']
+            ]);
+
+            if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
+                $this->updateGPS($existingGPS, $product['quantity']);
+            } else {
+                $this->createGPS($request, $product);
+            }
+        }
     }
 
     /**
@@ -185,31 +219,32 @@ class PurchaseRepository
     public function undoPreviousGPSChanges($id)
     {
         $stockTransfer = StockTransfer::find($id);
+        $products = StockTransferProduct::where('stock_transfer_id', $id)->get();
 
-        $oldGodownStock = GodownProductsStock::where('godown_id', $stockTransfer->to_godown_id)
-            ->where('product_id', $stockTransfer->product_id)
-            ->first();
+        foreach($products as $product) {
+            $oldGodownStock = GodownProductsStock::where('godown_id', $stockTransfer->to_godown_id)
+                ->where('product_id', $product->product_id)
+                ->first();
 
-        $oldCurrentStock = $oldGodownStock->current_stock;
-        $oldGodownStock->current_stock = $oldCurrentStock - $stockTransfer->quantity;
-        $oldGodownStock->save();
+            $oldGodownStock->current_stock -= $product->quantity;
+            $oldGodownStock->save();
+        }
     }
 
-    public function createGPS(Request $request)
+    public function createGPS(Request $request, $product)
     {
         GodownProductsStock::create([
-            'product_id'    => $request->product_id,
+            'product_id'    => $product['id'],
             'godown_id'     => $request->to_godown_id,
-            'current_stock' => $request->quantity
+            'current_stock' => $product['quantity']
         ]);
 
         $this->cleanNoStock();
     }
 
-    public function updateGPS(GodownProductsStock $godownStock, Request $request)
+    public function updateGPS(GodownProductsStock $godownStock, $productQuantity)
     {
-        $currentStock = $godownStock->current_stock;
-        $godownStock->current_stock = $currentStock + $request->quantity;
+        $godownStock->current_stock += $productQuantity;
         $godownStock->save();
 
         $this->cleanNoStock();

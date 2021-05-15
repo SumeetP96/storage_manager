@@ -8,6 +8,7 @@ use App\Http\Requests\StockTransferRequest;
 use App\Services\Response\ResponseService;
 use App\Services\Transfers\InterGodownService;
 use App\Repositories\Transfers\InterGodownRepository;
+use Illuminate\Support\Facades\DB;
 
 class InterGodownController extends Controller
 {
@@ -44,7 +45,9 @@ class InterGodownController extends Controller
     public function index(Request $request)
     {
         return $this->responseService
-            ->records($this->interGodownRepository->fetchAll($request));
+            ->records(
+                $this->interGodownRepository->fetchAll($request)
+            );
     }
 
     /**
@@ -55,19 +58,12 @@ class InterGodownController extends Controller
      */
     public function store(StockTransferRequest $request)
     {
-        if (! $this->interGodownService->validateQuantity($request)) {
-            return $this->responseService->error([
-                'quantity'  => ['Quantity exceeds stock.']
-            ]);
-        }
+        $errors = $this->interGodownService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        $this->interGodownRepository->create($request);
-
-        if ($existingGPS = $this->interGodownService->checkExistingGPS($request)) {
-            $this->interGodownRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->interGodownRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request) {
+            $this->interGodownRepository->create($request, $this->interGodownService);
+        });
 
         return $this->responseService->success();
     }
@@ -81,7 +77,23 @@ class InterGodownController extends Controller
     public function show($id)
     {
         return $this->responseService
-            ->record($this->interGodownRepository->fetchOne($id));
+            ->record(
+                $this->interGodownRepository->fetchOne($id)
+            );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $purchaseId
+     * @return \Illuminate\Http\Response
+     */
+    public function showTransferProducts($purchaseId)
+    {
+        return $this->responseService
+            ->record(
+                $this->interGodownRepository->fetchShowTransferProducts($purchaseId)
+            );
     }
 
     /**
@@ -93,19 +105,12 @@ class InterGodownController extends Controller
      */
     public function update(StockTransferRequest $request, $id)
     {
-        if (! $this->interGodownService->validateQuantity($request)) {
-            return $this->responseService->error([
-                'quantity'  => ['Quantity exceeds stock.']
-            ]);
-        }
+        $errors = $this->interGodownService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        $this->interGodownRepository->update($request, $id);
-
-        if ($existingGPS = $this->interGodownService->checkExistingGPS($request)) {
-            $this->interGodownRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->interGodownRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request, $id) {
+            $this->interGodownRepository->update($request, $id, $this->interGodownService);
+        });
 
         return $this->responseService->success();
     }

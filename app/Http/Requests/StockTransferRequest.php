@@ -26,7 +26,6 @@ class StockTransferRequest extends FormRequest
         return [
             'date'              => 'required|date',
             'from_godown_id'    => 'different:to_godown_id|required|integer',
-            'product_id'        => 'required|integer',
             'to_godown_id'      => 'different:from_godown_id|required|integer',
             'order_no'          => 'nullable|max:20',
             'invoice_no'        => 'nullable|max:20',
@@ -40,11 +39,9 @@ class StockTransferRequest extends FormRequest
         return [
             'from_godown_id.required'   => 'From account field is required.',
             'from_godown_id.different'  => 'Godowns must not be same.',
-            'product_id.required'       => 'Product field is required.',
+            'products.*.id.required'    => 'Product field is required.',
             'to_godown_id.required'     => 'To godown field is required.',
             'to_godown_id.different'    => 'Godowns must not be same.',
-            'quantity.required'         => 'Quantity field is required.',
-            'quantity.integer'          => 'Invalid quantity.',
         ];
     }
 }

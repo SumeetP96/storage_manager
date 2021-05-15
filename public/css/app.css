@@ -60,3 +60,13 @@ body .view-record-table td {
   padding: 10px 12px;
 }
 
+body .inter-view-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+body .inter-view-table td {
+  border-bottom: none !important;
+  padding: 1px 8px !important;
+}
+

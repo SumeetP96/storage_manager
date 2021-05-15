@@ -8,6 +8,8 @@ export const CrudMixin = {
 
       this.dialogErrors = {}
 
+      const currentIndex = this.currentIndex
+
       this.$swal({
         title: 'Are you sure you want to create this record?',
         text: "Create record!",
@@ -24,24 +26,21 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Created!',
-                'Record has been created.',
-                'success'
-              )
 
-              let id = response.data.id
+              const id = response.data.id
 
               if (payload.apiRoute == 'products') {
-                this.productDetails = {}
-                this.record.product_id = ''
+                this.inputProducts[currentIndex].id = id
+
                 this.axios.get('/api/products/autocomplete')
                   .then(response => {
                     this.products = response.data.records
-                    this.record.product_id = id
                     this.axios.get(`/api/products/${id}/details`)
-                      .then(response => this.productDetails = response.data)
-                  })
+                      .then(response => {
+                        this.productDetails[currentIndex].unit = response.data.unit
+                        this.productDetails[currentIndex].remarks = response.data.remarks
+                      })
+                    })
               }
 
               if (payload.apiRoute == 'agents') {
@@ -131,21 +130,19 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Updated!',
-                'Record has been updated.',
-                'success'
-              )
 
               if (payload.apiRoute == 'products') {
-                this.productDetails = {}
-                this.record.product_id = ''
+                this.productDetails[this.currentIndex] = { remarks: '', unit: '' }
+                this.inputProducts[this.currentIndex].id = ''
                 this.axios.get('/api/products/autocomplete')
                   .then(response => {
                     this.products = response.data.records
-                    this.record.product_id = id
+                    this.inputProducts[this.currentIndex].id = id
                     this.axios.get(`/api/products/${id}/details`)
-                      .then(response => this.productDetails = response.data)
+                      .then(response => {
+                        this.productDetails[this.currentIndex].unit = response.data.unit
+                        this.productDetails[this.currentIndex].remarks = response.data.remarks
+                      })
                   })
               }
 

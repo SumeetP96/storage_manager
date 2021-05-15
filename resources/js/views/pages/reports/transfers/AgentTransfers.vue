@@ -63,9 +63,10 @@
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
             <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="resetDates(); refreshTable('date');" :loading="refreshLoading" :disabled="records.length == 0">
-                <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                refresh
+              @click="resetDates(); refreshTable('date', `agent_id=${agentId}`);"
+                :loading="refreshLoading" :disabled="records.length == 0">
+                  <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                  refresh
             </v-btn>
 
             <v-text-field
@@ -114,6 +115,17 @@
                     </span>
                 </th>
 
+                <!-- Invoice No -->
+                <th class="subtitle-2 text-center" :class="sortBy == 'invoiceNo' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'invoiceNo' ? 'font-size: 1rem !important' : ''">
+
+                    <span class="sort-link" @click="sortRecords('invoiceNo', 'date')">Reference no</span>
+                    <span v-if="sortBy == 'invoiceNo'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+                </th>
+
                 <th class="subtitle-2" :class="sortBy == 'fromName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'fromName' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('fromName', 'date')">From</span>
@@ -132,37 +144,10 @@
                     </span>
                 </th>
 
-                <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber', 'date')">Lot number</span>
-                    <span v-if="sortBy == 'lotNumber'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-                </th>
-
-                <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'productName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productName', 'date')">Product</span>
-                    <span v-if="sortBy == 'productName'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-                </th>
-
-                <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('quantity', 'date')">Quantity</span>
-                    <span v-if="sortBy == 'quantity'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-                </th>
-
-                <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('unit', 'date')">Unit</span>
-                    <span v-if="sortBy == 'unit'">
+                <th class="subtitle-2" :class="sortBy == 'updated_at' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'updated_at' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('updated_at', 'date')">Last modified on</span>
+                    <span v-if="sortBy == 'updated_at'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
@@ -171,7 +156,7 @@
               </tr>
             </thead>
             <tbody v-if="records.length > 0">
-              <tr v-for="record in records" :key="record.id">
+              <tr v-for="(record, index) in records" :key="index">
                   <td class="subtitle-1 text-center font-weight-bold">{{ record.date | moment('DD/MM/YYYY') }}</td>
 
                   <td class="subtitle-1 text-center">
@@ -193,30 +178,21 @@
                     </v-btn>
                   </td>
 
+                  <td class="subtitle-1 text-center grey--text font-weight-bold"
+                    :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                      {{ record.invoiceNo ? record.invoiceNo : '-' }}
+                  </td>
+
                   <td class="subtitle-1">{{ record.fromName }}</td>
+
                   <td class="subtitle-1">{{ record.toName }}</td>
 
-                  <td class="subtitle-1 text-center">{{ record.lotNumber }}</td>
-                  <td class="subtitle-1">{{ record.productName }}</td>
-
-                  <td class="subtitle-1 text-right font-weight-bold">
-                    <span v-if="record.ttid == 1">{{ formatQuantity(record.quantity) }}</span>
-                    <span v-if="record.ttid == 2" class="success--text">
-                      + {{ formatQuantity(record.quantity) }}
-                    </span>
-                    <span v-if="record.ttid == 3" class="error--text">
-                      - {{ formatQuantity(record.quantity) }}
-                    </span>
-                  </td>
-
-                  <td class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                    {{ record.unit }}
-                  </td>
+                  <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>
               </tr>
             </tbody>
             <tbody v-else>
               <tr>
-                <td :colspan="8" class="text-center subtitle-1">No records found.</td>
+                <td :colspan="6" class="text-center subtitle-1">No records found.</td>
               </tr>
             </tbody>
           </template>
@@ -274,37 +250,49 @@
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">From account</td>
+                  <td class="subtitle-1 font-weight-bold text-left">From
+                    <span v-if="recordType == 'Purchase'">account</span>
+                    <span v-else>godown</span>
+                  </td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                     {{ dbRecord.fromName }}
                   </td>
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">To godown</td>
+                  <td class="subtitle-1 font-weight-bold text-left">To
+                    <span v-if="recordType == 'Sale'">account</span>
+                    <span v-else>godown</span>
+                  </td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                     {{ dbRecord.toName }}
                   </td>
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Lot number</td>
+                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productLotNumber ? dbRecord.productLotNumber : '-' }}
-                  </td>
-                </tr>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Product</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productName }}
-                  </td>
-                </tr>
+                    <table>
+                      <tr v-for="(product, index) in recordProducts" :key="index">
+                        <td style="border: none; padding: 1px 0">
+                          <span>{{ product.name }}</span>
+                        </td>
+                        <td style="border: none; padding: 1px 0" class="px-2 text-center">
+                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            ( {{ product.lotNumber }} )
+                          </span>
+                          <span v-else>-</span>
+                        </td>
+                        <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            {{ product.unit }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Quantity</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ formatQuantity(dbRecord.quantity) }} {{ dbRecord.productUnit }}
                   </td>
                 </tr>
 
@@ -415,7 +403,7 @@ export default {
     this.customQuery = `agent_id=${this.agentId}`
     this.sortBy = 'date'
 
-    this.axios.get('/api/agents/autocomplete')
+    this.axios.get('/api/agents/autocomplete_with_transfers')
       .then(response => this.agents = response.data.records)
 
     if (this.agents) this.loadRecords()
@@ -480,7 +468,12 @@ export default {
 
       this.axios
         .get(`/api/${apiRoute}/${agentId}/show`)
-        .then(response => this.dbRecord = response.data.record)
+        .then(response => {
+          this.dbRecord = response.data.record
+
+          this.axios.get(`/api/${apiRoute}/transfer_products/${agentId}`)
+            .then(response => this.recordProducts = response.data.record)
+        })
     }
   }
 }

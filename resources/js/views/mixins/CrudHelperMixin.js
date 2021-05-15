@@ -9,7 +9,8 @@ export const CrudHelperMixin = {
         search: payload.hasOwnProperty('search') ? payload.search : false,
         reset: payload.hasOwnProperty('reset') ? payload.reset : true,
         loader: payload.hasOwnProperty('loader') ? payload.loader : undefined,
-        loadMore: payload.hasOwnProperty('loadMore') ? payload.loadMore : false
+        loadMore: payload.hasOwnProperty('loadMore') ? payload.loadMore : false,
+        customQuery: payload.hasOwnProperty('customQuery') ? payload.customQuery : false,
       })
     },
 

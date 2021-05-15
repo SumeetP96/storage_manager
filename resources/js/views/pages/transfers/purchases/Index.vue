@@ -38,7 +38,7 @@
           <v-text-field
             v-model="record.fromDate"
             hide-details="auto"
-            outlined
+            solo
             placeholder="From date"
             @blur="formatDate('fromDate'); dbFromDate = flipToYMD(record.fromDate); fetchDateRecords()"
             prepend-inner-icon="mdi-calendar"
@@ -50,7 +50,7 @@
           <v-text-field
             v-model="record.toDate"
             hide-details="auto"
-            outlined
+            solo
             placeholder="To date"
             @blur="formatDate('toDate'); dbToDate = flipToYMD(record.toDate); fetchDateRecords()"
             prepend-inner-icon="mdi-calendar"
@@ -107,62 +107,17 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+                </th>
 
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="dateFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('date') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="dateFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Date range</div>
+                <!-- Invoice No -->
+                <th class="subtitle-2 text-center" :class="sortBy == 'invoiceNo' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'invoiceNo' ? 'font-size: 1rem !important' : ''">
 
-                            <v-text-field
-                              v-model="record.fromDate"
-                              hide-details
-                              solo
-                              :disabled="filterLoading"
-                              :loading="filterLoading"
-                              placeholder="From date"
-                              @blur="formatDate('fromDate'); dbFromDate = flipToYMD(record.fromDate);"
-                              prepend-inner-icon="mdi-calendar"
-                              :class="$vuetify.theme.dark ? '' : 'white'"
-                              class="center-input mt-3"
-                              dense>
-                            </v-text-field>
-
-                            <v-text-field
-                              v-model="record.toDate"
-                              hide-details
-                              solo
-                              :disabled="filterLoading"
-                              :loading="filterLoading"
-                              placeholder="To date"
-                              @blur="formatDate('toDate'); dbToDate = flipToYMD(record.toDate);"
-                              prepend-inner-icon="mdi-calendar"
-                              :class="$vuetify.theme.dark ? '' : 'white'"
-                              class="center-input mt-2"
-                              dense>
-                            </v-text-field>
-
-                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
-                              <v-btn dark small @click="removeFilter('date')" tabindex="-1" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('date')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
+                    <span class="sort-link" @click="sortRecords('invoiceNo', 'date')">Invoice no</span>
+                    <span v-if="sortBy == 'invoiceNo'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
                 </th>
 
                 <!-- From Account -->
@@ -301,273 +256,14 @@
                     </v-menu> -->
                 </th>
 
-                <!-- Lot number -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'productLotNumber' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'productLotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productLotNumber', 'date')">Lot number</span>
-                    <span v-if="sortBy == 'productLotNumber'">
+                <th v-if="selectedColumns.indexOf('agent') >= 0"
+                  class="subtitle-2" :class="sortBy == 'agent' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'agent' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('agent', 'date')">Agent</span>
+                    <span v-if="sortBy == 'agent'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="lotFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('lot') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="lotFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="lotSelectOnly"
-                              :items="lotAutofill"
-                              label="Select lot number"
-                              item-value="lot_number"
-                              item-text="lot_number"
-                              multiple
-                              clearable
-                              :loading="filterLoading"
-                              :disabled="lotSelectExcept.length > 0 || lotNull || filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="lotSelectExcept"
-                              :items="lotAutofill"
-                              label="Select lot number"
-                              item-value="lot_number"
-                              item-text="lot_number"
-                              multiple
-                              clearable
-                              :loading="filterLoading"
-                              :disabled="lotSelectOnly.length > 0 || lotNull || filterLoading"
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <v-checkbox v-model="lotNull" label="Select records with no lot number" hide-details
-                              class="rounded elevation-1 my-1 px-3 pt-3 pb-3" :class="$vuetify.theme.dark ? '' : 'white'">
-                            </v-checkbox>
-
-                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
-                              <v-btn dark small @click="removeFilter('lot')" tabindex="-1" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('lot')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
-                </th>
-
-                <!-- Product -->
-                <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'productName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productName', 'date')">Product</span>
-                    <span v-if="sortBy == 'productName'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="productFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('product') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="productFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="productSelectOnly"
-                              :items="productAutofill"
-                              label="Select products"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              clearable
-                              :disabled="productSelectExcept.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="productSelectExcept"
-                              :items="productAutofill"
-                              :disabled="productSelectOnly.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              label="Select products"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              clearable
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
-                              <v-btn dark small @click="removeFilter('product')" tabindex="-1" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('product')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
-                </th>
-
-                <!-- Quantity -->
-                <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('quantity', 'date')">Quantity</span>
-                    <span v-if="sortBy == 'quantity'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="quantityFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('quantity') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="quantityFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Quantity greater than</div>
-
-                            <v-text-field
-                              v-model="quantityGt"
-                              hide-details
-                              solo
-                              :disabled="filterLoading"
-                              :loading="filterLoading"
-                              placeholder="0.00"
-                              :class="$vuetify.theme.dark ? '' : 'white'"
-                              class="right-input"
-                              dense>
-                            </v-text-field>
-
-                            <div class="subtitle-2 mb-1 mt-3">Quantity less than</div>
-
-                            <v-text-field
-                              v-model="quantityLt"
-                              hide-details
-                              solo
-                              :disabled="filterLoading"
-                              :loading="filterLoading"
-                              placeholder="0.00"
-                              :class="$vuetify.theme.dark ? '' : 'white'"
-                              class="right-input"
-                              dense>
-                            </v-text-field>
-
-                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
-                              <v-btn dark small @click="removeFilter('quantity')" tabindex="-1" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('quantity')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
-                </th>
-
-                <!-- Unit -->
-                <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('unit', 'date')">Unit</span>
-                    <span v-if="sortBy == 'unit'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="unitFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('unit') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="unitFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="unitSelectOnly"
-                              :items="unitAutofill"
-                              label="Select units"
-                              item-value="unit"
-                              item-text="unit"
-                              multiple
-                              clearable
-                              :disabled="unitSelectExcept.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="unitSelectExcept"
-                              :items="unitAutofill"
-                              :disabled="unitSelectOnly.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              label="Select units"
-                              item-value="unit"
-                              item-text="unit"
-                              multiple
-                              clearable
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1" :loading="filterLoading">
-                              <v-btn dark small @click="removeFilter('unit')" tabindex="-1">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('unit')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
                 </th>
 
                 <th v-if="selectedColumns.indexOf('remarks') >= 0"
@@ -604,28 +300,22 @@
 
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
-                @click="viewRecordDialog = true; loadRecord(record.id)">
+                @click="viewRecordDialog = true; customFetchTransfer(record.id)">
                   <td class="subtitle-1 text-center font-weight-bold">
                     {{ record.date | moment('DD/MM/YYYY') }}
+                  </td>
+
+                  <td class="subtitle-1 text-center grey--text font-weight-bold"
+                    :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                      {{ record.invoiceNo ? record.invoiceNo : '-' }}
                   </td>
 
                   <td class="subtitle-1">{{ record.fromName }}</td>
 
                   <td class="subtitle-1">{{ record.toName }}</td>
 
-                  <td class="subtitle-1 text-center grey--text font-weight-bold"
-                    :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                      <span v-if="record.productLotNumber">{{ record.productLotNumber }}</span>
-                      <span v-else>-</span>
-                  </td>
-
-                  <td class="subtitle-1">{{ record.productName }}</td>
-
-                  <td class="subtitle-1 text-right font-weight-bold">{{ formatQuantity(record.quantity) }}</td>
-
-                  <td class="subtitle-2 grey--text"
-                    :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.productUnit }}
+                  <td v-if="selectedColumns.indexOf('agent') >= 0" class="subtitle-1">
+                    {{ record.agent }}
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
@@ -714,23 +404,29 @@
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Lot number</td>
+                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ record.productLotNumber ? record.productLotNumber : '-' }}
-                  </td>
-                </tr>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Product</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ record.productName }}
-                  </td>
-                </tr>
+                    <table>
+                      <tr v-for="(product, index) in recordProducts" :key="index">
+                        <td style="border: none; padding: 1px 0">
+                          <span>{{ product.name }}</span>
+                        </td>
+                        <td style="border: none; padding: 1px 0" class="px-2 text-center">
+                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            ( {{ product.lotNumber }} )
+                          </span>
+                          <span v-else>-</span>
+                        </td>
+                        <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            {{ product.unit }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Quantity</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ formatQuantity(record.quantity) }} {{ record.productUnit }}
                   </td>
                 </tr>
 
@@ -832,6 +528,7 @@ export default {
     this.loadRecords()
 
     this.setupExtraColumns([
+      { value: 'agent', label: 'Agent' },
       { value: 'remarks', label: 'Remarks' },
       { value: 'created_at', label: 'Created at' },
     ])

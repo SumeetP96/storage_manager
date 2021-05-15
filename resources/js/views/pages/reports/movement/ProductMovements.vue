@@ -63,9 +63,10 @@
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
             <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="resetDates(); refreshTable('date');" :loading="refreshLoading" :disabled="records.length == 0">
-                <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                refresh
+              @click="resetDates(); refreshTable('date', `product_id=${productId}`);"
+                :loading="refreshLoading" :disabled="records.length == 0">
+                  <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                  refresh
             </v-btn>
 
             <v-text-field
@@ -266,23 +267,32 @@
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Lot number</td>
+                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productLotNumber ? dbRecord.productLotNumber : '-' }}
-                  </td>
-                </tr>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Product</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productName }}
-                  </td>
-                </tr>
+                    <table class="inter-view-table">
+                      <tr v-for="(product, index) in recordProducts" :key="index">
+                        <td style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                            <span>{{ product.name }}</span>
+                        </td>
+                        <td class="text-center"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            ( {{ product.lotNumber }} )
+                          </span>
+                          <span v-else>-</span>
+                        </td>
+                        <td class="text-right" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            {{ product.unit }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Quantity</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ formatQuantity(dbRecord.quantity) }} {{ dbRecord.productUnit }}
                   </td>
                 </tr>
 
@@ -393,7 +403,7 @@ export default {
     this.customQuery = `product_id=${this.productId}`
     this.sortBy = 'date'
 
-    this.axios.get('/api/products/autocomplete')
+    this.axios.get('/api/products/autocomplete_with_stock')
       .then(response => this.products = response.data.records)
 
     if (this.products) this.loadRecords()
@@ -458,7 +468,11 @@ export default {
 
       this.axios
         .get(`/api/${apiRoute}/${recordId}/show`)
-        .then(response => this.dbRecord = response.data.record)
+        .then(response => {
+          this.dbRecord = response.data.record
+          this.axios.get(`/api/${apiRoute}/transfer_products/${recordId}`)
+            .then(response => this.recordProducts = response.data.record)
+        })
     }
   }
 }

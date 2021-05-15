@@ -24,11 +24,6 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Created!',
-                'Record has been created.',
-                'success'
-              )
 
               let id = response.data.id
 
@@ -106,11 +101,6 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Updated!',
-                'Record has been updated.',
-                'success'
-              )
 
               if (payload.apiRoute == 'agents') {
                 this.record.agent_id = ''

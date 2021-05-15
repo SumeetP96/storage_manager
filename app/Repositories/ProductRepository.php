@@ -74,12 +74,14 @@ class ProductRepository
     /**
      * Fetch records for autocomplete
      */
-    public function fetchAutocompletesWithStock($id)
+    public function fetchAutocompletesWithStock($id = null)
     {
-        return DB::table('products as pr')
-            ->leftJoin('godown_products_stocks as gps', 'gps.product_id', '=', 'pr.id')
-            ->where('gps.godown_id', $id)
-            ->where('gps.current_stock', '>', 0)
+        $query = DB::table('products as pr')
+            ->leftJoin('godown_products_stocks as gps', 'gps.product_id', '=', 'pr.id');
+
+        if (!is_null($id)) $query->where('gps.godown_id', $id);
+
+        return $query->where('gps.current_stock', '>', 0)
             ->selectRaw("
                 pr.id, CONCAT_WS(' - ', pr.name, CONCAT('( ', pr.lot_number, ' )'), alias) AS name
             ")->get();
@@ -96,7 +98,8 @@ class ProductRepository
 
         if (!is_null($godownId)) {
             $product->stock = GodownProductsStock::where('product_id', $id)
-            ->where('godown_id', $godownId)->first()->current_stock;
+                ->where('godown_id', $godownId)->first()
+                ->current_stock;
         }
 
         return $product;

@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 
 class InterGodownService
 {
-    public function checkExistingGPS(Request $request)
+    public function checkExistingGPS(Request $request, $productId)
     {
         $existingGPS = GodownProductsStock::where('godown_id', $request->to_godown_id)
-            ->where('product_id', $request->product_id)
+            ->where('product_id', $productId)
             ->first();
 
         if (is_null($existingGPS)) {
@@ -20,13 +20,27 @@ class InterGodownService
         }
     }
 
-    public function validateQuantity(Request $request)
+    public function validateProducts(Request $request)
     {
-        $gps = GodownProductsStock::where('product_id', $request->product_id)
-            ->where('godown_id', $request->from_godown_id)
-            ->first();
+        $errors = [];
+        foreach($request->products as $key => $product) {
+            $gps = GodownProductsStock::where('product_id', $product['id'])
+                ->where('godown_id', $request->from_godown_id)
+                ->first();
 
-        if ($request->quantity > $gps->current_stock) return false;
-        else return true;
+            if(empty($product['id'])) {
+                $errors['product_' . $key . '_id'] = ['Product field is required.'];
+            }
+
+            if (empty($product['quantity'])) {
+                $errors['product_' . $key . '_quantity'] = ['Quantity is required.'];
+            } else if (!is_integer((int) $product['quantity'])) {
+                $errors['product_' . $key . '_quantity'] = ['Invalid quantity.'];
+            } else if ($product['quantity'] > $gps->current_stock) {
+                $errors['product_' . $key . '_quantity'] = ['Quantity exceeds stock.'];
+            }
+        }
+
+        return $errors;
     }
 }

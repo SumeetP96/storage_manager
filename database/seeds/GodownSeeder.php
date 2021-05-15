@@ -42,12 +42,12 @@ class GodownSeeder extends Seeder
             ],
             [
                 'is_account'    => TRUE,
-                'name'      => 'Sumeet Prajapati',
-                'alias'     => 'SP',
-                'address'   => 'B-51, Rajbag Upasana Society, Ghodasar',
+                'name'      => 'MS Corporation',
+                'alias'     => 'MS',
+                'address'   => 'Kalupur',
                 'contact_1' => '9662865252',
-                'contact_2' => '21304567',
-                'email'     => 'sumeetprajapati@gmail.com'
+                'contact_2' => '',
+                'email'     => ''
             ],
         ];
 
@@ -64,17 +64,17 @@ class GodownSeeder extends Seeder
             ]);
         }
 
-        for ($i=1; $i < 100; $i++) {
-            Godown::create([
-                'is_account'    => false,
-                'name'      => 'Godown name ' . $i,
-                'alias'     => 'GN' . $i,
-                'address'   => 'Some godown location ' . $i,
-                'contact_1' => '9898989898',
-                'contact_2' => '6565656565',
-                'email'     => 'godownname' . $i . '@gmail.com',
-                'remarks'   => 'This is Godown ' . $i
-            ]);
-        }
+        // for ($i=1; $i < 100; $i++) {
+        //     Godown::create([
+        //         'is_account'    => false,
+        //         'name'      => 'Godown name ' . $i,
+        //         'alias'     => 'GN' . $i,
+        //         'address'   => 'Some godown location ' . $i,
+        //         'contact_1' => '9898989898',
+        //         'contact_2' => '6565656565',
+        //         'email'     => 'godownname' . $i . '@gmail.com',
+        //         'remarks'   => 'This is Godown ' . $i
+        //     ]);
+        // }
     }
 }

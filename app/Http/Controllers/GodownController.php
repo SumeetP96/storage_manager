@@ -121,6 +121,17 @@ class GodownController extends Controller
     }
 
     /**
+     * Fetch records for autocomplete with transfers
+     */
+    public function autocompleteWithTransfer()
+    {
+        return $this->responseService
+            ->autocomplete(
+                $this->godownRepository->fetchAutocompletesWithTransfer()
+            );
+    }
+
+    /**
      * Fetch selected record details
      */
     public function details($id)

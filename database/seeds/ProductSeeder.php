@@ -14,29 +14,19 @@ class ProductSeeder extends Seeder
     {
         $products = [
             [
-                'name'          => 'Wheat',
-                'alias'         => 'NW',
+                'name'          => 'Kohinoor Dubar',
+                'alias'         => 'KD',
+                'lot_number'    => rand(11111, 99999),
+            ],
+            [
+                'name'          => 'Kohinoor Tibar',
+                'alias'         => 'KT',
+                'lot_number'    => rand(11111, 99999),
+            ],
+            [
+                'name'          => 'Kohinoor Red Diamond',
+                'alias'         => 'KR',
                 'lot_number'    => NULL,
-            ],
-            [
-                'name'          => 'Rice',
-                'alias'         => 'NR',
-                'lot_number'    => rand(11111, 99999),
-            ],
-            [
-                'name'          => 'Toor Dal',
-                'alias'         => 'TD',
-                'lot_number'    => NULL,
-            ],
-            [
-                'name'          => 'Makkai',
-                'alias'         => 'MK',
-                'lot_number'    => rand(11111, 99999),
-            ],
-            [
-                'name'          => 'Edible Oil',
-                'alias'         => 'EO',
-                'lot_number'    => rand(11111, 99999),
             ],
         ];
 
@@ -45,8 +35,7 @@ class ProductSeeder extends Seeder
                 'name'          => $product['name'],
                 'lot_number'    => $product['lot_number'],
                 'alias'         => $product['alias'],
-                'unit'          => 'KGS',
-                'remarks'       => 'This is ' . $product['name'],
+                'unit'          => 'KGS'
             ]);
         }
     }

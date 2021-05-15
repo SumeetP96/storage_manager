@@ -8,6 +8,7 @@ use App\Http\Requests\StockTransferRequest;
 use App\Services\Response\ResponseService;
 use App\Services\Transfers\PurchaseService;
 use App\Repositories\Transfers\PurchaseRepository;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
@@ -44,7 +45,9 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         return $this->responseService
-            ->records($this->purchaseRepository->fetchAll($request));
+            ->records(
+                $this->purchaseRepository->fetchAll($request)
+            );
     }
 
     /**
@@ -55,13 +58,12 @@ class PurchaseController extends Controller
      */
     public function store(StockTransferRequest $request)
     {
-        $this->purchaseRepository->create($request);
+        $errors = $this->purchaseService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        if ($existingGPS = $this->purchaseService->checkExistingGPS($request)) {
-            $this->purchaseRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->purchaseRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request) {
+            $this->purchaseRepository->create($request, $this->purchaseService);
+        });
 
         return $this->responseService->success();
     }
@@ -75,7 +77,23 @@ class PurchaseController extends Controller
     public function show($id)
     {
         return $this->responseService
-            ->record($this->purchaseRepository->fetchOne($id));
+            ->record(
+                $this->purchaseRepository->fetchOne($id)
+            );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $purchaseId
+     * @return \Illuminate\Http\Response
+     */
+    public function showTransferProducts($purchaseId)
+    {
+        return $this->responseService
+            ->record(
+                $this->purchaseRepository->fetchShowTransferProducts($purchaseId)
+            );
     }
 
     /**
@@ -87,13 +105,12 @@ class PurchaseController extends Controller
      */
     public function update(StockTransferRequest $request, $id)
     {
-        $this->purchaseRepository->update($request, $id);
+        $errors = $this->purchaseService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        if ($existingGPS = $this->purchaseService->checkExistingGPS($request)) {
-            $this->purchaseRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->purchaseRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request, $id) {
+            $this->purchaseRepository->update($request, $id, $this->purchaseService);
+        });
 
         return $this->responseService->success();
     }

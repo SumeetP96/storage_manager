@@ -175,67 +175,41 @@ class ReportRepository
 
         $toDate = $request->get('to');
         $fromDate = $request->get('from');
+
         $productId = $request->get('product_id');
 
-        // If date range selected
+        $query = DB::table('stock_transfers as st')
+            ->where('stp.product_id', $productId)
+            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
+            ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
+            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
+            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
+
         if (!is_null($fromDate) && !is_null($toDate)) {
-            $records = DB::table('stock_transfers as st')
-                ->where('st.product_id', $productId)
-                ->whereDate('st.date', '<=', $toDate)
-                ->whereDate('st.date', '>=', $fromDate)
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                        ->orWhere('fg.name', 'like', '%' . $search . '%')
-                        ->orWhere('tg.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.quantity,
-                    st.id as id,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    pr.unit as unit,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
-        } else {
-            $records = DB::table('stock_transfers as st')
-                ->where('st.product_id', $productId)
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                        ->orWhere('fg.name', 'like', '%' . $search . '%')
-                        ->orWhere('tg.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.quantity,
-                    st.id as id,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    pr.unit as unit,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
+            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $records->get();
-        $total = $records->count();
+        $records = $query->where(function ($query) use ($search) {
+                $query->where('tt.name', 'like', '%' . $search . '%')
+                    ->orWhere('fg.name', 'like', '%' . $search . '%')
+                    ->orWhere('tg.name', 'like', '%' . $search . '%');
+            })
+            ->selectRaw('
+                stp.quantity,
+                st.id as id,
+                st.date as date,
+                st.transfer_type_id as ttid,
+                pr.unit as unit,
+                tg.name as toName,
+                fg.name as fromName,
+                tt.name as transferType
+            ')
+            ->skip($skip)
+            ->limit($limit)
+            ->orderBy($sortBy, $flow);
 
-        return ['records' => $records, 'total' => $total];
+        return ['records' => $records->get(), 'total' => $records->count()];
     }
 
     /**
@@ -257,75 +231,46 @@ class ReportRepository
 
         $accountId = $request->get('account_id');
 
-        // If date range selected
+        $query = DB::table('stock_transfers as st')
+            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
+            ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
+            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
+            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
+
         if (!is_null($fromDate) && !is_null($toDate)) {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->whereDate('st.date', '<=', $toDate)
-                ->whereDate('st.date', '>=', $fromDate)
-                ->where(function ($query) use ($accountId) {
-                    $query->where('st.to_godown_id', $accountId)
-                        ->orWhere('st.from_godown_id', $accountId);
-                })
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    IF(st.from_godown_id = ?, tg.name, fg.name) as name,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ', [$accountId])
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
-        } else {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->where(function ($query) use ($accountId) {
-                    $query->where('st.to_godown_id', $accountId)
-                        ->orWhere('st.from_godown_id', $accountId);
-                })
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    IF(st.from_godown_id = ?, tg.name, fg.name) as name,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ', [$accountId])
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
+            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $records->get();
-        $total = $records->count();
+        $records = $query->where(function ($query) use ($accountId) {
+                $query->where('st.to_godown_id', $accountId)
+                    ->orWhere('st.from_godown_id', $accountId);
+            })
+            ->where(function ($query) use ($search) {
+                $query->where('tt.name', 'like', '%' . $search . '%')
+                ->orWhere('fg.name', 'like', '%' . $search . '%')
+                ->orWhere('tg.name', 'like', '%' . $search . '%')
+                ->orWhere('pr.name', 'like', '%' . $search . '%');
+            })
+            ->selectRaw('
+                st.id as id,
+                stp.quantity,
+                st.date as date,
+                st.from_godown_id as fromId,
+                st.to_godown_id as toId,
+                st.transfer_type_id as ttid,
+                IF(st.from_godown_id = ?, tg.name, fg.name) as name,
+                pr.id as productId,
+                pr.unit as unit,
+                pr.name as productName,
+                pr.lot_number as lotNumber,
+                tt.name as transferType
+            ', [$accountId])
+            ->skip($skip)
+            ->limit($limit)
+            ->orderBy($sortBy, $flow);
 
-        return ['records' => $records, 'total' => $total];
+        return ['records' => $records->get(), 'total' => $records->count()];
     }
 
     /**
@@ -344,75 +289,41 @@ class ReportRepository
 
         $toDate = $request->get('to');
         $fromDate = $request->get('from');
+
         $agentId = $request->get('agent_id');
 
-        // If date range selected
+        $query = DB::table('stock_transfers as st')
+            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
+            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
+            ->where('st.agent_id', $agentId)
+            ->where('st.agent_id', '!=', null);
+
         if (!is_null($fromDate) && !is_null($toDate)) {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->whereDate('st.date', '<=', $toDate)
-                ->whereDate('st.date', '>=', $fromDate)
-                ->where('agent_id', $agentId)
-                ->where('agent_id', '!=', null)
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
-        } else {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->where('agent_id', $agentId)
-                ->where('agent_id', '!=', null)
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
+            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $records->get();
-        $total = $records->count();
+        $records = $query->where(function ($query) use ($search) {
+                $query->where('tt.name', 'like', '%' . $search . '%')
+                ->orWhere('fg.name', 'like', '%' . $search . '%')
+                ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
+                ->orWhere('tg.name', 'like', '%' . $search . '%');
+            })
+            ->selectRaw('
+                st.id as id,
+                st.date as date,
+                st.invoice_no as invoiceNo,
+                st.updated_at,
+                st.transfer_type_id as ttid,
+                tg.name as toName,
+                fg.name as fromName,
+                tt.name as transferType
+            ')
+            ->skip($skip)
+            ->limit($limit)
+            ->orderBy($sortBy, $flow);
 
-        return ['records' => $records, 'total' => $total];
+        return ['records' => $records->get(), 'total' => $records->count()];
     }
 
     /**
@@ -432,68 +343,36 @@ class ReportRepository
         $toDate = $request->get('to');
         $fromDate = $request->get('from');
 
-        // If date range selected
+
+        $query = DB::table('stock_transfers as st')
+            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
+            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
+
         if (!is_null($fromDate) && !is_null($toDate)) {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->whereDate('st.date', '<=', $toDate)
-                ->whereDate('st.date', '>=', $fromDate)
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
-        } else {
-            $records = DB::table('stock_transfers as st')
-                ->leftJoin('products as pr', 'pr.id', '=', 'st.product_id')
-                ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-                ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-                ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-                ->where(function ($query) use ($search) {
-                    $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.name', 'like', '%' . $search . '%');
-                })
-                ->selectRaw('
-                    st.id as id,
-                    st.quantity,
-                    st.date as date,
-                    st.transfer_type_id as ttid,
-                    tg.name as toName,
-                    fg.name as fromName,
-                    pr.unit as unit,
-                    pr.name as productName,
-                    pr.lot_number as lotNumber,
-                    tt.name as transferType
-                ')
-                ->skip($skip)
-                ->limit($limit)
-                ->orderBy($sortBy, $flow);
+            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $records->get();
-        $total = $records->count();
+        $records = $query->where(function ($query) use ($search) {
+                $query->where('tt.name', 'like', '%' . $search . '%')
+                ->orWhere('fg.name', 'like', '%' . $search . '%')
+                ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
+                ->orWhere('tg.name', 'like', '%' . $search . '%');
+            })
+            ->selectRaw('
+                st.id as id,
+                st.invoice_no as invoiceNo,
+                st.date as date,
+                st.updated_at,
+                st.transfer_type_id as ttid,
+                tg.name as toName,
+                fg.name as fromName,
+                tt.name as transferType
+            ')
+            ->skip($skip)
+            ->limit($limit)
+            ->orderBy($sortBy, $flow);
 
-        return ['records' => $records, 'total' => $total];
+        return ['records' => $records->get(), 'total' => $records->count()];
     }
 }

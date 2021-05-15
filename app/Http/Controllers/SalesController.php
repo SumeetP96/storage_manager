@@ -8,6 +8,7 @@ use App\Services\Transfers\SalesService;
 use App\Services\Response\ResponseService;
 use App\Http\Requests\StockTransferRequest;
 use App\Repositories\Transfers\SalesRepository;
+use Illuminate\Support\Facades\DB;
 
 class SalesController extends Controller
 {
@@ -44,7 +45,9 @@ class SalesController extends Controller
     public function index(Request $request)
     {
         return $this->responseService
-            ->records($this->salesRepository->fetchAll($request));
+            ->records(
+                $this->salesRepository->fetchAll($request)
+            );
     }
 
     /**
@@ -55,13 +58,12 @@ class SalesController extends Controller
      */
     public function store(StockTransferRequest $request)
     {
-        $this->salesRepository->create($request);
+        $errors = $this->salesService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        if ($existingGPS = $this->salesService->checkExistingGPS($request)) {
-            $this->salesRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->salesRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request) {
+            $this->salesRepository->create($request, $this->salesService);
+        });
 
         return $this->responseService->success();
     }
@@ -75,7 +77,23 @@ class SalesController extends Controller
     public function show($id)
     {
         return $this->responseService
-            ->record($this->salesRepository->fetchOne($id));
+            ->record(
+                $this->salesRepository->fetchOne($id)
+            );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $purchaseId
+     * @return \Illuminate\Http\Response
+     */
+    public function showTransferProducts($purchaseId)
+    {
+        return $this->responseService
+            ->record(
+                $this->salesRepository->fetchShowTransferProducts($purchaseId)
+            );
     }
 
     /**
@@ -87,19 +105,12 @@ class SalesController extends Controller
      */
     public function update(StockTransferRequest $request, $id)
     {
-        if (! $this->salesService->validateQuantity($request)) {
-            return $this->responseService->error([
-                'quantity'  => ['Quantity exceeds stock.']
-            ]);
-        }
+        $errors = $this->salesService->validateProducts($request);
+        if (count($errors) > 0) return $this->responseService->error($errors);
 
-        $this->salesRepository->update($request, $id);
-
-        if ($existingGPS = $this->salesService->checkExistingGPS($request)) {
-            $this->salesRepository->updateGPS($existingGPS, $request);
-        } else {
-            $this->salesRepository->createGPS($request);
-        }
+        DB::transaction(function () use ($request, $id) {
+            $this->salesRepository->update($request, $id, $this->salesService);
+        });
 
         return $this->responseService->success();
     }

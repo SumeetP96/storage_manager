@@ -24,11 +24,6 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Created!',
-                'Record has been created.',
-                'success'
-              )
 
               let id = response.data.id
 
@@ -95,11 +90,6 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-              this.$swal(
-                'Updated!',
-                'Record has been updated.',
-                'success'
-              )
 
               this.record.to_godown_id = ''
               this.accountDetails = {}

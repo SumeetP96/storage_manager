@@ -16,11 +16,10 @@ class CreateStockTransfersTable extends Migration
         Schema::create('stock_transfers', function (Blueprint $table) {
             $table->id();
             $table->date('date');
+            $table->bigInteger('transfer_no')->nullable();
             $table->foreignId('transfer_type_id')->constrained('transfer_types')->restrictOnDelete();
             $table->foreignId('from_godown_id')->constrained('godowns')->restrictOnDelete();
             $table->foreignId('to_godown_id')->constrained('godowns')->restrictOnDelete();
-            $table->foreignId('product_id')->constrained()->restrictOnDelete();
-            $table->bigInteger('quantity');
             $table->string('order_no', 20)->nullable();
             $table->string('invoice_no', 20)->nullable();
             $table->string('eway_bill_no', 20)->nullable();

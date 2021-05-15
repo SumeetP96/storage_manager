@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Godown;
+use App\StockTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,9 +65,30 @@ class GodownRepository
     {
         return DB::table('godowns as gd')
             ->leftJoin('godown_products_stocks as gps', 'gps.godown_id', '=', 'gd.id')
-            ->where('gd.is_account', false)
+            ->where('gd.is_account', FALSE)
             ->where('gps.current_stock', '>', 0)
             ->selectRaw("gd.id, CONCAT_WS(' - ', gd.name, gd.alias) AS name")
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Fetch records for autocomplete with Stocks
+     */
+    public function fetchAutocompletesWithTransfer()
+    {
+        $godownIds = [];
+        $fromData = StockTransfer::distinct()->get(['from_godown_id']);
+        $toData = StockTransfer::distinct()->get(['to_godown_id']);
+
+        foreach ($fromData as $data) array_push($godownIds, $data->from_godown_id);
+        foreach ($toData as $data) array_push($godownIds, $data->to_godown_id);
+
+        $godownIds = array_unique($godownIds);
+
+        return Godown::where('is_account', TRUE)
+            ->whereIn('id', $godownIds)
+            ->selectRaw("id, CONCAT_WS(' - ', name, alias) AS name")
             ->orderBy('name')
             ->get();
     }

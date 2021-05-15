@@ -9,6 +9,8 @@ export const CrudMixin = {
         toDate: ''
       },
 
+      recordProducts: [],
+
       records: [],
 
       apiRoute: '',
@@ -29,6 +31,7 @@ export const CrudMixin = {
       if (payload.reset) this.records = []
       this.searchLoading = true
       if (payload.loadMore) this.loadMoreLoading = true
+      if (payload.customQuery) this.customQuery = payload.customQuery
 
       this.axios
         .get(`/api/${this.apiRoute}?query=${this.query}
@@ -261,5 +264,23 @@ export const CrudMixin = {
       })
     },
 
+    customFetchTransfer(id) {
+      let loader = this.dft_ShowRecord
+      this[loader] = true
+
+      this.record = {}
+
+      this.axios
+        .get(`/api/${this.apiRoute}/${id}/show`)
+
+        .then(response => {
+          this.record = response.data.record
+          this.axios.get(`api/${this.apiRoute}/transfer_products/${id}`)
+            .then(response => {
+              this.recordProducts = response.data.record
+              this[loader] = false
+            })
+        })
+    }
   }
 }

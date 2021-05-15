@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Agent;
+use App\StockTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +48,19 @@ class AgentRepository
     public function fetchAutocompletes()
     {
         return Agent::selectRaw("id, CONCAT_WS(' - ', name, alias) AS name")->get();
+    }
+
+    /**
+     * Fetch records for autocomplete
+     */
+    public function fetchAutocompletesWithTransfer()
+    {
+        $agentIds = [];
+        $agentData = StockTransfer::distinct()->where('agent_id', '!=', NULL)->get(['agent_id']);
+
+        foreach($agentData as $data) array_push($agentIds, $data->agent_id);
+
+        return Agent::whereIn('id', $agentIds)->selectRaw("id, CONCAT_WS(' - ', name, alias) AS name")->get();
     }
 
     /**

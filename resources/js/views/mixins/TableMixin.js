@@ -23,12 +23,13 @@ export const TableMixin = {
       this.extraColumns = columns
     },
 
-    refreshTable(sortBy) {
+    refreshTable(sortBy, customQuery) {
       this.sortBy = sortBy ? sortBy : 'created_at'
       this.query = ''
+      this.customQuery = customQuery
       this.recordsPerPage = this.defaultRecordsPerPage
       this.clearFilters()
-      this.loadRecords()
+      this.loadRecords({ customQuery: customQuery })
     },
 
     sortRecords(field) {

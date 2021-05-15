@@ -123,7 +123,7 @@ class ProductController extends Controller
     /**
      * Fetch records for autocomplete with stock
      */
-    public function autocompleteWithStock($id)
+    public function autocompleteWithStock($id = null)
     {
         return $this->responseService
             ->autocomplete(

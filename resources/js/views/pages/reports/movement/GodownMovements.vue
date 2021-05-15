@@ -63,9 +63,10 @@
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
             <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="resetDates(); refreshTable('date');" :loading="refreshLoading" :disabled="records.length == 0">
-                <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                refresh
+              @click="resetDates(); refreshTable('date', `account_id=${accountId}`);"
+                :loading="refreshLoading" :disabled="records.length == 0">
+                  <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                  refresh
             </v-btn>
 
             <v-text-field
@@ -166,19 +167,19 @@
                   <td class="subtitle-1 text-center font-weight-bold">{{ record.date | moment('DD/MM/YYYY') }}</td>
 
                   <td class="subtitle-1 text-center">
-                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid)"
+                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid, record.productId)"
                       v-if="record.ttid == 1" text width="100%"
                       :color="$vuetify.theme.dark ? 'primary' : 'indigo lighten-1'">
                         {{ record.transferType }}
                     </v-btn>
 
-                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid)"
+                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid, record.productId)"
                       v-if="record.ttid == 2" text width="100%"
                       :color="$vuetify.theme.dark ? 'orange' : 'orange darken-2'">
                         {{ record.transferType }}
                     </v-btn>
 
-                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid)"
+                    <v-btn @click="viewRecordDialog = true; loadRecordDialog(record.id, record.ttid, record.productId)"
                       v-if="record.ttid == 3" text width="100%" color="success">
                       {{ record.transferType }}
                     </v-btn>
@@ -190,10 +191,13 @@
                   <td class="subtitle-1">{{ record.productName }}</td>
 
                   <td class="subtitle-1 text-right font-weight-bold">
-                    <span v-if="record.ttid == 1">{{ formatQuantity(record.quantity) }}</span>
-                    <span v-if="record.ttid == 2" class="success--text">
-                      + {{ formatQuantity(record.quantity) }}
+                    <!-- Inter & Purchase -->
+                    <span v-if="record.ttid == 1 || record.ttid == 2">
+                      <span v-if="record.toId == accountId" class="success--text">+ {{ formatQuantity(record.quantity) }}</span>
+                      <span v-else class="error--text">- {{ formatQuantity(record.quantity) }}</span>
                     </span>
+
+                    <!-- Sales -->
                     <span v-if="record.ttid == 3" class="error--text">
                       - {{ formatQuantity(record.quantity) }}
                     </span>
@@ -264,37 +268,52 @@
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">From</td>
+                  <td class="subtitle-1 font-weight-bold text-left">From
+                    <span v-if="recordType == 'Purchase'">account</span>
+                    <span v-else>godown</span>
+                  </td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                     {{ dbRecord.fromName }}
                   </td>
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">To</td>
+                  <td class="subtitle-1 font-weight-bold text-left">To
+                    <span v-if="recordType == 'Sale'">account</span>
+                    <span v-else>godown</span>
+                  </td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                     {{ dbRecord.toName }}
                   </td>
                 </tr>
 
                 <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Lot number</td>
+                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productLotNumber ? dbRecord.productLotNumber : '-' }}
-                  </td>
-                </tr>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Product</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.productName }}
-                  </td>
-                </tr>
+                    <table class="inter-view-table">
+                      <tr v-for="(product, index) in recordProducts" :key="index">
+                        <td style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                            <span>{{ product.name }}</span>
+                        </td>
+                        <td class="text-center"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            ( {{ product.lotNumber }} )
+                          </span>
+                          <span v-else>-</span>
+                        </td>
+                        <td class="text-right" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
+                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
+                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            {{ product.unit }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Quantity</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ formatQuantity(dbRecord.quantity) }} {{ dbRecord.productUnit }}
                   </td>
                 </tr>
 
@@ -394,6 +413,7 @@ export default {
 
       recordType: '',
 
+      productId: '',
       accountId: 0,
       accounts: [],
       accountDetails: {},
@@ -405,7 +425,7 @@ export default {
     this.customQuery = `account_id=${this.accountId}`
     this.sortBy = 'date'
 
-    this.axios.get('/api/godowns/autocomplete/0')
+    this.axios.get('/api/godowns/autocomplete_with_stock')
       .then(response => this.accounts = response.data.records)
 
     if (this.accounts) this.loadRecords()
@@ -450,9 +470,10 @@ export default {
       this.customQuery = `account_id=${this.accountId}`
     },
 
-    loadRecordDialog(accountId, transferTypeId) {
+    loadRecordDialog(accountId, transferTypeId, productId) {
       let apiRoute = ''
 
+      this.productId = productId
       this.dbRecord = {}
 
       if (transferTypeId == 1) {
@@ -470,7 +491,11 @@ export default {
 
       this.axios
         .get(`/api/${apiRoute}/${accountId}/show`)
-        .then(response => this.dbRecord = response.data.record)
+        .then(response => {
+          this.dbRecord = response.data.record
+          this.axios.get(`/api/${apiRoute}/transfer_products/${accountId}`)
+            .then(response => this.recordProducts = response.data.record)
+        })
     }
   }
 }
