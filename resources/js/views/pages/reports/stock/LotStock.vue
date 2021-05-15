@@ -46,7 +46,7 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th class="subtitle-2" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('lotNumber')">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
@@ -77,7 +77,7 @@
             </thead>
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name">
-                  <td class="subtitle-1">{{ record.lotNumber }}</td>
+                  <td class="subtitle-1 text-center font-weight-bold">{{ record.lotNumber }}</td>
 
                   <td class="subtitle-1 text-right font-weight-bold">
                     <span v-if="record.stock < 0" class="error--text">{{ formatQuantity(record.stock) }}</span>
