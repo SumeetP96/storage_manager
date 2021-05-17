@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,7 @@ class ReportRepository
             ')
             ->groupBy('name', 'unit');
 
-        $total = $results->count();
+        $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
@@ -96,17 +97,17 @@ class ReportRepository
         $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
-                $query->where('lot_number', 'like', '%' . $search . '%')
-                    ->orWhere('unit', 'like', '%' . $search . '%');
+                $query->where('pr.lot_number', 'like', '%' . $search . '%')
+                    ->orWhere('pr.unit', 'like', '%' . $search . '%');
             })
             ->selectRaw('
                 pr.unit as unit,
                 pr.lot_number as lotNumber,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('lotNumber', 'unit');
+            ->groupBy('pr.lot_number', 'pr.unit');
 
-        $total = $results->count();
+        $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
@@ -139,9 +140,9 @@ class ReportRepository
                 pr.name as name,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('lotNumber', 'unit', 'name');
+            ->groupBy('pr.lot_number', 'pr.unit', 'pr.name');
 
-        $total = $results->count();
+        $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
