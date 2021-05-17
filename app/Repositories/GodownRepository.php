@@ -22,7 +22,7 @@ class GodownRepository
         $sortBy = $request->get('sortBy');
         $flow = $request->get('flow');
 
-        $records = DB::table('godowns')
+        $results = DB::table('godowns')
             ->where('is_account', $is_account)
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
@@ -31,10 +31,12 @@ class GodownRepository
                     ->orWhere('contact_2', 'like', '%' . $search . '%')
                     ->orWhere('email', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%');
-            })->limit($limit)->skip($skip)
-            ->orderBy($sortBy, $flow);
+            });
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     /**

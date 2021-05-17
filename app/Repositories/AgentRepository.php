@@ -20,7 +20,7 @@ class AgentRepository
         $sortBy = $request->get('sortBy');
         $flow = $request->get('flow');
 
-        $records = DB::table('agents')
+        $results = DB::table('agents')
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('alias', 'like', '%' . $search . '%')
@@ -28,10 +28,12 @@ class AgentRepository
                     ->orWhere('contact_2', 'like', '%' . $search . '%')
                     ->orWhere('email', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%');
-            })->limit($limit)->skip($skip)
-            ->orderBy($sortBy, $flow);
+            });
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     /**

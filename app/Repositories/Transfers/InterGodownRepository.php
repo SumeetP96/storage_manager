@@ -31,7 +31,7 @@ class InterGodownRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($search) {
+        $results = $query->where(function ($query) use ($search) {
             $query->where('fg.name', 'like', '%' . $search . '%')
                 ->orWhere('st.transfer_no', 'like', '%' . $search . '%')
                 ->orWhere('tg.name', 'like', '%' . $search . '%');
@@ -45,12 +45,12 @@ class InterGodownRepository
                 st.created_at,
                 fg.name as fromName,
                 tg.name as toName
-            ')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ');
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     public function fetchOne($id)

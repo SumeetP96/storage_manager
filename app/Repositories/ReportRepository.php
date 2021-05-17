@@ -21,7 +21,7 @@ class ReportRepository
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
-        $records = DB::table('godown_products_stocks as gps')
+        $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
@@ -32,13 +32,10 @@ class ReportRepository
                 pr.name as name,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('name', 'unit')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ->groupBy('name', 'unit');
 
-        $records = $records->get();
-        $total = $records->count();
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
     }
@@ -58,7 +55,7 @@ class ReportRepository
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
-        $records = DB::table('godown_products_stocks as gps')
+        $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('godowns as gd', 'gps.godown_id', '=', 'gd.id')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
@@ -74,13 +71,10 @@ class ReportRepository
                 'pr.name as productName',
                 'pr.unit as productUnit',
                 'pr.lot_number as productLotNumber'
-            )
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            );
 
-        $records = $records->get();
-        $total = $records->count();
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
     }
@@ -99,7 +93,7 @@ class ReportRepository
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
-        $records = DB::table('godown_products_stocks as gps')
+        $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
                 $query->where('lot_number', 'like', '%' . $search . '%')
@@ -110,13 +104,10 @@ class ReportRepository
                 pr.lot_number as lotNumber,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('lotNumber', 'unit')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ->groupBy('lotNumber', 'unit');
 
-        $records = $records->get();
-        $total = $records->count();
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
     }
@@ -135,7 +126,7 @@ class ReportRepository
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
-        $records = DB::table('godown_products_stocks as gps')
+        $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
@@ -148,13 +139,10 @@ class ReportRepository
                 pr.name as name,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('lotNumber', 'unit', 'name')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ->groupBy('lotNumber', 'unit', 'name');
 
-        $records = $records->get();
-        $total = $records->count();
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
     }
@@ -190,7 +178,7 @@ class ReportRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($search) {
+        $results = $query->where(function ($query) use ($search) {
                 $query->where('tt.name', 'like', '%' . $search . '%')
                     ->orWhere('fg.name', 'like', '%' . $search . '%')
                     ->orWhere('tg.name', 'like', '%' . $search . '%');
@@ -204,12 +192,12 @@ class ReportRepository
                 tg.name as toName,
                 fg.name as fromName,
                 tt.name as transferType
-            ')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ');
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     /**
@@ -242,7 +230,7 @@ class ReportRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($accountId) {
+        $results = $query->where(function ($query) use ($accountId) {
                 $query->where('st.to_godown_id', $accountId)
                     ->orWhere('st.from_godown_id', $accountId);
             })
@@ -265,12 +253,12 @@ class ReportRepository
                 pr.name as productName,
                 pr.lot_number as lotNumber,
                 tt.name as transferType
-            ', [$accountId])
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ', [$accountId]);
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     /**
@@ -303,7 +291,7 @@ class ReportRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($search) {
+        $results = $query->where(function ($query) use ($search) {
                 $query->where('tt.name', 'like', '%' . $search . '%')
                 ->orWhere('fg.name', 'like', '%' . $search . '%')
                 ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
@@ -318,12 +306,12 @@ class ReportRepository
                 tg.name as toName,
                 fg.name as fromName,
                 tt.name as transferType
-            ')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ');
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     /**
@@ -353,7 +341,7 @@ class ReportRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($search) {
+        $results = $query->where(function ($query) use ($search) {
                 $query->where('tt.name', 'like', '%' . $search . '%')
                 ->orWhere('fg.name', 'like', '%' . $search . '%')
                 ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
@@ -368,11 +356,11 @@ class ReportRepository
                 tg.name as toName,
                 fg.name as fromName,
                 tt.name as transferType
-            ')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ');
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 }

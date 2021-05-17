@@ -32,7 +32,7 @@ class SalesRepository
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
 
-        $records = $query->where(function ($query) use ($search) {
+        $results = $query->where(function ($query) use ($search) {
             $query->where('fg.name', 'like', '%' . $search . '%')
                 ->orWhere('ag.name', 'like', '%' . $search . '%')
                 ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
@@ -48,12 +48,12 @@ class SalesRepository
                 fg.name as fromName,
                 tg.name as toName,
                 ag.name as agent
-            ')
-            ->skip($skip)
-            ->limit($limit)
-            ->orderBy($sortBy, $flow);
+            ');
 
-        return ['records' => $records->get(), 'total' => $records->count()];
+        $total = $results->count();
+        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
+
+        return ['records' => $records, 'total' => $total];
     }
 
     public function fetchOne($id)
