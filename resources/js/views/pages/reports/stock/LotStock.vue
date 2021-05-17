@@ -8,7 +8,7 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="5" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name')"
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', 'lotNumber')"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh

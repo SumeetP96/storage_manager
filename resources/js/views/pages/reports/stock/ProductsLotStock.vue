@@ -8,7 +8,7 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name')"
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', 'lotNumber')"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -48,7 +48,7 @@
               <tr>
                 <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('lotNumber', 'lotNumber')">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -57,7 +57,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('name')">Product</span>
+                    <span class="sort-link" @click="sortRecords('name', 'lotNumber')">Product</span>
                     <span v-if="sortBy == 'name'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -66,7 +66,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'stock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'stock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('stock')">Total stock</span>
+                    <span class="sort-link" @click="sortRecords('stock', 'lotNumber')">Total stock</span>
                     <span v-if="sortBy == 'stock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -75,7 +75,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('unit')">Unit</span>
+                    <span class="sort-link" @click="sortRecords('unit', 'lotNumber')">Unit</span>
                     <span v-if="sortBy == 'unit'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>

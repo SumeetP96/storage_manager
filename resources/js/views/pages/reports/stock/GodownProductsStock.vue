@@ -8,7 +8,7 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('godownName')"
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('godownName', 'godownName')"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -48,7 +48,7 @@
               <tr>
                 <th class="subtitle-2" :class="sortBy == 'godownName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'godownName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('godownName')">Godown</span>
+                    <span class="sort-link" @click="sortRecords('godownName', 'godownName')">Godown</span>
                     <span v-if="sortBy == 'godownName'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -57,7 +57,7 @@
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'productLotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productLotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productLotNumber')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('productLotNumber', 'godownName')">Lot number</span>
                     <span v-if="sortBy == 'productLotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -66,7 +66,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productName')">Product</span>
+                    <span class="sort-link" @click="sortRecords('productName', 'godownName')">Product</span>
                     <span v-if="sortBy == 'productName'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -75,7 +75,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'currentStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'currentStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('currentStock')">Current stock</span>
+                    <span class="sort-link" @click="sortRecords('currentStock', 'godownName')">Current stock</span>
                     <span v-if="sortBy == 'currentStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -84,7 +84,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'productUnit' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productUnit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productUnit')">Unit</span>
+                    <span class="sort-link" @click="sortRecords('productUnit', 'godownName')">Unit</span>
                     <span v-if="sortBy == 'productUnit'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
