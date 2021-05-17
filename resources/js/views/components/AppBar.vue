@@ -58,11 +58,12 @@
       </div>
     </v-app-bar>
 
-    <v-dialog v-model="backupDialog" max-width="600">
+    <v-dialog v-model="backupDialog" max-width="600"
+      @click:outside="restrictPathEdit = true" @keydown.esc="restrictPathEdit = true">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
           <div>Backup Data</div>
-          <v-btn icon @click="backupDialog = false"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon @click="backupDialog = false; restrictPathEdit = true"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
         <v-card-text class="py-5">
@@ -78,7 +79,7 @@
             :filled="restrictPathEdit"
             :readonly="restrictPathEdit"
             :error-messages="errors.path"
-            placeholder="Path e.x. C:\user\name\Desktop">
+            placeholder="Path e.x. C:\Users\username\Desktop">
           </v-text-field>
 
           <div class="d-flex align-center justify-center mt-5">
