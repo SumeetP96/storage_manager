@@ -6,7 +6,7 @@
 
         <title>{{ config('app.name', 'Storage Manager') }}</title>
 
-        {{-- @laravelPWA --}}
+        @laravelPWA
 
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
