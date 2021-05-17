@@ -59,11 +59,15 @@
     </v-app-bar>
 
     <v-dialog v-model="backupDialog" max-width="600"
-      @click:outside="restrictPathEdit = true" @keydown.esc="restrictPathEdit = true">
+      @click:outside="restrictPathEdit = true; errors.path = []"
+      @keydown.esc="restrictPathEdit = true; errors.path = []">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
           <div>Backup Data</div>
-          <v-btn icon @click="backupDialog = false; restrictPathEdit = true"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon
+            @click="backupDialog = false; restrictPathEdit = true; errors.path = []">
+              <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
 
         <v-card-text class="py-5">
