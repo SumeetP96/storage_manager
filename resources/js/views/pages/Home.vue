@@ -128,28 +128,28 @@ export default {
           label: 'Products',
           description: 'Products that your business deals in.',
           icon: 'mdi-shape',
-          color: 'brown lighten-1'
+          color: 'brown'
         },
         {
           routeName: 'godowns.index',
           label: 'Godowns',
           description: 'Owned / rented godowns, shops and cold storages.',
           icon: 'mdi-store',
-          color: 'brown lighten-1'
+          color: 'brown'
         },
         {
           routeName: 'accounts.index',
           label: 'Accounts',
           description: 'Supplier and sustomer accounts.',
           icon: 'mdi-account-group',
-          color: 'brown lighten-1'
+          color: 'brown'
         },
         {
           routeName: 'agents.index',
           label: 'Agents',
           description: 'Contact persons for purchase and sales.',
           icon: 'mdi-handshake',
-          color: 'brown lighten-1'
+          color: 'brown'
         },
       ],
 
@@ -158,7 +158,7 @@ export default {
           routeName: 'reports.index',
           label: 'Reports',
           description: 'Godowns, accounts, products and stock reports.',
-          icon: 'mdi-chart-arc',
+          icon: 'mdi-finance',
           color: 'amber accent-4'
         },
       ]
