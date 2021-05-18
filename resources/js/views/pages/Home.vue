@@ -140,7 +140,7 @@ export default {
         {
           routeName: 'accounts.index',
           label: 'Accounts',
-          description: 'Supplier and sustomer accounts.',
+          description: 'Supplier and customer accounts.',
           icon: 'mdi-account-group',
           color: 'brown'
         },
