@@ -246,6 +246,13 @@
             </tr>
 
             <tr>
+              <td class="subtitle-1 font-weight-bold text-left">Address</td>
+              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
+                {{ record.address ? record.address : '-' }}
+              </td>
+            </tr>
+
+            <tr>
               <td class="subtitle-1 font-weight-bold text-left">Contact 1</td>
               <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                 {{ record.contact_1 ? record.contact_1 : '-' }}
