@@ -49,5 +49,18 @@ class ProductSeeder extends Seeder
                 'packing'       => $product['packing'] * 100,
             ]);
         }
+
+        // $packings = [10, 25, 30, 50];
+        // for($i = 1; $i <= 100; $i++) {
+        //     Product::create([
+        //         'name'          => 'Product Name ' . $i,
+        //         'lot_number'    => rand(10000, 99999),
+        //         'alias'         => 'PRD' . $i,
+        //         'unit'          => 'KGS',
+        //         'compound_unit' => 'BAG',
+        //         'packing'       => $packings[rand(0, 3)] * 100,
+        //         'remarks'       => 'Lorem ipsum dolor sit amet, consectetur adipisicing'
+        //     ]);
+        // }
     }
 }

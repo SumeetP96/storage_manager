@@ -38,9 +38,18 @@
 
           <v-btn :href="`/export/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
             download="products.xlsx"
+            style="width: 125px"
             class="ml-2 success--text"
             :color="$vuetify.theme.dark ? '' : 'white'">
-            <v-icon class="mr-2">mdi-file-excel</v-icon> Excel
+            <v-icon class="mr-2">mdi-file-excel-outline</v-icon> Excel
+          </v-btn>
+
+          <v-btn :href="`/export/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
+            download="products.pdf"
+            style="width: 125px"
+            class="ml-2 error--text"
+            :color="$vuetify.theme.dark ? '' : 'white'">
+            <v-icon class="mr-2">mdi-file-pdf-outline</v-icon> PDF
           </v-btn>
 
         </v-col>

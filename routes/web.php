@@ -22,6 +22,7 @@ Route::post('/user/password/update', 'AppController@updatePassword')->name('upda
 
 Route::prefix('export')->group(function () {
 
+    Route::get('/pdf/products', 'ExportController@productPdf');
     Route::get('/excel/products', 'ExportController@productExcel');
 
 });
