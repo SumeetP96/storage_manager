@@ -1,5 +1,6 @@
 <?php
 
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,9 @@ Route::get('/user/password/change', 'AppController@changePassword');
 Route::post('/user/password/update', 'AppController@updatePassword')->name('update.password');
 
 Route::prefix('export')->group(function () {
-    Route::get('/products/excel', 'ExportController@productsExcel');
+
+    Route::get('/excel/products', 'ExportController@productExcel');
+
 });
 
 Route::get('/{any}', 'AppController@index')->where('any', '.*');

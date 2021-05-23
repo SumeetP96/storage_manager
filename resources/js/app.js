@@ -13,6 +13,7 @@ import moment from 'vue-moment'
 import VueShortkey from 'vue-shortkey'
 import VueSweetalert2 from 'vue-sweetalert2'
 
+
 import 'sweetalert2/dist/sweetalert2.min.css'
 
 Vue.use(moment)
