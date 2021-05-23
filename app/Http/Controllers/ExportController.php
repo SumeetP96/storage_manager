@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Exports\ProductExport;
+use Illuminate\Http\Request;
 
 class ExportController extends Controller
 {
     public function productExcel(Request $request)
     {
-        $query = [
-            'id'    => NULL
-        ];
-
-        return (new ProductExport($query))->download('products.xlsx');
+        return (new ProductExport([
+            'flow'      => $request->get('flow'),
+            'query'     => $request->get('query'),
+            'sortBy'    => $request->get('sortBy')
+        ]))->download('products.xlsx');
     }
 }

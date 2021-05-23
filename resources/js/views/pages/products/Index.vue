@@ -36,7 +36,8 @@
             </div>
           </template>
 
-          <v-btn  href="/export/excel/products" download="products.xlsx"
+          <v-btn :href="`/export/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
+            download="products.xlsx"
             class="ml-2 success--text"
             :color="$vuetify.theme.dark ? '' : 'white'">
             <v-icon class="mr-2">mdi-file-excel</v-icon> Excel
@@ -47,7 +48,7 @@
         <!-- Search -->
         <v-col cols="12" sm="12" md="4" offset-md="2"
           class="d-flex justify-end align-center">
-            <v-btn :color="$vuetify.theme.dark ? '' : 'white'" @click="refreshTable()"
+            <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
               class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
               :loading="refreshLoading" :disabled="records.length == 0">
                 <v-icon class="mr-2">mdi-table-refresh</v-icon>
