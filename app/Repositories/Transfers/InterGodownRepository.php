@@ -76,6 +76,9 @@ class InterGodownRepository
                 stp.id,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
+                pr.compound_unit as compoundUnit,
+                stp.compound_quantity as compoundQuantity,
+                stp.compound_quantity div 100 as compoundQuantityRaw,
                 pr.id as productId,
                 pr.name as name,
                 pr.unit as unit,
@@ -110,7 +113,8 @@ class InterGodownRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $interGodownService->checkExistingGPS($request, $product['id'])) {
@@ -147,7 +151,8 @@ class InterGodownRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $interGodownService->checkExistingGPS($request, $product['id'])) {
@@ -166,8 +171,6 @@ class InterGodownRepository
         $this->undoPreviousGPSChanges($id);
 
         StockTransfer::find($id)->delete();
-
-        $this->cleanNoStock();
     }
 
     /**
@@ -208,8 +211,6 @@ class InterGodownRepository
             ->first();
         $from->current_stock = $from->current_stock - $product['quantity'];
         $from->save();
-
-        $this->cleanNoStock();
     }
 
     public function updateGPS(GodownProductsStock $godownStock, Request $request, $product)
@@ -222,12 +223,5 @@ class InterGodownRepository
             ->first();
         $from->current_stock -= $product['quantity'];
         $from->save();
-
-        $this->cleanNoStock();
-    }
-
-    public function cleanNoStock()
-    {
-        GodownProductsStock::where('current_stock', 0)->delete();
     }
 }

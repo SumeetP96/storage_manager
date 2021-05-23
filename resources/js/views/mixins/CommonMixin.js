@@ -1,22 +1,22 @@
-import { ThemeMixin } from './ThemeMixin'
 import { CrudMixin } from './CrudMixin'
 import { DateMixin } from './DateMixin'
+import { ThemeMixin } from './ThemeMixin'
 import { TableMixin } from './TableMixin'
 import { LoaderMixin } from './LoaderMixin'
 import { SearchMixin } from './SearchMixin'
+import { FilterMixin } from './filter/FilterMixin'
 import { CrudHelperMixin } from './CrudHelperMixin'
-import { FilterMixin } from './FilterMixin'
 
 export const CommonMixin = {
   mixins: [
-    ThemeMixin,
-    CrudMixin,
-    LoaderMixin,
-    SearchMixin,
     DateMixin,
+    CrudMixin,
+    ThemeMixin,
     TableMixin,
-    CrudHelperMixin,
+    SearchMixin,
+    LoaderMixin,
     FilterMixin,
+    CrudHelperMixin,
   ],
 
   methods: {
@@ -33,6 +33,10 @@ export const CommonMixin = {
       if (!quantity) return ''
       let qty = (parseFloat(quantity) * 100).toFixed(0)
       return qty
+    },
+
+    hardRedirect(location) {
+      window.location.href = location
     }
   }
 }

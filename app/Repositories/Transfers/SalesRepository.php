@@ -81,6 +81,9 @@ class SalesRepository
                 stp.id,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
+                pr.compound_unit as compoundUnit,
+                stp.compound_quantity as compoundQuantity,
+                stp.compound_quantity div 100 as compoundQuantityRaw,
                 pr.id as productId,
                 pr.name as name,
                 pr.unit as unit,
@@ -112,7 +115,8 @@ class SalesRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product['id'])) {
@@ -149,7 +153,8 @@ class SalesRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product['id'])) {
@@ -168,8 +173,6 @@ class SalesRepository
         $this->undoPreviousGPSChanges($id);
 
         StockTransfer::find($id)->delete();
-
-        $this->cleanNoStock();
     }
 
     /**
@@ -197,20 +200,11 @@ class SalesRepository
             'godown_id'     => $request->from_godown_id,
             'current_stock' => -$product['quantity']
         ]);
-
-        $this->cleanNoStock();
     }
 
     public function updateGPS(GodownProductsStock $godownStock, $productQuantity)
     {
         $godownStock->current_stock -= $productQuantity;
         $godownStock->save();
-
-        $this->cleanNoStock();
-    }
-
-    public function cleanNoStock()
-    {
-        GodownProductsStock::where('current_stock', 0)->delete();
     }
 }

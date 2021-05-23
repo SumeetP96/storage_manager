@@ -17,16 +17,25 @@ class ProductSeeder extends Seeder
                 'name'          => 'Kohinoor Dubar',
                 'alias'         => 'KD',
                 'lot_number'    => rand(11111, 99999),
+                'unit'          => 'KGS',
+                'compound_unit' => 'BAG',
+                'packing'       => 25
             ],
             [
                 'name'          => 'Kohinoor Tibar',
                 'alias'         => 'KT',
                 'lot_number'    => rand(11111, 99999),
+                'unit'          => 'KGS',
+                'compound_unit' => 'BAG',
+                'packing'       => 25
             ],
             [
                 'name'          => 'Kohinoor Red Diamond',
                 'alias'         => 'KR',
                 'lot_number'    => NULL,
+                'unit'          => 'KGS',
+                'compound_unit' => 'BAG',
+                'packing'       => 25
             ],
         ];
 
@@ -35,7 +44,9 @@ class ProductSeeder extends Seeder
                 'name'          => $product['name'],
                 'lot_number'    => $product['lot_number'],
                 'alias'         => $product['alias'],
-                'unit'          => 'KGS'
+                'unit'          => $product['unit'],
+                'compound_unit' => $product['compound_unit'],
+                'packing'       => $product['packing'] * 100,
             ]);
         }
     }

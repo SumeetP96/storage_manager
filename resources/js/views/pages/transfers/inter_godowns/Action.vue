@@ -1,8 +1,8 @@
 <template>
   <div>
-    <AppBar backRoute="inter_godowns.index" />
+    <AppBar backRoute="inter_godowns.index" :disableBack="true" />
 
-    <v-col cols="12" md="11" class="mx-auto">
+    <v-col cols="12" class="px-8">
 
       <v-skeleton-loader v-if="showRecordLoading" v-bind="attrs" class="mt-5"
         type="list-item-three-line, card-heading, list-item-three-line, card-heading, image, actions">
@@ -15,7 +15,7 @@
         <!-- Top -->
         <v-row>
           <!-- Left Side -->
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="5">
 
             <!-- Date -->
             <v-row>
@@ -139,18 +139,23 @@
 
 
           <!-- Right Side -->
-          <v-col cols="12" md="6" class="pl-8">
+          <v-col cols="7">
             <!-- Product -->
             <v-row>
               <v-col cols="12" class="rounded elevation-1 px-4"
                 :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
 
                 <v-row no-gutters>
-                  <v-col cols="12" md="8">
+                  <v-col cols="12" md="7">
                     <label class="subtitle-1">Product
                       <span class="red--text text-h6">*</span></label>
                   </v-col>
-                  <v-col cols="12" md="4">
+                  <v-col cols="12" md="2">
+                    <div class="subtitle-1 text-right" :class="inputProducts.length > 1 ? 'pr-10' : 'pr-2'"
+                      style="width: 100%">Compound
+                      <span class="red--text text-h6"></span></div>
+                  </v-col>
+                  <v-col cols="12" md="3">
                     <div class="subtitle-1 text-right" :class="inputProducts.length > 1 ? 'pr-10' : ''"
                       style="width: 100%">Quantity
                       <span class="red--text text-h6">*</span></div>
@@ -158,7 +163,7 @@
                 </v-row>
 
                 <v-row v-for="(product, index) in inputProducts" :key="index" no-gutters class="mb-2">
-                  <v-col cols="12" md="9" class="pr-10">
+                  <v-col cols="12" md="7">
                     <div style="width: 100%">
                       <v-autocomplete
                         v-model="inputProducts[index].id"
@@ -174,10 +179,8 @@
                         @input="fetchProductDetails(index)"
                         item-text="name"
                         item-value="id"
-                        prepend-inner-icon="mdi-shape-outline"
                         :error-messages="errors[`product_${index}_id`]"
                         :class="$vuetify.theme.dark ? '' : 'white'"
-                        class="left-input"
                         dense>
                       </v-autocomplete>
                       <div v-if="productDetails[index].remarks"
@@ -187,7 +190,37 @@
                     </div>
                   </v-col>
 
-                  <v-col cols="12" md="3">
+                  <!-- Compound Quantity -->
+                  <v-col cols="12" md="2" class="pl-5">
+                    <div>
+                      <v-text-field
+                        v-model="inputProducts[index].compoundQuantityRaw"
+                        hide-details="auto"
+                        outlined
+                        @blur="
+                          inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
+                          calculateQuantity(index)
+                          "
+                        placeholder="0.00"
+                        :error-messages="errors[`product_${index}_compound_quantity`]"
+                        :class="$vuetify.theme.dark ? '' : 'white'"
+                        class="right-input"
+                        dense>
+                      </v-text-field>
+
+                      <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
+                        :class="$vuetify.theme.dark ? '' : 'white'"
+                        class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
+                          <span class="primary--text">
+                            {{ formatQuantity(((productDetails[index].stock) * 100) / productDetails[index].packing, 0) }}
+                          </span>
+                          <span class="pink--text pl-1">{{ productDetails[index].compoundUnit }}</span>
+                          <span class="pink--text">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
+                      </div>
+                    </div>
+                  </v-col> <!-- / Compound Quantity End -->
+
+                  <v-col cols="12" md="3" class="pl-5">
                     <div class="d-flex align-start justify-end">
                       <div>
                         <v-text-field
@@ -195,6 +228,10 @@
                           hide-details="auto"
                           outlined
                           @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
+                          @input="
+                            inputProducts[index].compoundQuantity = undefined;
+                            inputProducts[index].compoundQuantityRaw = undefined;
+                          "
                           placeholder="0.00"
                           :error-messages="errors[`product_${index}_quantity`]"
                           :class="$vuetify.theme.dark ? '' : 'white'"
@@ -282,12 +319,14 @@
         <div class="my-8">
           <v-btn v-if="record.id"
             color="indigo" dark :loading="updateButtonLoading"
+            v-shortkey="['alt', 's']" @shortkey="updateTransfer($route.params.id, 'inter_godowns.index')"
             @click="updateTransfer($route.params.id, 'inter_godowns.index')">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update transfer
           </v-btn>
 
           <v-btn v-else
             color="indigo" dark :loading="createButtonLoading"
+            v-shortkey="['alt', 's']" @shortkey="createTransfer($route.params.id, 'inter_godowns.index')"
             @click="createTransfer('inter_godowns.index')">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save transfer
           </v-btn>

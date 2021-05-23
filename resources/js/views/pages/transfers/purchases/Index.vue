@@ -8,9 +8,10 @@
 
       <v-row align="center">
         <v-col cols="12" sm="12" md="7" class="text-h5 d-flex align-center">
-          <v-btn color="indigo" dark :to="{ name: 'purchases.action' }">
-            <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
-            new purchase
+          <v-btn color="indigo" dark :to="{ name: 'purchases.action' }"
+            v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'purchases.action' })">
+              <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
+              new purchase
           </v-btn>
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -64,7 +65,7 @@
         <v-col cols="12" sm="12" md="4" offset-md="1"
           class="d-flex justify-end align-center">
             <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('date')"
-              class="mr-2"
+              class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable('date')"
               :loading="refreshLoading" :disabled="records.length == 0">
                 <v-icon class="mr-2">mdi-table-refresh</v-icon>
                 refresh
@@ -360,6 +361,8 @@
             <v-btn color="indigo white--text" class="ml-5"
               :loading="loadMoreLoading"
               :disabled="totalRecords == records.length"
+              v-shortkey.once="['alt', 'l']"
+              @shortkey="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })"
               @click="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })">
               load more
               <v-icon>mdi-chevron-down</v-icon>
@@ -370,7 +373,7 @@
 
     </v-col>
 
-    <v-dialog v-model="viewRecordDialog" max-width="1200">
+    <v-dialog v-model="viewRecordDialog" max-width="90%">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
           <div>Purchase Details</div>
@@ -379,7 +382,7 @@
 
         <v-card-text class="pt-6 pb-10">
           <v-row>
-            <v-col cols="12" md="7" class="pr-10">
+            <v-col cols="12" md="8" class="pr-10">
               <div class="overline pl-2 grey--text mb-2" style="font-size: 0.9rem !important">Transfer details</div>
               <table class="view-record-table">
                 <tr>
@@ -412,11 +415,17 @@
                         <td style="border: none; padding: 1px 0">
                           <span>{{ product.name }}</span>
                         </td>
-                        <td style="border: none; padding: 1px 0" class="px-2 text-center">
+                        <td style="border: none; padding: 1px 0; width: 14%" class="px-2 text-center">
                           <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
                             ( {{ product.lotNumber }} )
                           </span>
                           <span v-else>-</span>
+                        </td>
+                        <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                          <span class="font-weight-bold">{{ formatQuantity(product.compoundQuantity) }}</span>
+                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                            {{ product.compoundUnit }}
+                          </span>
                         </td>
                         <td style="border: none; padding: 1px 0" class="text-right pl-5">
                           <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
@@ -442,7 +451,7 @@
               </table>
             </v-col>
 
-            <v-col cols="12" md="5">
+            <v-col cols="12" md="4">
               <div class="overline pl-2 grey--text mb-2" style="font-size: 0.9rem !important">Additional details</div>
               <table class="view-record-table">
                 <tr>

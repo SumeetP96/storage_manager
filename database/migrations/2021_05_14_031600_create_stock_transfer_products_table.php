@@ -18,6 +18,7 @@ class CreateStockTransferProductsTable extends Migration
             $table->foreignId('stock_transfer_id')->constrained('stock_transfers')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->restrictOnDelete();
             $table->bigInteger('quantity');
+            $table->bigInteger('compound_quantity')->nullable();
             $table->timestamps();
         });
     }

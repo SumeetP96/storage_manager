@@ -2,7 +2,7 @@
   <div>
     <AppBar backRoute="reports.index" />
 
-    <v-col cols="12" lg="6" class="mx-auto">
+    <v-col cols="12" lg="7" class="mx-auto">
 
       <div class="text-h5 py-4">Lot Stock</div>
 
@@ -55,19 +55,19 @@
                     </span>
                 </th>
 
-                <th class="subtitle-2 text-right" :class="sortBy == 'stock' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'stock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('stock', 'lotNumber')">Total stock</span>
-                    <span v-if="sortBy == 'stock'">
+                <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('compoundStock', 'name')">Compound stock</span>
+                    <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
                 </th>
 
-                <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('unit', 'lotNumber')">Unit</span>
-                    <span v-if="sortBy == 'unit'">
+                <th class="subtitle-2 text-right" :class="sortBy == 'stock' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'stock' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('stock', 'name')">Total stock</span>
+                    <span v-if="sortBy == 'stock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
@@ -77,15 +77,24 @@
             </thead>
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name">
-                  <td class="subtitle-1 text-center font-weight-bold">{{ record.lotNumber }}</td>
+                  <td class="subtitle-1 text-center font-weight-bold">
+                    {{ record.lotNumber ? record.lotNumber : 'Unassigned' }}
+                  </td>
+
+                  <td class="subtitle-1 text-right font-weight-bold">
+                    <span v-if="record.compoundStock < 0" class="error--text">{{ formatQuantity(record.compoundStock) }}</span>
+                    <span v-else>{{ record.compoundStock }}</span>
+                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      {{ record.compoundUnit }}
+                    </span>
+                  </td>
 
                   <td class="subtitle-1 text-right font-weight-bold">
                     <span v-if="record.stock < 0" class="error--text">{{ formatQuantity(record.stock) }}</span>
                     <span v-else>{{ formatQuantity(record.stock) }}</span>
-                  </td>
-
-                  <td class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                    {{ record.unit }}
+                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      {{ record.unit }}
+                    </span>
                   </td>
               </tr>
             </tbody>

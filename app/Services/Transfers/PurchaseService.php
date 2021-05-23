@@ -28,6 +28,10 @@ class PurchaseService
                 $errors['product_' . $key . '_id'] = ['Product field is required.'];
             }
 
+            if (!empty($product['compound_quantity']) && !is_integer((int) $product['compound_quantity'])) {
+                $errors['product_' . $key . '_compound_quantity'] = ['Invalid input.'];
+            }
+
             if (empty($product['quantity'])) {
                 $errors['product_' . $key . '_quantity'] = ['Quantity is required.'];
             } else if (!is_integer((int) $product['quantity'])) {

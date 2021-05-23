@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,5 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/{any}', 'app')->where('any', '.*');
+Auth::routes();
 
+Route::get('/user/password/change', 'AppController@changePassword');
+Route::post('/user/password/update', 'AppController@updatePassword')->name('update.password');
+
+Route::prefix('export')->group(function () {
+    Route::get('/products/excel', 'ExportController@productsExcel');
+});
+
+Route::get('/{any}', 'AppController@index')->where('any', '.*');

@@ -46,12 +46,14 @@ export const InterGodownMixin = {
               this.axios.get(`/api/purchases/transfer_products/${id}`)
                 .then(response => {
                   response.data.record.forEach((product, index) => {
-                    this.inputProducts.push({ id: '', quantity: '', quantityRaw: ''})
-                    this.productDetails.push({ unit: '', remarks: '' })
+                    this.inputProducts.push({ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' })
+                    this.productDetails.push({ unit: '', remarks: '', packing: '', compoundUnit: '' })
 
                     this.inputProducts[index].id = product.productId
                     this.inputProducts[index].quantity = product.quantity
                     this.inputProducts[index].quantityRaw = product.quantityRaw
+                    this.inputProducts[index].compoundQuantity = product.compoundQuantity
+                    this.inputProducts[index].compoundQuantityRaw = product.compoundQuantityRaw
 
                     this.fetchProductDetails(index)
                   })
@@ -134,6 +136,8 @@ export const InterGodownMixin = {
           this.productDetails[index].unit = response.data.unit
           this.productDetails[index].stock = response.data.stock
           this.productDetails[index].remarks = response.data.remarks
+          this.productDetails[index].compoundUnit = response.data.compoundUnit
+          this.productDetails[index].packing = response.data.packing
         })
     },
 

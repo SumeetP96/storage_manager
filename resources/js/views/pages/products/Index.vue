@@ -2,15 +2,16 @@
   <div>
     <AppBar backRoute="home" />
 
-    <v-col cols="12" lg="10" class="mx-auto">
+    <v-col cols="12" lg="11" class="mx-auto">
 
       <div class="text-h5 py-4">Products</div>
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn color="indigo" dark :to="{ name: 'products.action' }">
-            <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
-            new product
+          <v-btn color="indigo" dark :to="{ name: 'products.action' }"
+            v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'products.action' })">
+              <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
+              new product
           </v-btn>
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -39,8 +40,10 @@
         <!-- Search -->
         <v-col cols="12" sm="12" md="4" offset-md="2"
           class="d-flex justify-end align-center">
+            <v-btn @click="hardRedirect('/export/products/excel')">excel</v-btn>
+
             <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
-              class="mr-2"
+              class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
               :loading="refreshLoading" :disabled="records.length == 0">
                 <v-icon class="mr-2">mdi-table-refresh</v-icon>
                 refresh
@@ -190,6 +193,8 @@
             <v-btn color="indigo white--text" class="ml-5"
               :loading="loadMoreLoading"
               :disabled="totalRecords == records.length"
+              v-shortkey.once="['alt', 'l']"
+              @shortkey="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })"
               @click="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })">
               load more
               <v-icon>mdi-chevron-down</v-icon>

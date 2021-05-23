@@ -2,60 +2,43 @@
   <div>
     <v-app-bar dense app>
 
-      <v-btn v-if="$route.name != 'home'"
-        icon @click="$router.push({ name: backRoute })" tabindex="-1"
-        class="d-none d-sm-flex">
+      <v-btn v-if="$route.name != 'home'" tabindex="-1" icon
+        v-shortkey.once="['alt', 'q']" @shortkey="$router.push({ name: backRoute })"
+        @click="$router.push({ name: backRoute })">
           <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
 
-      <v-btn v-if="$route.name != 'home'"
-        icon @click="$router.go(0)" tabindex="-1"
-        class="d-none d-sm-flex">
-          <v-icon>mdi-refresh</v-icon>
-      </v-btn>
-
-      <v-btn v-if="$route.name != 'home'"
-        icon @click="$router.push({ name: 'home' })" tabindex="-1">
+      <v-btn v-if="$route.name != 'home'" tabindex="-1"
+        v-shortkey.once="['home']" @shortkey="$router.push({ name: 'home' })"
+        icon @click="$router.push({ name: 'home' })">
           <v-icon>mdi-home</v-icon>
       </v-btn>
 
       <div v-if="$route.name != 'home'"
-        class="hidden-xs-only grey--text text--lighten-1 ml-4 mr-5 font-weight-thin" style="font-size: 1.5rem">|</div>
+        class="hidden-xs-only grey--text text--lighten-1 ml-3 mr-5 font-weight-thin"
+        style="font-size: 1.5rem">
+        |
+      </div>
 
       <v-app-bar-title class="ml-2 ml-sm-0">Storage Manager</v-app-bar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn text class="mr-1 hidden-xs-only" tabindex="-1" :color="$vuetify.theme.dark ? 'primary' : 'indigo'"
+      <v-btn text class="mr-1" tabindex="-1" :color="$vuetify.theme.dark ? 'primary' : 'indigo'"
+        v-shortkey.once="['alt', 'b']" @shortkey="openBackupDialog()"
         @click="openBackupDialog()">
         <v-icon class="text-h6 mr-2">mdi-cloud-upload</v-icon> backup
       </v-btn>
 
-      <!-- Mobile -->
-      <v-btn icon class="hidden-sm-and-up" tabindex="-1" :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
-        <v-icon class="text-h6">mdi-backup-restore</v-icon>
+      <v-btn text v-if="theme == 'dark'" @click="toggleApplicationTheme('light')" tabindex="-1"
+        v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('light')">
+          <v-icon class="text-h6 mr-2">mdi-weather-sunny</v-icon> light
       </v-btn>
 
-      <div class="hidden-xs-only">
-        <v-btn text v-if="theme == 'dark'" @click="toggleApplicationTheme('light')" tabindex="-1">
-            <v-icon class="text-h6 mr-2">mdi-weather-sunny</v-icon> light
-        </v-btn>
-
-        <v-btn text v-else @click="toggleApplicationTheme('dark')" tabindex="-1">
-            <v-icon class="text-h6 mr-1">mdi-weather-night</v-icon> dark
-        </v-btn>
-      </div>
-
-      <!-- Mobile -->
-      <div class="hidden-sm-and-up">
-        <v-btn icon v-if="theme == 'dark'" @click="toggleApplicationTheme('light')" tabindex="-1">
-          <v-icon class="text-h6">mdi-weather-sunny</v-icon>
-        </v-btn>
-
-        <v-btn icon v-else @click="toggleApplicationTheme('dark')" tabindex="-1">
-          <v-icon class="text-h6">mdi-weather-night</v-icon>
-        </v-btn>
-      </div>
+      <v-btn text v-else @click="toggleApplicationTheme('dark')" tabindex="-1"
+        v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('dark')">
+          <v-icon class="text-h6 mr-1">mdi-weather-night</v-icon> dark
+      </v-btn>
     </v-app-bar>
 
     <v-dialog v-model="backupDialog" max-width="600"
@@ -107,77 +90,16 @@
 
 <script>
 import { CommonMixin } from '../mixins/CommonMixin'
+import { AppBarMixin } from '../mixins/appbar/AppBarMixin'
 
 export default {
-  data() {
-    return {
-      backupPath: '',
-      backupDialog: false,
-      backupLoading: false,
-      restrictPathEdit: true,
-    }
-  },
-
-  mixins: [CommonMixin],
-
   props: ['backRoute'],
+
+  mixins: [CommonMixin, AppBarMixin],
 
   mounted() {
     this.setApplicationTheme()
-  },
-
-  methods: {
-    toggleApplicationTheme(theme) {
-      if (theme == 'light') localStorage.setItem('dark_theme', false)
-      else if (theme == 'dark') localStorage.setItem('dark_theme', true)
-      this.theme = theme
-      this.setApplicationTheme()
-    },
-
-    setApplicationTheme() {
-      let theme = (localStorage.getItem('dark_theme') == 'true') ? 'dark' : 'light'
-      if (theme == 'dark') {
-        document.body.style.backgroundColor = '#121212';
-        this.$vuetify.theme.dark = true
-      } else {
-        this.$vuetify.theme.dark = false
-        document.body.style.backgroundColor = '#ECEFF1';
-      }
-      this.theme = theme
-    },
-
-    openBackupDialog() {
-      this.axios
-        .get('/api/backup/get_path')
-        .then(response => {
-          this.backupPath = response.data.path
-          this.backupDialog = true
-        })
-    },
-
-    backupData() {
-      this.backupLoading = true
-      this.axios
-        .get(`/api/backup/run?path=${this.backupPath}`)
-        .then(response => {
-          console.log(response.data);
-          this.backupDialog = false
-          this.$swal('Complete!', 'Data backup successful.', 'success')
-          this.backupLoading = false
-          this.backupPath = ''
-        })
-        .catch(({response}) => {
-          if (response.status == 422) {
-            this.errors = response.data.errors
-            this.backupLoading = false
-          }
-        })
-    },
-
-    changePath() {
-      this.restrictPathEdit = false
-      document.getElementById('backupPath').focus()
-    }
+    this.fetchTransactionDate()
   }
 }
 </script>

@@ -2,8 +2,9 @@
 
 namespace App\Repositories;
 
-use App\GodownProductsStock;
 use App\Product;
+use App\GodownProductsStock;
+use App\StockTransferProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +40,19 @@ class ProductRepository
      */
     public function fetchOne($id)
     {
-        return Product::find($id);
+        return DB::table('products')->where('id', $id)
+            ->selectRaw('
+                id,
+                name,
+                alias,
+                lot_number,
+                unit,
+                compound_unit,
+                packing,
+                packing div 100 as packingRaw,
+                remarks
+            ')
+            ->first();
     }
 
     /**
@@ -83,8 +96,7 @@ class ProductRepository
 
         if (!is_null($id)) $query->where('gps.godown_id', $id);
 
-        return $query->where('gps.current_stock', '>', 0)
-            ->selectRaw("
+        return $query->selectRaw("
                 pr.id, CONCAT_WS(' - ', pr.name, CONCAT('( ', pr.lot_number, ' )'), alias) AS name
             ")->get();
     }
@@ -95,7 +107,7 @@ class ProductRepository
     public function details($id, $godownId = null)
     {
         $product = Product::where('id', $id)
-            ->select('unit', 'remarks')
+            ->select('unit', 'remarks', 'compound_unit as compoundUnit', 'packing')
             ->first();
 
         if (!is_null($godownId)) {
@@ -117,6 +129,8 @@ class ProductRepository
             'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
             'lot_number'    => ($request->lot_number != '') ? $request->lot_number : NULL,
             'unit'          => strtoupper($request->unit),
+            'packing'       => $request->packing,
+            'compound_unit' => strtoupper($request->compound_unit),
             'remarks'       => $request->remarks
         ])->id;
     }
@@ -131,8 +145,13 @@ class ProductRepository
             'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
             'lot_number'    => ($request->lot_number != '') ? $request->lot_number : NULL,
             'unit'          => strtoupper($request->unit),
+            'packing'       => $request->packing,
+            'compound_unit' => strtoupper($request->compound_unit),
             'remarks'       => $request->remarks
         ]);
+
+        $stps = StockTransferProduct::where('product_id', $id)
+            ->update(['compound_quantity' => NULL]);
     }
 
     /**

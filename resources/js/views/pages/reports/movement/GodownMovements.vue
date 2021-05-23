@@ -142,19 +142,19 @@
                     </span>
                 </th>
 
-                <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('quantity', 'date')">Quantity</span>
-                    <span v-if="sortBy == 'quantity'">
+                <th class="subtitle-2 text-right" :class="sortBy == 'compoundQuantity' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'compoundQuantity' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('compoundQuantity', 'date')">Compound</span>
+                    <span v-if="sortBy == 'compoundQuantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
                 </th>
 
-                <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('unit', 'date')">Unit</span>
-                    <span v-if="sortBy == 'unit'">
+                <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('quantity', 'date')">Quantity</span>
+                    <span v-if="sortBy == 'quantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
@@ -190,6 +190,24 @@
                   <td class="subtitle-1 text-center">{{ record.lotNumber }}</td>
                   <td class="subtitle-1">{{ record.productName }}</td>
 
+                  <td v-if="record.compoundQuantity" class="subtitle-1 text-right font-weight-bold">
+                    <!-- Inter & Purchase -->
+                    <span v-if="record.ttid == 1 || record.ttid == 2">
+                      <span v-if="record.toId == accountId" class="success--text">+ {{ formatQuantity(record.compoundQuantity) }}</span>
+                      <span v-else class="error--text">- {{ formatQuantity(record.compoundQuantity) }}</span>
+                    </span>
+
+                    <!-- Sales -->
+                    <span v-if="record.ttid == 3" class="error--text">
+                      - {{ formatQuantity(record.compoundQuantity) }}
+                    </span>
+
+                    <span class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      {{ record.compoundUnit }} ({{ formatQuantity(record.packing, 0) }})
+                    </span>
+                  </td>
+                  <td v-else class="text-right pr-5">-</td>
+
                   <td class="subtitle-1 text-right font-weight-bold">
                     <!-- Inter & Purchase -->
                     <span v-if="record.ttid == 1 || record.ttid == 2">
@@ -201,11 +219,12 @@
                     <span v-if="record.ttid == 3" class="error--text">
                       - {{ formatQuantity(record.quantity) }}
                     </span>
+
+                    <span class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      {{ record.unit }}
+                    </span>
                   </td>
 
-                  <td class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                    {{ record.unit }}
-                  </td>
               </tr>
             </tbody>
             <tbody v-else>

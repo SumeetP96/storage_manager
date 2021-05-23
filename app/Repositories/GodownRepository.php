@@ -68,7 +68,6 @@ class GodownRepository
         return DB::table('godowns as gd')
             ->leftJoin('godown_products_stocks as gps', 'gps.godown_id', '=', 'gd.id')
             ->where('gd.is_account', FALSE)
-            ->where('gps.current_stock', '>', 0)
             ->selectRaw("gd.id, CONCAT_WS(' - ', gd.name, gd.alias) AS name")
             ->orderBy('name')
             ->get();

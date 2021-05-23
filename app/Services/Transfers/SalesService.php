@@ -23,6 +23,8 @@ class SalesService
     public function validateProducts(Request $request)
     {
         $errors = [];
+        $runningStock = [];
+
         foreach($request->products as $key => $product) {
             $gps = GodownProductsStock::where('product_id', $product['id'])
                 ->where('godown_id', $request->from_godown_id)
@@ -32,11 +34,23 @@ class SalesService
                 $errors['product_' . $key . '_id'] = ['Product field is required.'];
             }
 
+            if (!empty($product['compound_quantity']) && !is_integer((int) $product['compound_quantity'])) {
+                $errors['product_' . $key . '_compound_quantity'] = ['Invalid input.'];
+            }
+
+            $productId = $product['id'];
+            $productQuantity = (int) $product['quantity'];
+
             if (empty($product['quantity'])) {
                 $errors['product_' . $key . '_quantity'] = ['Quantity is required.'];
-            } else if (!is_integer((int) $product['quantity'])) {
+            } else if (!is_integer($productQuantity)) {
                 $errors['product_' . $key . '_quantity'] = ['Invalid quantity.'];
-            } else if ($product['quantity'] > $gps->current_stock) {
+            }
+
+            if (array_key_exists($productId, $runningStock)) $runningStock[$productId] += $productQuantity;
+            else $runningStock[$productId] = $productQuantity;
+
+            if ($runningStock[$productId] > $gps->current_stock) {
                 $errors['product_' . $key . '_quantity'] = ['Quantity exceeds stock.'];
             }
         }

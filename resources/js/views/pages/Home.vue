@@ -15,6 +15,7 @@
         <v-col cols="12" md="6" lg="4"
           v-for="link in transferLinks" :key="link.label">
           <v-card elevation="1" v-ripple class="mx-1"
+            v-shortkey.once="link.shortcut" @shortkey="$router.push({ name: link.routeName })"
             @keypress.enter="$router.push({ name: link.routeName })"
             @click="$router.push({ name: link.routeName })">
               <v-list-item three-line>
@@ -71,6 +72,7 @@
         <v-col cols="12" md="6" lg="4"
           v-for="link in reportLinks" :key="link.label">
           <v-card elevation="1" v-ripple class="mx-1"
+            v-shortkey.once="link.shortcut" @shortkey="$router.push({ name: link.routeName })"
             @keypress.enter="$router.push({ name: link.routeName })"
             @click="$router.push({ name: link.routeName })">
               <v-list-item three-line>
@@ -104,21 +106,24 @@ export default {
           label: 'Purchase',
           description: 'Stock transfer through purchase of products.',
           icon: 'mdi-cart-arrow-down',
-          color: 'error'
+          color: 'error',
+          shortcut: ['alt', 'p']
         },
         {
           routeName: 'inter_godowns.index',
           label: 'Inter Godown',
           description: 'Transfer throught internal movement of products.',
           icon: 'mdi-atom-variant',
-          color: 'indigo'
+          color: 'indigo',
+          shortcut: ['alt', 'i']
         },
         {
           routeName: 'sales.index',
           label: 'Sales',
           description: 'Stock transfer throught sale of products.',
           icon: 'mdi-cart-arrow-up',
-          color: 'green accent-4'
+          color: 'green accent-4',
+          shortcut: ['alt', 's']
         },
       ],
 
@@ -159,7 +164,8 @@ export default {
           label: 'Reports',
           description: 'Godowns, accounts, products and stock reports.',
           icon: 'mdi-finance',
-          color: 'amber accent-4'
+          color: 'amber accent-4',
+          shortcut: ['alt', 'r']
         },
       ]
     }

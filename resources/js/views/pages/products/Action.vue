@@ -57,9 +57,42 @@
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col cols="12" md="3">
-            <label class="subtitle-1">Unit of measurement
+        <v-row align="start">
+          <v-col cols="2">
+            <label class="subtitle-1">Compound unit
+              <span class="red--text text-h6"></span></label>
+            <v-text-field
+              v-model="record.compound_unit"
+              hide-details="auto"
+              outlined
+              :error-messages="errors.compound_unit"
+              :class="$vuetify.theme.dark ? '' : 'white'"
+              dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="1" class="text-center mt-10 subtitle-1 d-flex px-2">
+            <v-icon>mdi-chevron-right</v-icon>
+            <span class="font-weight-bold">OF</span>
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-col>
+
+          <v-col cols="2">
+            <label class="subtitle-1">Packing
+              <span class="red--text text-h6"></span></label>
+            <v-text-field
+              v-model="record.packingRaw"
+              hide-details="auto"
+              @blur="record.packing = setFormatQuantity(record.packingRaw)"
+              outlined
+              :error-messages="errors.packing"
+              :class="$vuetify.theme.dark ? '' : 'white'"
+              dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="2">
+            <label class="subtitle-1">Unit
               <span class="red--text text-h6">*</span></label>
             <v-text-field
               v-model="record.unit"
@@ -88,12 +121,14 @@
 
         <v-btn v-if="record.id" class="mt-10"
           color="indigo" dark :loading="updateButtonLoading"
+          v-shortkey="['alt', 's']" @shortkey="updateFromForm($route.params.id,{ redirect: 'products.index' })"
           @click="updateFromForm($route.params.id,{ redirect: 'products.index' })">
             <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update product
         </v-btn>
 
         <v-btn v-else
           color="indigo" dark class="mt-10" :loading="createButtonLoading"
+          v-shortkey="['alt', 's']" @shortkey="createFromForm({ redirect: 'products.index' })"
           @click="createFromForm({ redirect: 'products.index' })">
             <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save product
         </v-btn>

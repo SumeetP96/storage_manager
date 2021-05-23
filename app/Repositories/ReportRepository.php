@@ -31,9 +31,11 @@ class ReportRepository
             ->selectRaw('
                 pr.unit as unit,
                 pr.name as name,
+                sum(gps.current_stock div pr.packing) as compoundStock,
+                pr.compound_unit as compoundUnit,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('name', 'unit');
+            ->groupBy('name', 'unit', 'compound_unit');
 
         $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
@@ -59,20 +61,24 @@ class ReportRepository
         $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('godowns as gd', 'gps.godown_id', '=', 'gd.id')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
+            ->where('gps.current_stock', '>', 0)
             ->where(function ($query) use ($search) {
                 $query->where('pr.name', 'like', '%' . $search . '%')
                     ->orWhere('gd.name', 'like', '%' . $search . '%')
                     ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
             })
-            ->select(
-                'gps.updated_at',
-                'gps.created_at',
-                'gps.current_stock as currentStock',
-                'gd.name as godownName',
-                'pr.name as productName',
-                'pr.unit as productUnit',
-                'pr.lot_number as productLotNumber'
-            );
+            ->selectRaw('
+                gps.updated_at,
+                gps.created_at,
+                gps.current_stock as currentStock,
+                gd.name as godownName,
+                pr.name as productName,
+                pr.unit as productUnit,
+                gps.current_stock div pr.packing as compoundStock,
+                pr.packing,
+                pr.compound_unit as compoundUnit,
+                pr.lot_number as productLotNumber
+            ');
 
         $total = $results->count();
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
@@ -103,9 +109,11 @@ class ReportRepository
             ->selectRaw('
                 pr.unit as unit,
                 pr.lot_number as lotNumber,
+                pr.compound_unit as compoundUnit,
+                sum(gps.current_stock div pr.packing) as compoundStock,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('pr.lot_number', 'pr.unit');
+            ->groupBy('lot_number', 'unit', 'compound_unit');
 
         $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
@@ -129,18 +137,22 @@ class ReportRepository
 
         $results = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
+            ->where('gps.current_stock', '>', 0)
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('lot_number', 'like', '%' . $search . '%')
                     ->orWhere('unit', 'like', '%' . $search . '%');
             })
             ->selectRaw('
-                pr.unit as unit,
+                pr.unit as productUnit,
                 pr.lot_number as lotNumber,
                 pr.name as name,
-                sum(gps.current_stock) as stock
+                gps.current_stock div pr.packing as compoundStock,
+                pr.packing,
+                pr.compound_unit as compoundUnit,
+                sum(gps.current_stock) as currentStock
             ')
-            ->groupBy('pr.lot_number', 'pr.unit', 'pr.name');
+            ->groupBy('lot_number', 'unit', 'name', 'compound_unit', 'packing', 'current_stock');
 
         $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
@@ -186,6 +198,9 @@ class ReportRepository
             })
             ->selectRaw('
                 stp.quantity,
+                stp.compound_quantity as compoundQuantity,
+                pr.compound_unit as compoundUnit,
+                pr.packing,
                 st.id as id,
                 st.date as date,
                 st.transfer_type_id as ttid,
@@ -244,6 +259,9 @@ class ReportRepository
             ->selectRaw('
                 st.id as id,
                 stp.quantity,
+                stp.compound_quantity as compoundQuantity,
+                pr.compound_unit as compoundUnit,
+                pr.packing,
                 st.date as date,
                 st.from_godown_id as fromId,
                 st.to_godown_id as toId,

@@ -35,12 +35,8 @@ export const CrudMixin = {
                 this.axios.get('/api/products/autocomplete')
                   .then(response => {
                     this.products = response.data.records
-                    this.axios.get(`/api/products/${id}/details`)
-                      .then(response => {
-                        this.productDetails[currentIndex].unit = response.data.unit
-                        this.productDetails[currentIndex].remarks = response.data.remarks
-                      })
-                    })
+                    this.fetchProductDetails(currentIndex)
+                  })
               }
 
               if (payload.apiRoute == 'agents') {
@@ -113,6 +109,7 @@ export const CrudMixin = {
       this.showRecordLoading = true
 
       this.dialogErrors = {}
+      const currentIndex = this.currentIndex
 
       this.$swal({
         title: 'Are you sure you want to update this record?',
@@ -130,19 +127,14 @@ export const CrudMixin = {
 
           .then(response => {
             if (response.data.success) {
-
               if (payload.apiRoute == 'products') {
-                this.productDetails[this.currentIndex] = { remarks: '', unit: '' }
-                this.inputProducts[this.currentIndex].id = ''
+                this.inputProducts[currentIndex].id = ''
+
                 this.axios.get('/api/products/autocomplete')
                   .then(response => {
                     this.products = response.data.records
-                    this.inputProducts[this.currentIndex].id = id
-                    this.axios.get(`/api/products/${id}/details`)
-                      .then(response => {
-                        this.productDetails[this.currentIndex].unit = response.data.unit
-                        this.productDetails[this.currentIndex].remarks = response.data.remarks
-                      })
+                    this.inputProducts[currentIndex].id = id
+                    this.fetchProductDetails(currentIndex)
                   })
               }
 
@@ -179,7 +171,6 @@ export const CrudMixin = {
                     })
                 }
               }
-
               this.closeDialog(payload.dialog)
             }
 

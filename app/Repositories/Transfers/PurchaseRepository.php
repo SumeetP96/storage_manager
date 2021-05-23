@@ -22,25 +22,6 @@ class PurchaseRepository
         $toDate = $request->get('to');
         $fromDate = $request->get('from');
 
-        // $fromOnlyIds = $request->get('fromOnlyIds');
-        // $fromExceptIds = $request->get('fromExceptIds');
-
-        // $toOnlyIds = $request->get('toOnlyIds');
-        // $toExceptIds = $request->get('toExceptIds');
-
-        // $productOnlyIds = $request->get('productOnlyIds');
-        // $productExceptIds = $request->get('productExceptIds');
-
-        // $lotOnly = $request->get('lotOnly');
-        // $lotExcept = $request->get('lotExcept');
-        // $lotNull = (bool) $request->get('lotNull');
-
-        // $unitOnly = $request->get('unitOnly');
-        // $unitExcept = $request->get('unitExcept');
-
-        // $quantityGt = $request->get('quantityGt');
-        // $quantityLt = $request->get('quantityLt');
-
         $query = DB::table('stock_transfers as st')
             ->where('st.transfer_type_id', StockTransfer::PURCHASE)
             ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
@@ -50,28 +31,6 @@ class PurchaseRepository
         if (!is_null($fromDate) && !is_null($toDate)) {
             $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
         }
-
-        // if (!is_null($fromOnlyIds)) $query->whereIn('fg.id', explode(',', $fromOnlyIds));
-        // if (!is_null($fromExceptIds)) $query->whereNotIn('fg.id', explode(',', $fromExceptIds));
-
-        // if (!is_null($toOnlyIds)) $query->whereIn('tg.id', explode(',', $toOnlyIds));
-        // if (!is_null($toExceptIds)) $query->whereNotIn('tg.id', explode(',', $toExceptIds));
-
-        // if (!is_null($productOnlyIds)) $query->whereIn('pr.id', explode(',', $productOnlyIds));
-        // if (!is_null($productExceptIds)) $query->whereNotIn('pr.id', explode(',', $productExceptIds));
-
-        // if ($lotNull) {
-        //     $query->where('pr.lot_number', NULL);
-        // } else {
-        //     if (!is_null($lotOnly)) $query->whereIn('pr.lot_number', explode(',', $lotOnly));
-        //     if (!is_null($lotExcept)) $query->whereNotIn('pr.lot_number', explode(',', $lotExcept));
-        // }
-
-        // if (!is_null($unitOnly)) $query->whereIn('pr.unit', explode(',', $unitOnly));
-        // if (!is_null($unitExcept)) $query->whereNotIn('pr.unit', explode(',', $unitExcept));
-
-        // if (!is_null($quantityGt)) $query->where('st.quantity', '>', $quantityGt * 100);
-        // if (!is_null($quantityLt)) $query->where('st.quantity', '<', $quantityLt * 100);
 
         $results = $query->where(function ($query) use ($search) {
             $query->where('fg.name', 'like', '%' . $search . '%')
@@ -122,6 +81,9 @@ class PurchaseRepository
                 stp.id,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
+                pr.compound_unit as compoundUnit,
+                stp.compound_quantity as compoundQuantity,
+                stp.compound_quantity div 100 as compoundQuantityRaw,
                 pr.id as productId,
                 pr.name as name,
                 pr.unit as unit,
@@ -153,7 +115,8 @@ class PurchaseRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
@@ -190,7 +153,8 @@ class PurchaseRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity']
+                'quantity'          => $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {

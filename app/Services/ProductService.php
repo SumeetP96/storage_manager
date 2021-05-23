@@ -10,7 +10,7 @@ class ProductService
     public function findDuplicateProductLot(Request $request, $id = NULL)
     {
         if (empty($request->lot_number)) {
-            $productExist = Product::where($id, '!=', $id)
+            $productExist = Product::where('id', '!=', $id)
                 ->where('lot_number', NULL)
                 ->where('name', $request->name)
                 ->first();
@@ -40,11 +40,14 @@ class ProductService
     public function validateRequest(Request $request)
     {
         $request->validate([
-            'name'  => 'required|max:255',
-            'alias' => 'nullable|max:10',
-            'unit'  => 'required|size:3'
+            'name'          => 'required|max:255',
+            'alias'         => 'nullable|max:10',
+            'unit'          => 'required|size:3',
+            'compound_unit' => 'size:3',
+            'packing'       => 'integer'
         ],[
-            'alias.max' => 'Only 10 letters allowed.'
+            'alias.max'         => 'Only 10 letters allowed.',
+            'packing.integer'   => 'Invalid packing.'
         ]);
     }
 }

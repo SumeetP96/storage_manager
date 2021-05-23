@@ -17,7 +17,7 @@ export const TransferMixin = {
 
       dialogRecord: {},
       dialogErrors: {},
-      inputProducts: [{ id: '', quantity: '', quantityRaw: '' }],
+      inputProducts: [{ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' }],
 
       agents: [],
       godowns: [],
@@ -27,7 +27,7 @@ export const TransferMixin = {
 
       godownDetails: {},
       accountDetails: {},
-      productDetails: [{ unit: '', remarks: '' }],
+      productDetails: [{ unit: '', remarks: '', packing: '', compoundUnit: '' }],
     }
   },
 
@@ -47,7 +47,7 @@ export const TransferMixin = {
     addProductInputRow() {
       const last = this.inputProducts.length
       this.productDetails.push({ unit: '', stock: '', remarks: '' })
-      this.inputProducts.push({ id: '', quantity: '', quantityRaw: '' })
+      this.inputProducts.push({ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' })
       setTimeout(() => document.getElementById(`productBox${last}`).focus(), 100);
     },
 
@@ -65,6 +65,22 @@ export const TransferMixin = {
     clearUnusedInputs() {
       this.inputProducts = this.inputProducts.filter((product) => product.id || product.quantity)
       if (this.inputProducts.length == 0) this.addProductInputRow()
+    },
+
+    calculateQuantity(index) {
+      let compoundQuantity = parseFloat(this.inputProducts[index].compoundQuantityRaw)
+      let packing = this.formatQuantity(parseFloat(this.productDetails[index].packing), 0)
+
+      if (!compoundQuantity || !packing) return
+      if (parseFloat(compoundQuantity) <= 0) return
+
+      if (compoundQuantity && packing) {
+        this.inputProducts[index].quantityRaw = (compoundQuantity * packing).toFixed(0)
+        this.inputProducts[index].quantity = (compoundQuantity * packing).toFixed(0) * 100
+      } else {
+        this.inputProducts[index].quantityRaw = undefined
+        this.inputProducts[index].quantity = undefined
+      }
     },
   }
 }

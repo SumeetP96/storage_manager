@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\ProductRepository;
 use App\Services\ProductService;
 use App\Services\Response\ResponseService;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -93,7 +94,9 @@ class ProductController extends Controller
 
         $this->productService->validateRequest($request);
 
-        $this->productRepository->update($request, $id);
+        DB::transaction(function () use ($request, $id) {
+            $this->productRepository->update($request, $id);
+        });
 
         return $this->responseService->success();
     }
