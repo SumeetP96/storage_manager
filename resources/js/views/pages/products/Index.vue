@@ -693,6 +693,31 @@
             </tr>
 
             <tr>
+              <td class="subtitle-1 font-weight-bold text-left">Unit</td>
+              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
+                {{ record.unit }}
+              </td>
+            </tr>
+
+            <tr>
+              <td class="subtitle-1 font-weight-bold text-left">Compound unit</td>
+              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
+                {{ record.compound_unit ? record.compound_unit : '-' }}
+              </td>
+            </tr>
+
+            <tr>
+              <td class="subtitle-1 font-weight-bold text-left">Packing</td>
+              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
+                <span v-if="record.packing">
+                  {{ formatQuantity(record.packing, 0) }}
+                  <span class="subtitle-2 grey--text pl-1">({{ record.unit }})</span>
+                </span>
+                <span v-else>-</span>
+              </td>
+            </tr>
+
+            <tr>
               <td class="subtitle-1 font-weight-bold text-left">Remarks</td>
               <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                 {{ record.remarks ? record.remarks : '-' }}
