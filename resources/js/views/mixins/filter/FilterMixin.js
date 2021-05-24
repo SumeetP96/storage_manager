@@ -125,6 +125,20 @@ export const FilterMixin = {
         this.dbToDate = ''
       }
 
+      if (type == 'updatedRange') {
+        this.record.updatedFromDate = ''
+        this.record.updatedToDate = ''
+        this.dbUpdatedFromDate = ''
+        this.dbUpdatedToDate = ''
+      }
+
+      if (type == 'createdRange') {
+        this.record.createdFromDate = ''
+        this.record.createdToDate = ''
+        this.dbCreatedFromDate = ''
+        this.dbCreatedToDate = ''
+      }
+
       // Only / Except filter
       if (type == 'onlyExcept') {
         this[`${name}SelectOnly`] = []
