@@ -53,5 +53,15 @@ body {
             padding: 1px 8px !important;
         }
     }
+
+    .keyboard-shortcut-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            border-bottom: 1px solid #CFD8DC;
+            padding: 10px 12px;
+        }
+    }
 }
 

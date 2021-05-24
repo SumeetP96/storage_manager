@@ -70,3 +70,13 @@ body .inter-view-table td {
   padding: 1px 8px !important;
 }
 
+body .keyboard-shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .keyboard-shortcut-table td {
+  border-bottom: 1px solid #CFD8DC;
+  padding: 10px 12px;
+}
+

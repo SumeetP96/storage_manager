@@ -14,6 +14,10 @@ export const SearchMixin = {
     clearSearch() {
       this.query = ''
       this.searchRecords()
+    },
+
+    focusSearch() {
+      document.getElementById('searchInput').focus()
     }
   }
 }

@@ -22,7 +22,8 @@
               <v-menu offset-y :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn dark v-bind="attrs" v-on="on"
-                    :color="$vuetify.theme.dark ? '' : 'white purple--text'">
+                    :color="$vuetify.theme.dark ? '' : 'white purple--text'"
+                    v-shortkey="['alt', 's']" @shortkey="focusSearch()">
                       <v-icon class="mr-2">mdi-table-eye</v-icon>
                       Columns <v-icon class="ml-2">mdi-menu-down</v-icon>
                   </v-btn>
@@ -36,21 +37,43 @@
             </div>
           </template>
 
-          <v-btn :href="`/export/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
-            download="products.xlsx"
-            style="width: 125px"
-            class="ml-2 success--text"
-            :color="$vuetify.theme.dark ? '' : 'white'">
-            <v-icon class="mr-2">mdi-file-excel-outline</v-icon> Excel
-          </v-btn>
+          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-          <v-btn :href="`/export/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
-            download="products.pdf"
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" class="error--text"
+                :color="$vuetify.theme.dark ? '' : 'white'">
+                <v-icon class="mr-2">mdi-file-export-outline</v-icon> Export
+              </v-btn>
+            </template>
+            <v-list dense>
+
+              <v-list-item :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
+                :download="`${this.products}.pdf`">
+                <v-list-item-icon><v-icon>mdi-file-pdf-outline</v-icon></v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="pr-8">PDF</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-list-item :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
+                :download="`${this.products}.xlsx`">
+                <v-list-item-icon><v-icon>mdi-file-excel-outline</v-icon></v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Excel</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+
+            </v-list>
+          </v-menu>
+
+          <v-btn @click="printPage(`/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}`)"
             style="width: 125px"
-            class="ml-2 error--text"
+            class="ml-2 indigo--text"
             :color="$vuetify.theme.dark ? '' : 'white'">
-            <v-icon class="mr-2">mdi-file-pdf-outline</v-icon> PDF
+            <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
+          <iframe style="display: none"></iframe>
 
         </v-col>
 

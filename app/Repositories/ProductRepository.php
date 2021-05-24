@@ -5,34 +5,28 @@ namespace App\Repositories;
 use App\Product;
 use App\GodownProductsStock;
 use App\StockTransferProduct;
+use App\Traits\ProductTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository
 {
+    use ProductTrait;
+
     /**
-     * Fetch all records
+     * Fetch all products
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
      */
     public function fetchAll(Request $request)
     {
-        $search = $request->get('query');
-        $limit = $request->get('limit');
-        $skip = $request->get('skip');
-        $sortBy = $request->get('sortBy');
-        $flow = $request->get('flow');
+        return [
+            'total' => $this->allRecords($request)->count(),
 
-        $results = DB::table('products')
-            ->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('alias', 'like', '%' . $search . '%')
-                    ->orWhere('remarks', 'like', '%' . $search . '%')
-                    ->orWhere('lot_number', 'like', '%' . $search . '%');
-            });
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allRecords($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**
@@ -50,7 +44,9 @@ class ProductRepository
                 compound_unit,
                 packing,
                 packing div 100 as packingRaw,
-                remarks
+                remarks,
+                created_at,
+                updated_at
             ')
             ->first();
     }

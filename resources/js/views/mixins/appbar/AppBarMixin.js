@@ -1,13 +1,27 @@
 import { UserMixin } from "./UserMixin";
 import { ThemeMixin } from "./ThemeMIxin";
 import { BackupMixin } from "./BackupMixin";
-import { TransactionDateMixin } from "./TransactionDateMixin";
 
 export const AppBarMixin = {
   mixins: [
     UserMixin,
     ThemeMixin,
     BackupMixin,
-    TransactionDateMixin
-  ],
+ ],
+
+  data() {
+    return {
+      usersName: '',
+      settingsMenu: false,
+      keyboardShortcutDialog: false
+    }
+  },
+
+  methods: {
+    toggleSettingMenu() {
+      this.settingsMenu = !this.settingsMenu
+      if (this.settingsMenu) document.getElementById('settingsButton').focus()
+      else document.getElementById('settingsButton').blur()
+    }
+  }
 }

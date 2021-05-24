@@ -1,4 +1,5 @@
 import { CrudMixin } from './CrudMixin'
+import { PageMixin } from './PageMixin'
 import { DateMixin } from './DateMixin'
 import { ThemeMixin } from './ThemeMixin'
 import { TableMixin } from './TableMixin'
@@ -11,6 +12,7 @@ export const CommonMixin = {
   mixins: [
     DateMixin,
     CrudMixin,
+    PageMixin,
     ThemeMixin,
     TableMixin,
     SearchMixin,

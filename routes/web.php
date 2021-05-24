@@ -1,6 +1,5 @@
 <?php
 
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,10 +19,12 @@ Auth::routes();
 Route::get('/user/password/change', 'AppController@changePassword');
 Route::post('/user/password/update', 'AppController@updatePassword')->name('update.password');
 
-Route::prefix('export')->group(function () {
+Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function(){
 
-    Route::get('/pdf/products', 'ExportController@productPdf');
-    Route::get('/excel/products', 'ExportController@productExcel');
+    // Products
+    Route::get('/pdf/products', 'Exports\ProductExportController@productPdf');
+    Route::get('/excel/products', 'Exports\ProductExportController@productExcel');
+    Route::get('/print/products', 'Exports\ProductExportController@productPrint');
 
 });
 
