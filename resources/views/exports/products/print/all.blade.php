@@ -21,7 +21,10 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
-                        <span>{{ $record->name }} ({{ $record->alias }})</span>
+                        <span>
+                            {{ $record->name }}
+                            @if ($record->alias) ({{ $record->alias }}) @endif
+                        </span>
                         <div class="text-secondary">{{ $record->remarks }}</div>
                     </td>
                     <td class="text-center">{{ $record->lot_number }}</td>

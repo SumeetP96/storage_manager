@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::prefix('autofills')->group(function () {
+    Route::get('/products/distinct_units', 'Autofill\ProductAutofillController@distinctUnits');
+    Route::get('/products/distinct_compound_units', 'Autofill\ProductAutofillController@distinctCompoundUnits');
+});
+
 Route::prefix('godowns')->group(function () {
     Route::get('/', 'GodownController@index');
     Route::get('/{id}/show', 'GodownController@show');

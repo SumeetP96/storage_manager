@@ -4,9 +4,14 @@ export const CrudMixin = {
       errors: {},
 
       record: {
-        onlyDate: '',
         fromDate: '',
-        toDate: ''
+        toDate: '',
+
+        createdFromDate: '',
+        createdToDate: '',
+
+        updatedFromDate: '',
+        updatedToDate: '',
       },
 
       recordProducts: [],

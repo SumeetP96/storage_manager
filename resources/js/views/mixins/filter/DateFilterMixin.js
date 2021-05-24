@@ -3,9 +3,18 @@ export const DateFilterMixin = {
     return {
       lastFrom: '',
       lastTo: '',
-
       dbFromDate: '',
       dbToDate: '',
+
+      lastCreatedFrom: '',
+      lastCreatedTo: '',
+      dbCreatedFromDate: '',
+      dbCreatedToDate: '',
+
+      lastUpdatedFrom: '',
+      lastUpdatedTo: '',
+      dbUpdatedFromDate: '',
+      dbUpdatedToDate: '',
     }
   },
 

@@ -19,12 +19,56 @@ trait ProductTrait
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
-        return DB::table('products')
-            ->where(function ($query) use ($search) {
+        $query = DB::table('products');
+
+        // Lot number filters with / without
+        $lotNumber = $request->get('lotNumber');
+        if ($lotNumber == 'with') $query->whereNotNull('lot_number');
+        if ($lotNumber == 'without') $query->whereNull('lot_number');
+
+        // Alias filters with / without
+        $alias = $request->get('alias');
+        if ($alias == 'with') $query->whereNotNull('alias');
+        if ($alias == 'without') $query->whereNull('alias');
+
+        // Unit filters only / except
+        $unitOnly = $request->get('unitOnly');
+        if (!is_null($unitOnly) > 0) $query->whereIn('unit', explode(',', $unitOnly));
+        $unitExcept = $request->get('unitExcept');
+        if (!is_null($unitExcept) > 0) $query->whereNotIn('unit', explode(',', $unitExcept));
+
+        // Compound Unit filters only / except
+        $compound_unitOnly = $request->get('compound_unitOnly');
+        if (!is_null($compound_unitOnly) > 0) $query->whereIn('compound_unit', explode(',', $compound_unitOnly));
+        $compound_unitExcept = $request->get('compound_unitExcept');
+        if (!is_null($compound_unitExcept) > 0) $query->whereNotIn('compound_unit', explode(',', $compound_unitExcept));
+
+        // Less than greater than
+        $packingLt = $request->get('packingLt');
+        if (!is_null($packingLt)) $query->where('packing', '<', (int) $packingLt * 100);
+        $packingGt = $request->get('packingGt');
+        if (!is_null($packingGt)) $query->where('packing', '>', (int) $packingGt * 100);
+
+        // Updated at date range
+        $updatedFromDate = $request->get('updatedFrom');
+        $updatedToDate = $request->get('updatedTo');
+        if (!is_null($updatedFromDate) && !is_null($updatedToDate)) {
+            $query->whereDate('updated_at', '<=', $updatedToDate)->whereDate('updated_at', '>=', $updatedFromDate);
+        }
+
+        // Created at date range
+        $createdFromDate = $request->get('createdFrom');
+        $createdToDate = $request->get('createdTo');
+        if (!is_null($createdFromDate) && !is_null($createdToDate)) {
+            $query->whereDate('created_at', '<=', $createdToDate)->whereDate('created_at', '>=', $createdFromDate);
+        }
+
+        return $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('alias', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%')
                     ->orWhere('lot_number', 'like', '%' . $search . '%');
             })->orderBy($sortBy, $flow);
+
     }
 }

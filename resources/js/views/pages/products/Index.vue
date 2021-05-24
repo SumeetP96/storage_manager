@@ -2,12 +2,18 @@
   <div>
     <AppBar backRoute="home" />
 
+
+    <!-- Main Col Wrapper -->
     <v-col cols="12" lg="11" class="mx-auto">
 
       <div class="text-h5 py-4">Products</div>
 
+      <!-- Above Table -->
       <v-row align="end">
+        <!-- Left Section -->
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
+
+          <!-- New record -->
           <v-btn color="indigo" dark :to="{ name: 'products.action' }"
             v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'products.action' })">
               <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
@@ -35,86 +41,93 @@
                 </v-list>
               </v-menu>
             </div>
-          </template>
+          </template> <!-- / Column Menu End -->
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
+          <!-- Export Menu -->
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" class="error--text"
-                :color="$vuetify.theme.dark ? '' : 'white'">
+              <!-- Button -->
+              <v-btn v-bind="attrs" v-on="on"
+                :color="$vuetify.theme.dark ? '' : 'white indigo--text'">
                 <v-icon class="mr-2">mdi-file-export-outline</v-icon> Export
               </v-btn>
             </template>
             <v-list dense>
-
-              <v-list-item :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
-                :download="`${this.products}.pdf`">
-                <v-list-item-icon><v-icon>mdi-file-pdf-outline</v-icon></v-list-item-icon>
+              <!-- PDF -->
+              <v-list-item :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+                :download="`${apiRoute}.pdf`">
+                <v-list-item-icon><v-icon class="error--text">mdi-file-pdf</v-icon></v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title class="pr-8">PDF</v-list-item-title>
+                  <v-list-item-title class="pr-8 error--text">PDF</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
 
-              <v-list-item :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}`"
-                :download="`${this.products}.xlsx`">
-                <v-list-item-icon><v-icon>mdi-file-excel-outline</v-icon></v-list-item-icon>
+              <!-- Excel -->
+              <v-list-item :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+                :download="`${apiRoute}.xlsx`">
+                <v-list-item-icon><v-icon class="success--text">mdi-file-excel</v-icon></v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>Excel</v-list-item-title>
+                  <v-list-item-title class="success--text">Excel</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-
             </v-list>
-          </v-menu>
+          </v-menu> <!-- / Export Menu End -->
 
-          <v-btn @click="printPage(`/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}`)"
-            style="width: 125px"
-            class="ml-2 indigo--text"
-            :color="$vuetify.theme.dark ? '' : 'white'">
+          <!-- Print -->
+          <v-btn @click="printPage(`/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)"
+            style="width: 125px" class="ml-2"
+            :color="$vuetify.theme.dark ? '' : 'white indigo--text'">
             <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe style="display: none"></iframe>
 
-        </v-col>
+        </v-col> <!-- / Left Section End -->
 
-        <!-- Search -->
-        <v-col cols="12" sm="12" md="4" offset-md="2"
-          class="d-flex justify-end align-center">
-            <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
-              class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
-              :loading="refreshLoading" :disabled="records.length == 0">
-                <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                refresh
-            </v-btn>
+        <!-- Right Section -->
+        <v-col cols="12" sm="12" md="4" offset-md="2" class="d-flex justify-end align-center">
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
+            :loading="refreshLoading" :disabled="records.length == 0">
+              <v-icon class="mr-2">mdi-table-refresh</v-icon>
+              refresh
+          </v-btn>
 
-            <v-text-field
-              id="searchInput"
-              solo
-              dense
-              clearable
-              hide-details
-              v-model="query"
-              label="Search records"
-              :loading="searchLoading"
-              :disabled="searchLoading"
-              @click:clear="clearSearch()"
-              @keypress.enter="searchRecords()"
-              prepend-inner-icon="mdi-magnify">
-            </v-text-field>
-        </v-col>
-      </v-row>
+          <!-- Search -->
+          <v-text-field
+            id="searchInput"
+            solo
+            dense
+            clearable
+            hide-details
+            v-model="query"
+            label="Search records"
+            :loading="searchLoading"
+            :disabled="searchLoading"
+            @click:clear="clearSearch()"
+            @keypress.enter="searchRecords()"
+            prepend-inner-icon="mdi-magnify">
+          </v-text-field>
+        </v-col> <!-- / Right Section End -->
+      </v-row> <!-- / Above Table End -->
 
+
+      <!-- Table Section -->
       <div class="mt-3">
-        <v-skeleton-loader v-bind="attrs"
-          v-if="recordsTableLoading"
-          type="table-row-divider@6"
+        <!-- Table loader -->
+        <v-skeleton-loader v-bind="attrs" v-if="recordsTableLoading" type="table-row-divider@6"
           :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
 
+        <!-- Records Table -->
         <v-simple-table v-else class="elevation-1">
           <template v-slot:default>
             <thead>
               <tr>
+
+                <!-- Lot number -->
                 <th class="subtitle-2 text-center" :class="sortBy == 'lot_number' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lot_number' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('lot_number')">Lot number</span>
@@ -122,8 +135,48 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Lot Number filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="lotNumber_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('lotNumber') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="lotNumber_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="lotNumber" column hide-details>
+                                <v-radio label="With lot number" value="with"></v-radio>
+                                <v-radio label="Without lot number" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('lotNumber', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('lotNumber', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Lot Number filter end -->
                 </th>
 
+                <!-- Name -->
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('name')">Name</span>
@@ -133,16 +186,258 @@
                     </span>
                 </th>
 
-                <th v-if="selectedColumns.indexOf('alias') >= 0"
-                  class="subtitle-2 text-center" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
+                <!-- Alias -->
+                <th class="subtitle-2 text-center" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'alias' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('alias')">Alias</span>
                     <span v-if="sortBy == 'alias'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Alias filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="alias_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('alias') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="alias_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="alias" column hide-details>
+                                <v-radio label="With alias" value="with"></v-radio>
+                                <v-radio label="Without alias" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('alias', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('alias', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Alias filter end -->
                 </th>
 
+                <!-- Unit -->
+                <th class="subtitle-2 text-center" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('unit')">Unit</span>
+                    <span v-if="sortBy == 'unit'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+
+                    <!-- Unit filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="unit_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('unit') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="unit_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="unitSelectOnly"
+                              :items="units"
+                              label="Unit to show"
+                              item-value="unit"
+                              item-text="unit"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="unitSelectExcept.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="unitSelectExcept"
+                              :items="units"
+                              :disabled="unitSelectOnly.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Unit to hide"
+                              item-value="unit"
+                              item-text="unit"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('unit', 'onlyExcept')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('unit', 'onlyExcept')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Unit filter end -->
+                </th>
+
+                <!-- Compound unit -->
+                <th v-if="selectedColumns.indexOf('compound_unit') >= 0"
+                  class="subtitle-2 text-center" :class="sortBy == 'compound_unit' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'compound_unit' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('compound_unit')">Compound unit</span>
+                    <span v-if="sortBy == 'compound_unit'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+
+                    <!-- Compound Unit filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="compound_unit_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('compound_unit') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="compound_unit_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="compound_unitSelectOnly"
+                              :items="compound_units"
+                              label="Compound unit to show"
+                              item-value="compound_unit"
+                              item-text="compound_unit"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="compound_unitSelectExcept.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="compound_unitSelectExcept"
+                              :items="compound_units"
+                              :disabled="compound_unitSelectOnly.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Compound unit to hide"
+                              item-value="compound_unit"
+                              item-text="compound_unit"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('compound_unit', 'onlyExcept')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('compound_unit', 'onlyExcept')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Compound Unit filter end -->
+                </th>
+
+                <th v-if="selectedColumns.indexOf('packing') >= 0"
+                  class="subtitle-2 text-center" :class="sortBy == 'packing' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'packing' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('packing')">Packing</span>
+                    <span v-if="sortBy == 'packing'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+
+                    <!-- Packing filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="packing_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('packing') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="packing_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select greater than</div>
+
+                            <v-text-field
+                              v-model="packingGt"
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="0"
+                              dense
+                              solo>
+                            </v-text-field>
+
+                            <div class="subtitle-2 my-1">Select less than</div>
+
+                            <v-text-field
+                              v-model="packingLt"
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="0"
+                              dense
+                              solo>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('packing', 'lessGreat')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('packing', 'lessGreat')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Packing filter end -->
+                </th>
+
+                <!-- Remarks -->
                 <th v-if="selectedColumns.indexOf('remarks') >= 0"
                   class="subtitle-2" :class="sortBy == 'remarks' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'remarks' ? 'font-size: 1rem !important' : ''">
@@ -153,6 +448,7 @@
                     </span>
                 </th>
 
+                <!-- Updated at -->
                 <th class="subtitle-2" :class="sortBy == 'updated_at' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'updated_at' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('updated_at')">Last modified on</span>
@@ -160,8 +456,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Updated at filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="updatedRange_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('updatedAt') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="updatedRange_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Date range</div>
+
+                            <v-text-field
+                              v-model="record.updatedFromDate"
+                              hide-details
+                              solo
+                              :loading="filterLoading"
+                              :disabled="filterLoading"
+                              placeholder="From date"
+                              @blur="formatDate('updatedFromDate'); dbUpdatedFromDate = flipToYMD(record.updatedFromDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-3"
+                              dense>
+                            </v-text-field>
+
+                            <v-text-field
+                              v-model="record.updatedToDate"
+                              hide-details
+                              solo
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="To date"
+                              @blur="formatDate('updatedToDate'); dbUpdatedToDate = flipToYMD(record.updatedToDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-2"
+                              dense>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
+                              <v-btn dark small @click="removeFilter('updatedAt', 'updatedRange')" tabindex="-1" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('updatedAt', 'updatedRange')" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Updated at filter end -->
                 </th>
 
+                <!-- Created at -->
                 <th v-if="selectedColumns.indexOf('created_at') >= 0"
                   class="subtitle-2" :class="sortBy == 'created_at' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'created_at' ? 'font-size: 1rem !important' : ''">
@@ -170,6 +524,63 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Created at filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="createdRange_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('createdAt') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="createdRange_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Date range</div>
+
+                            <v-text-field
+                              v-model="record.createdFromDate"
+                              hide-details
+                              solo
+                              :loading="filterLoading"
+                              :disabled="filterLoading"
+                              placeholder="From date"
+                              @blur="formatDate('createdFromDate'); dbCreatedFromDate = flipToYMD(record.createdFromDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-3"
+                              dense>
+                            </v-text-field>
+
+                            <v-text-field
+                              v-model="record.createdToDate"
+                              hide-details
+                              solo
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="To date"
+                              @blur="formatDate('createdToDate'); dbCreatedToDate = flipToYMD(record.createdToDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-2"
+                              dense>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
+                              <v-btn dark small @click="removeFilter('createdAt', 'createdRange')" tabindex="-1" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('createdAt', 'createdRange')" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Created at filter end -->
                 </th>
 
               </tr>
@@ -185,8 +596,20 @@
 
                   <td class="subtitle-1">{{ record.name }}</td>
 
-                  <td v-if="selectedColumns.indexOf('alias') >= 0" class="subtitle-1 text-center">
-                    {{ record.alias }}
+                  <td class="subtitle-1 text-center">{{ record.alias ? record.alias : '-' }}</td>
+
+                  <td class="subtitle-1 text-center font-weight-bold">{{ record.unit }}</td>
+
+                  <td v-if="selectedColumns.indexOf('compound_unit') >= 0" class="subtitle-1 text-center">
+                    {{ record.compound_unit ? record.compound_unit : '-' }}
+                  </td>
+
+                  <td v-if="selectedColumns.indexOf('packing') >= 0" class="subtitle-1 text-center">
+                    <span v-if="record.packing">
+                      {{ formatQuantity(record.packing, 0) }}
+                      <span class="subtitle-2 grey--text pl-1">{{ record.unit }}</span>
+                    </span>
+                    <span v-else>-</span>
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
@@ -206,43 +629,52 @@
               </tr>
             </tbody>
           </template>
-        </v-simple-table>
+        </v-simple-table> <!-- / Records Table End -->
 
+        <!-- Load more loader -->
         <v-skeleton-loader v-bind="attrs" v-if="addRecordsTableLoading" type="table-row-divider@3"
           :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
+      </div> <!-- / Table Section End -->
 
-        <div class="d-flex justify-space-between mt-3 ml-3">
-          <div v-if="records">
-            ( {{ records.length }} of {{ totalRecords }} )
-          </div>
-          <div class="d-flex justify-end align-center">
-            Records per page
-            <v-select
-              @change="loadRecords()"
-              v-model="recordsPerPage"
-              :items="perPageItems"
-              hide-details
-              dense solo
-              style="width: 85px"
-              class="ml-3 elevation-0 center-input">
-            </v-select>
 
-            <v-btn color="indigo white--text" class="ml-5"
-              :loading="loadMoreLoading"
-              :disabled="totalRecords == records.length"
-              v-shortkey.once="['alt', 'l']"
-              @shortkey="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })"
-              @click="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })">
-              load more
-              <v-icon>mdi-chevron-down</v-icon>
-            </v-btn>
-          </div>
+      <!-- Below Table -->
+      <div class="d-flex justify-space-between mt-3 ml-3">
+        <!-- Records Length -->
+        <div v-if="records">
+          ( {{ records.length }} of {{ totalRecords }} )
         </div>
-      </div>
+
+        <div class="d-flex justify-end align-center">
+          Records per page
+          <v-select
+            @change="loadRecords()"
+            v-model="recordsPerPage"
+            :items="perPageItems"
+            hide-details
+            dense solo
+            style="width: 85px"
+            class="ml-3 elevation-0 center-input">
+          </v-select>
+
+          <!-- Load more -->
+          <v-btn color="indigo white--text" class="ml-5"
+            :loading="loadMoreLoading"
+            :disabled="totalRecords == records.length"
+            v-shortkey.once="['alt', 'l']"
+            @shortkey="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })"
+            @click="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })">
+            load more
+            <v-icon>mdi-chevron-down</v-icon>
+          </v-btn>
+        </div>
+      </div> <!-- / Below Table End -->
 
     </v-col>
+    <!-- / Main Col Wrapper End -->
 
+
+    <!-- View Record Dialog -->
     <v-dialog v-model="viewRecordDialog" max-width="800">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
@@ -304,7 +736,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> <!-- / View Record Dialog End -->
 
   </div>
 </template>
@@ -319,18 +751,78 @@ export default {
     this.apiRoute = 'products'
 
     this.loadRecords()
+    this.fetchUnitAutofill()
+    this.fetchCompoundUnitAutofill()
 
     this.setupExtraColumns([
-      { value: 'alias', label: 'Alias' },
+      { value: 'compound_unit', label: 'Compound unit' },
+      { value: 'packing', label: 'Packing' },
       { value: 'remarks', label: 'Remarks' },
       { value: 'created_at', label: 'Created at' },
     ])
-
-    this.selectedColumns = ['alias', 'remarks']
   },
 
   components: {
     AppBar: require('../../components/AppBar').default
+  },
+
+  data() {
+    return {
+      lotNumber: '',
+      lotNumber_FILTER: false,
+
+      alias: '',
+      alias_FILTER: false,
+
+      unit_FILTER: false,
+      units: [],
+      unitSelectOnly: [],
+      unitSelectExcept: [],
+
+      compound_unit_FILTER: false,
+      compound_units: [],
+      compound_unitSelectOnly: [],
+      compound_unitSelectExcept: [],
+
+      packingLt: '',
+      packingGt: '',
+      packing_FILTER: false,
+    }
+  },
+
+  methods: {
+    fetchUnitAutofill() {
+      this.filterLoading = true
+      this.axios.get('/api/autofills/products/distinct_units')
+        .then(response => {
+          this.units = response.data
+          this.filterLoading = false
+        })
+    },
+
+    fetchCompoundUnitAutofill() {
+      this.filterLoading = true
+      this.axios.get('/api/autofills/products/distinct_compound_units')
+        .then(response => {
+          this.compound_units = response.data
+          this.filterLoading = false
+        })
+    }
   }
 }
 </script>
+
+<style scoped>
+  .right-input >>> input {
+    text-align: right
+  }
+
+  .center-input >>> input {
+    text-align: center;
+    padding-left: 2px;
+  }
+
+  .left-input >>> input {
+    padding-left: 10px;
+  }
+</style>

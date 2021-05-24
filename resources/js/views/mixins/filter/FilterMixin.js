@@ -7,6 +7,8 @@ export const FilterMixin = {
     return {
       filters: {},
       activeFilters: [],
+      createdRange_FILTER: false,
+      updatedRange_FILTER: false,
     }
   },
 
@@ -33,37 +35,78 @@ export const FilterMixin = {
      * Add filter to list
      * @param {String} name Column name
      */
-    addFilter(name, type, propName) {
-
+    addFilter(name, type) {
       // Date range filter
       if (type == 'dateRange') {
         if (this.dbFromDate == '' || this.dbToDate == '') return
         this.filters.date = `${this.getSeperator()}from=${this.dbFromDate}&to=${this.dbToDate}`
       }
 
+      // Created at range filter
+      if (type == 'createdRange') {
+        if (this.dbCreatedFromDate == '' || this.dbCreatedToDate == '') return
+        this.filters.createdAt = `${this.getSeperator()}createdFrom=${this.dbCreatedFromDate}&createdTo=${this.dbCreatedToDate}`
+      }
+
+      // Updated at range filter
+      if (type == 'updatedRange') {
+        if (this.dbUpdatedFromDate == '' || this.dbUpdatedToDate == '') return
+        this.filters.updatedAt = `${this.getSeperator()}updatedFrom=${this.dbUpdatedFromDate}&updatedTo=${this.dbUpdatedToDate}`
+      }
+
       // Only / Except filter
       if (type == 'onlyExcept') {
         if (this[`${name}SelectOnly`].length == 0 && this[`${name}SelectExcept`].length == 0) return
 
-        let ids = []
+        let values = []
         if (this[`${name}SelectOnly`].length > 0) {
-          this[`${name}SelectOnly`].forEach(record => ids.push(record.id))
-          this.filters[name] = `${this.getSeperator()}${name}Only=${ids}`
+          this[`${name}SelectOnly`].forEach(record => values.push(record[name]))
+          this.filters[name] = `${this.getSeperator()}${name}Only=${values}`
         }
 
         if (this[`${name}SelectExcept`].length > 0) {
-          this[`${name}SelectExcept`].forEach(record => ids.push(record.id))
-          this.filters[name] = `${this.getSeperator()}${name}Except=${ids}`
+          this[`${name}SelectExcept`].forEach(record => values.push(record[name]))
+          this.filters[name] = `${this.getSeperator()}${name}Except=${values}`
         }
       }
 
-      if (type == 'withWithout') {
-        if (!this[name]) return
-        this.filters[name] = `${this.getSeperator()}${name}=${this[name]}`
+      // Only / Except filter ID
+      if (type == 'onlyExceptId') {
+        if (this[`${name}SelectOnlyId`].length == 0 && this[`${name}SelectExceptId`].length == 0) return
+
+        let ids = []
+        if (this[`${name}SelectOnlyId`].length > 0) {
+          this[`${name}SelectOnlyId`].forEach(record => ids.push(record.id))
+          this.filters[name] = `${this.getSeperator()}${name}OnlyId=${ids}`
+        }
+
+        if (this[`${name}SelectExceptId`].length > 0) {
+          this[`${name}SelectExceptId`].forEach(record => ids.push(record.id))
+          this.filters[name] = `${this.getSeperator()}${name}ExceptId=${ids}`
+        }
       }
 
+      // Less than greater than number
+      if (type == 'lessGreat') {
+        if (!this[`${name}Lt`] && !this[`${name}Gt`]) return
+
+        if(!isNaN(this[`${name}Lt`])) {
+          this.filters[`${name}Lt`] = `${this.getSeperator()}${name}Lt=${this[`${name}Lt`]}`
+        }
+
+        if(!isNaN(this[`${name}Gt`])) {
+          this.filters[`${name}Gt`] = `${this.getSeperator()}${name}Gt=${this[`${name}Gt`]}`
+        }
+      }
+
+      // Contains string like
+      // if (type == 'withWithout') {
+      //   if (!this[name]) return
+      //   this.filters[name] = `${this.getSeperator()}${name}=${this[name]}`
+      // }
+
       if (this.activeFilters.indexOf(name) < 0) this.activeFilters.push(name)
-      this[`${name}_FILTER`] = false
+
       this.filterRecords()
     },
 
@@ -82,8 +125,19 @@ export const FilterMixin = {
         this.dbToDate = ''
       }
 
+      // Only / Except filter
+      if (type == 'onlyExcept') {
+        this[`${name}SelectOnly`] = []
+        this[`${name}SelectExcept`] = []
+      }
+
+      // Less than greater than number
+      if (type == 'lessGreat') {
+        this[`${name}Lt`]  = ''
+        this[`${name}Gt`]  = ''
+      }
+
       this.filters[name] = ''
-      this[`${name}_FILTER`] = false
       this.filterRecords()
     },
 
@@ -103,9 +157,9 @@ export const FilterMixin = {
      * Clear variables used for filtering
      */
     clearFilterVars() {
-      this.activeFilters.forEach(name => {
-        this[`${name}_FILTER`] = false
-      })
+      for (let prop in this.$data) {
+        if (prop.indexOf('_FILTER') >= 0) this[prop] = false
+      }
     },
 
     resetCustomQuery() {
