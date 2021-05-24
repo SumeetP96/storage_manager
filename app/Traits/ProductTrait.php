@@ -29,7 +29,7 @@ trait ProductTrait
         // Alias filters with / without
         $alias = $request->get('alias');
         if ($alias == 'with') $query->whereNotNull('alias');
-        if ($alias == 'without') $query->whereNull('alias');
+        if ($alias == 'without') $query->whereNull('alias')->orWhere('alias', '');
 
         // Unit filters only / except
         $unitOnly = $request->get('unitOnly');

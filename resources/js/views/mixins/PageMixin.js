@@ -1,7 +1,7 @@
 export const PageMixin = {
   methods: {
-    printPage(url) {
-      const print = document.getElementsByTagName('iframe')[0]
+    printPage(id, url) {
+      const print = document.getElementById('all-print')
       print.setAttribute('src', url)
     }
   }

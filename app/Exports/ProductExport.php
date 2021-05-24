@@ -2,10 +2,9 @@
 
 namespace App\Exports;
 
-use App\Traits\ProductTrait;
 use Carbon\Carbon;
+use App\Traits\ProductTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -31,17 +30,6 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
     public function query()
     {
         return $this->allRecords($this->request);
-        // $flow = $this->query['flow'];
-        // $search = $this->query['query'];
-        // $sortBy = $this->query['sortBy'];
-
-        // return DB::table('products')
-        //     ->where(function ($query) use ($search) {
-        //         $query->where('name', 'like', '%' . $search . '%')
-        //             ->orWhere('alias', 'like', '%' . $search . '%')
-        //             ->orWhere('remarks', 'like', '%' . $search . '%')
-        //             ->orWhere('lot_number', 'like', '%' . $search . '%');
-        //     })->orderBy($sortBy, $flow);
     }
 
     public function map($product): array

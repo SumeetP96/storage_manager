@@ -28,7 +28,7 @@
               <v-menu offset-y :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn dark v-bind="attrs" v-on="on"
-                    :color="$vuetify.theme.dark ? '' : 'white purple--text'"
+                    :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
                     v-shortkey="['alt', 's']" @shortkey="focusSearch()">
                       <v-icon class="mr-2">mdi-table-eye</v-icon>
                       Columns <v-icon class="ml-2">mdi-menu-down</v-icon>
@@ -45,50 +45,37 @@
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-          <!-- Export Menu -->
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <!-- Button -->
-              <v-btn v-bind="attrs" v-on="on"
-                :color="$vuetify.theme.dark ? '' : 'white indigo--text'">
-                <v-icon class="mr-2">mdi-file-export-outline</v-icon> Export
-              </v-btn>
-            </template>
-            <v-list dense>
-              <!-- PDF -->
-              <v-list-item :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-                :download="`${apiRoute}.pdf`">
-                <v-list-item-icon><v-icon class="error--text">mdi-file-pdf</v-icon></v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="pr-8 error--text">PDF</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+          <!-- PDF -->
+          <v-btn tabindex="-1" style="width: 120px"
+            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+            :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.pdf`">
+              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+          </v-btn>
 
-              <!-- Excel -->
-              <v-list-item :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-                :download="`${apiRoute}.xlsx`">
-                <v-list-item-icon><v-icon class="success--text">mdi-file-excel</v-icon></v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="success--text">Excel</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-menu> <!-- / Export Menu End -->
+          <!-- Excel -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+            :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.xlsx`">
+              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+          </v-btn>
 
           <!-- Print -->
-          <v-btn @click="printPage(`/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)"
-            style="width: 125px" class="ml-2"
-            :color="$vuetify.theme.dark ? '' : 'white indigo--text'">
-            <v-icon class="mr-2">mdi-printer</v-icon> Print
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white purple--text'"
+            @click="printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
-          <iframe style="display: none"></iframe>
+          <iframe id="all-print" style="display: none"></iframe>
 
         </v-col> <!-- / Left Section End -->
 
         <!-- Right Section -->
         <v-col cols="12" sm="12" md="4" offset-md="2" class="d-flex justify-end align-center">
           <!-- Refresh -->
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable()"
             class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
@@ -678,7 +665,7 @@
     <v-dialog v-model="viewRecordDialog" max-width="800">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>Product Details</div>
+          Product Details
           <v-btn icon @click="viewRecordDialog = false"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
@@ -725,10 +712,27 @@
         </v-card-text>
 
         <v-card-actions class="d-flex justify-space-between">
-          <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
-            @click="editFromTable({ name: 'products.action', params: { id: record.id } })">
-              <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit product
-          </v-btn>
+          <div class="d-flex">
+            <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
+              @click="editFromTable({ name: 'products.action', params: { id: record.id } })">
+                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit product
+            </v-btn>
+
+            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+            <v-btn color="error" text tabindex="-1"
+              :href="`/exports/pdf/products/${record.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+            </v-btn>
+
+            <!-- Print -->
+            <v-btn @click="printPage('print-record', `/exports/print/products/${record.id}`)"
+              text tabindex="-1" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
+                <v-icon class="mr-2">mdi-printer</v-icon> Print
+            </v-btn>
+            <iframe id="print-record" style="display: none"></iframe>
+          </div>
 
           <v-btn color="error" dark text tabindex="-1" :loading="deleteButtonLoading"
             @click="deleteFromTable(record.id, { dialog: 'viewRecordDialog' })">

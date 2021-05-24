@@ -100,10 +100,10 @@ export const FilterMixin = {
       }
 
       // Contains string like
-      // if (type == 'withWithout') {
-      //   if (!this[name]) return
-      //   this.filters[name] = `${this.getSeperator()}${name}=${this[name]}`
-      // }
+      if (type == 'withWithout') {
+        if (!this[name]) return
+        this.filters[name] = `${this.getSeperator()}${name}=${this[name]}`
+      }
 
       if (this.activeFilters.indexOf(name) < 0) this.activeFilters.push(name)
 
