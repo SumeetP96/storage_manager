@@ -26,12 +26,12 @@
 
       <v-btn text v-if="theme == 'dark'" @click="toggleApplicationTheme('light')" tabindex="-1"
         v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('light')">
-          light <v-icon class="text-h6 ml-2">mdi-weather-sunny</v-icon>
+          <v-icon class="text-h6 mr-2">mdi-weather-sunny</v-icon> light
       </v-btn>
 
       <v-btn text v-else @click="toggleApplicationTheme('dark')" tabindex="-1"
         v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('dark')">
-          dark <v-icon class="text-h6 ml-2">mdi-weather-night</v-icon>
+          <v-icon class="text-h6 mr-2">mdi-weather-night</v-icon> dark
       </v-btn>
 
       <!-- Settings Menu -->
@@ -40,7 +40,7 @@
           <v-btn text v-bind="attrs" v-on="on" id="settingsButton"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'" tabindex="-1"
             v-shortkey.once="['alt', 't']" @shortkey="toggleSettingMenu()" @click="toggleSettingMenu()">
-              {{ usersName ? usersName : 'Settings' }} <v-icon class="ml-2 text-h6">mdi-cog-outline</v-icon>
+              <v-icon class="mr-2 text-h6">mdi-cog-outline</v-icon> Settings
           </v-btn>
         </template>
 
@@ -268,8 +268,6 @@ export default {
 
   mounted() {
     this.setApplicationTheme()
-
-    this.usersName = this.getMeta('users-name')
   },
 }
 </script>

@@ -11,7 +11,6 @@ export const AppBarMixin = {
 
   data() {
     return {
-      usersName: '',
       settingsMenu: false,
       keyboardShortcutDialog: false
     }
