@@ -2,17 +2,29 @@
   <div>
     <v-app-bar dense app>
 
-      <v-btn v-if="$route.name != 'home' && !disableBack" tabindex="-1" icon
-        v-shortkey.once="['alt', 'q']" @shortkey="$router.push({ name: backRoute })"
-        @click="$router.push({ name: backRoute })">
+      <div v-if="disableBack">
+        <v-btn v-if="$route.name != 'home'" tabindex="-1" icon @click="$router.push({ name: backRoute })">
           <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
+        </v-btn>
 
-      <v-btn v-if="$route.name != 'home' && !disableBack" tabindex="-1"
-        v-shortkey.once="['home']" @shortkey="$router.push({ name: 'home' })"
-        icon @click="$router.push({ name: 'home' })">
+        <v-btn v-if="$route.name != 'home'" tabindex="-1" icon @click="$router.push({ name: 'home' })">
           <v-icon>mdi-home</v-icon>
-      </v-btn>
+        </v-btn>
+      </div>
+
+      <div v-else>
+        <v-btn v-if="$route.name != 'home'" tabindex="-1" icon
+          v-shortkey.once="['alt', 'q']" @shortkey="$router.push({ name: backRoute })"
+          @click="$router.push({ name: backRoute })">
+            <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+
+        <v-btn v-if="$route.name != 'home'" tabindex="-1"
+          v-shortkey.once="['home']" @shortkey="$router.push({ name: 'home' })"
+          icon @click="$router.push({ name: 'home' })">
+            <v-icon>mdi-home</v-icon>
+        </v-btn>
+      </div>
 
       <div v-if="$route.name != 'home'"
         class="hidden-xs-only grey--text text--lighten-1 ml-3 mr-5 font-weight-thin"

@@ -25,4 +25,11 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function(){
     Route::get('/pdf/agents/{id}', 'Exports\AgentExportController@singlePdf');
     Route::get('/print/agents/{id}', 'Exports\AgentExportController@singlePrint');
 
+    // Purchases
+    Route::get('/pdf/purchases', 'Exports\PurchaseExportController@allPdf');
+    Route::get('/excel/purchases', 'Exports\PurchaseExportController@allExcel');
+    Route::get('/print/purchases', 'Exports\PurchaseExportController@allPrint');
+    Route::get('/pdf/purchases/{id}', 'Exports\PurchaseExportController@singlePdf');
+    Route::get('/print/purchases/{id}', 'Exports\PurchaseExportController@singlePrint');
+
 });

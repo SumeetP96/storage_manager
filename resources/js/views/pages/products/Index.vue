@@ -63,7 +63,7 @@
             :download="`${apiRoute}.xlsx`">
               <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
           </v-btn>
- 
+
           <!-- Print -->
           <v-btn tabindex="-1" class="ml-2" style="width: 120px"
           :loading="refreshLoading"

@@ -21,15 +21,37 @@ trait ProductTrait
 
         $query = DB::table('products');
 
+        return $this->getFilteredQuery($query, $request)
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('alias', 'like', '%' . $search . '%')
+                    ->orWhere('remarks', 'like', '%' . $search . '%')
+                    ->orWhere('lot_number', 'like', '%' . $search . '%');
+            })->orderBy($sortBy, $flow);
+    }
+
+    /**
+     * Get filtered query
+     *
+     * @param  mixed $query
+     * @param  mixed $request
+     * @return Object
+     */
+    public function getFilteredQuery($query, Request $request)
+    {
         // Lot number filters with / without
         $lotNumber = $request->get('lotNumber');
         if ($lotNumber == 'with') $query->whereNotNull('lot_number');
-        if ($lotNumber == 'without') $query->whereNull('lot_number');
+        if ($lotNumber == 'without') $query->where(function ($query) {
+            $query->whereNull('lot_number')->orWhere('lot_number', '');
+        });
 
         // Alias filters with / without
         $alias = $request->get('alias');
         if ($alias == 'with') $query->whereNotNull('alias');
-        if ($alias == 'without') $query->whereNull('alias')->orWhere('alias', '');
+        if ($alias == 'without') $query->where(function ($query) {
+            $query->whereNull('alias')->orWhere('alias', '');
+        });
 
         // Unit filters only / except
         $unitOnly = $request->get('unitOnly');
@@ -63,12 +85,6 @@ trait ProductTrait
             $query->whereDate('created_at', '<=', $createdToDate)->whereDate('created_at', '>=', $createdFromDate);
         }
 
-        return $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('alias', 'like', '%' . $search . '%')
-                    ->orWhere('remarks', 'like', '%' . $search . '%')
-                    ->orWhere('lot_number', 'like', '%' . $search . '%');
-            })->orderBy($sortBy, $flow);
-
+        return $query;
     }
 }

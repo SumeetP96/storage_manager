@@ -9,6 +9,7 @@ export const FilterMixin = {
       activeFilters: [],
       createdRange_FILTER: false,
       updatedRange_FILTER: false,
+      date_FILTER: false,
     }
   },
 
@@ -143,6 +144,12 @@ export const FilterMixin = {
       if (type == 'onlyExcept') {
         this[`${name}SelectOnly`] = []
         this[`${name}SelectExcept`] = []
+      }
+
+      // Only / Except Id filter
+      if (type == 'onlyExceptId') {
+        this[`${name}SelectOnlyId`] = []
+        this[`${name}SelectExceptId`] = []
       }
 
       // Less than greater than number

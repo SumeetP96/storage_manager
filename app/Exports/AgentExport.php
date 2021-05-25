@@ -32,17 +32,17 @@ class AgentExport implements FromQuery, WithMapping, WithHeadings, WithColumnFor
         return $this->allRecords($this->request);
     }
 
-    public function map($product): array
+    public function map($record): array
     {
         return [
-            $product->name,
-            $product->alias,
-            $product->contact_1,
-            $product->contact_2,
-            $product->email,
-            $product->remarks,
-            Date::dateTimeToExcel(Carbon::parse($product->updated_at)),
-            Date::dateTimeToExcel(Carbon::parse($product->created_at))
+            $record->name,
+            $record->alias,
+            $record->contact_1,
+            $record->contact_2,
+            $record->email,
+            $record->remarks,
+            Date::dateTimeToExcel(Carbon::parse($record->updated_at)),
+            Date::dateTimeToExcel(Carbon::parse($record->created_at))
         ];
     }
 

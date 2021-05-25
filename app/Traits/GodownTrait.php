@@ -23,31 +23,61 @@ trait GodownTrait
 
         $query = DB::table('godowns')->where('is_account', $is_account);
 
+        return $this->getFilteredQuery($query, $request)
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('alias', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%')
+                ->orWhere('contact_1', 'like', '%' . $search . '%')
+                ->orWhere('contact_2', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('remarks', 'like', '%' . $search . '%');
+            })->orderBy($sortBy, $flow);
+    }
+
+    /**
+     * Get filtered query
+     *
+     * @param  mixed $query
+     * @param  mixed $request
+     * @return Object
+     */
+    public function getFilteredQuery($query, Request $request)
+    {
         // Alias filters with / without
         $alias = $request->get('alias');
         if ($alias == 'with') $query->whereNotNull('alias');
-        if ($alias == 'without') $query->whereNull('alias')->orWhere('alias', '');
+        if ($alias == 'without') $query->where(function ($query) {
+            $query->whereNull('alias')->orWhere('alias', '');
+        });
 
         // Contact 1 filters with / without
         $contact_1 = $request->get('contact_1');
         if ($contact_1 == 'with') $query->whereNotNull('contact_1');
-        if ($contact_1 == 'without') $query->whereNull('contact_1')->orWhere('contact_1', '');
+        if ($contact_1 == 'without') $query->where(function ($query) {
+            $query->whereNull('contact_1')->orWhere('contact_1', '');
+        });
 
         // Contact 2 filters with / without
         $contact_2 = $request->get('contact_2');
         if ($contact_2 == 'with') $query->whereNotNull('contact_2');
-        if ($contact_2 == 'without') $query->whereNull('contact_2')->orWhere('contact_2', '');
+        if ($contact_2 == 'without') $query->where(function ($query) {
+            $query->whereNull('contact_2')->orWhere('contact_2', '');
+        });
 
         // Email filters with / without
         $email = $request->get('email');
         if ($email == 'with') $query->whereNotNull('email');
-        if ($email == 'without') $query->whereNull('email')->orWhere('email', '');
+        if ($email == 'without') $query->where(function ($query) {
+            $query->whereNull('email')->orWhere('email', '');
+        });
 
         // Address filters with / without
         $address = $request->get('address');
         if ($address == 'with') $query->whereNotNull('address');
-        if ($address == 'without') $query->whereNull('address')->orWhere('address', '');
-
+        if ($address == 'without') $query->where(function ($query) {
+            $query->whereNull('address')->orWhere('address', '');
+        });
 
         // Updated at date range
         $updatedFromDate = $request->get('updatedFrom');
@@ -63,15 +93,6 @@ trait GodownTrait
             $query->whereDate('created_at', '<=', $createdToDate)->whereDate('created_at', '>=', $createdFromDate);
         }
 
-        return $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                ->orWhere('alias', 'like', '%' . $search . '%')
-                ->orWhere('address', 'like', '%' . $search . '%')
-                ->orWhere('contact_1', 'like', '%' . $search . '%')
-                ->orWhere('contact_2', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                ->orWhere('remarks', 'like', '%' . $search . '%');
-            })->orderBy($sortBy, $flow);
-
+        return $query;
     }
 }
