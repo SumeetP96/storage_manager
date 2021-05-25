@@ -4,36 +4,24 @@ namespace App\Repositories;
 
 use App\Agent;
 use App\StockTransfer;
+use App\Traits\AgentTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AgentRepository
 {
+    use AgentTrait;
+
     /**
      * Fetch all records
      */
     public function fetchAll(Request $request)
     {
-        $search = $request->get('query');
-        $limit = $request->get('limit');
-        $skip = $request->get('skip');
-        $sortBy = $request->get('sortBy');
-        $flow = $request->get('flow');
+        return [
+            'total' => $this->allRecords($request)->count(),
 
-        $results = DB::table('agents')
-            ->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('alias', 'like', '%' . $search . '%')
-                    ->orWhere('contact_1', 'like', '%' . $search . '%')
-                    ->orWhere('contact_2', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%')
-                    ->orWhere('remarks', 'like', '%' . $search . '%');
-            });
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allRecords($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**

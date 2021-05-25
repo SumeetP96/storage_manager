@@ -47,7 +47,8 @@
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
           <!-- PDF -->
-          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -55,17 +56,19 @@
           </v-btn>
 
           <!-- Excel -->
-          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
             :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.xlsx`">
               <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
           </v-btn>
-
+ 
           <!-- Print -->
           <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+          :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
-            :disabled="disableExport" @click="disableExportButtons();
+            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
               printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>

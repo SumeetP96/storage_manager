@@ -14,10 +14,10 @@
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
 
           <!-- New record -->
-          <v-btn color="indigo" dark :to="{ name: 'products.action' }"
-            v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'products.action' })">
+          <v-btn color="indigo" dark :to="{ name: 'godowns.action' }"
+            v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'godowns.action' })">
               <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
-              new product
+              new godown
           </v-btn>
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -47,26 +47,29 @@
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
           <!-- PDF -->
-          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
-            :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :href="`/exports/pdf/godowns?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
               <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
           </v-btn>
 
           <!-- Excel -->
-          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
-            :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :href="`/exports/excel/godowns?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.xlsx`">
               <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
           </v-btn>
 
           <!-- Print -->
           <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+            :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
-            :disabled="disableExport" @click="disableExportButtons();
-              printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/godowns?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe id="all-print" style="display: none"></iframe>
@@ -322,6 +325,56 @@
                     </v-menu> <!-- / Email filter end -->
                 </th>
 
+                <!-- Address -->
+                <th v-if="selectedColumns.indexOf('address') >= 0"
+                  class="subtitle-2" :class="sortBy == 'address' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'address' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('address')">Address</span>
+                    <span v-if="sortBy == 'address'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+
+                    <!-- Address filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="address_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('address') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="address_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="address" column hide-details>
+                                <v-radio label="With address" value="with"></v-radio>
+                                <v-radio label="Without address" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('address', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('address', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Address filter end -->
+                </th>
+
                 <!-- Remarks -->
                 <th v-if="selectedColumns.indexOf('remarks') >= 0"
                   class="subtitle-2" :class="sortBy == 'remarks' ? 'pink--text font-weight-bold' : ''"
@@ -493,6 +546,11 @@
                     <span v-else>-</span>
                   </td>
 
+                  <td class="subtitle-1" v-if="selectedColumns.indexOf('address') >= 0">
+                    <span v-if="record.address">{{ record.address }}</span>
+                    <span v-else>-</span>
+                  </td>
+
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">{{ record.remarks }}</td>
 
                   <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>
@@ -635,13 +693,13 @@
             <!-- PDF -->
             <v-btn color="error" text tabindex="-1" :disabled="disableExport"
               @click="disableExportButtons(2)"
-              :href="`/exports/pdf/products/${record.id}`"
+              :href="`/exports/pdf/godowns/${record.id}`"
               :download="`${apiRoute}.pdf`">
                 <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
             </v-btn>
 
             <!-- Print -->
-            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/products/${record.id}`)"
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/godowns/${record.id}`)"
               text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>
@@ -673,6 +731,7 @@ export default {
 
     this.setupExtraColumns([
       { value: 'email', label: 'Email' },
+      { value: 'address', label: 'Address' },
       { value: 'remarks', label: 'Remarks' },
       { value: 'created_at', label: 'Created at' }
     ])
@@ -695,6 +754,9 @@ export default {
 
       email: '',
       email_FILTER: false,
+
+      address: '',
+      address_FILTER: false,
     }
   }
 }

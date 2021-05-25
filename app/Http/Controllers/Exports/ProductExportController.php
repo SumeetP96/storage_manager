@@ -19,7 +19,7 @@ class ProductExportController extends Controller
      * @param  Illuminate\Http\Request $request
      * @return void
      */
-    public function productPdf(Request $request)
+    public function allPdf(Request $request)
     {
         $records = $this->allRecords($request)->get();
         $pdf = PDF::loadView('exports.products.pdf.all', compact('records'));
@@ -32,7 +32,7 @@ class ProductExportController extends Controller
      * @param  Illuminate\Http\Request $request
      * @return void
      */
-    public function productExcel(Request $request)
+    public function allExcel(Request $request)
     {
         return (new ProductExport($request))->download('products.xlsx');
     }
@@ -43,7 +43,7 @@ class ProductExportController extends Controller
      * @param  Illuminate\Http\Request $request
      * @return void
      */
-    public function productPrint(Request $request)
+    public function allPrint(Request $request)
     {
         $records = $this->allRecords($request)->get();
         return view('exports.products.print.all', compact('records'));
@@ -55,7 +55,7 @@ class ProductExportController extends Controller
      * @param  integer $id
      * @return void
      */
-    public function productSinglePdf($id)
+    public function singlePdf($id)
     {
         $record = Product::find($id);
         $pdf = PDF::loadView('exports.products.pdf.single', compact('record'));
@@ -68,7 +68,7 @@ class ProductExportController extends Controller
      * @param  integer $id
      * @return void
      */
-    public function productSinglePrint($id)
+    public function singlePrint($id)
     {
         $record = Product::find($id);
         return view('exports.products.print.single', compact('record'));

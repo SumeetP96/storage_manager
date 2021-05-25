@@ -25,7 +25,7 @@
       <v-spacer></v-spacer>
 
       <v-btn text v-if="theme == 'dark'" @click="toggleApplicationTheme('light')" tabindex="-1"
-        v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('light')">
+        v-shortkey.once="['alt', 'h']" @shortkey="toggleApplicationTheme('light')" color="amber lighten-3">
           <v-icon class="text-h6 mr-2">mdi-weather-sunny</v-icon> light
       </v-btn>
 

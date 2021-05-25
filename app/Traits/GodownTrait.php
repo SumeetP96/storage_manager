@@ -43,6 +43,11 @@ trait GodownTrait
         if ($email == 'with') $query->whereNotNull('email');
         if ($email == 'without') $query->whereNull('email')->orWhere('email', '');
 
+        // Address filters with / without
+        $address = $request->get('address');
+        if ($address == 'with') $query->whereNotNull('address');
+        if ($address == 'without') $query->whereNull('address')->orWhere('address', '');
+
 
         // Updated at date range
         $updatedFromDate = $request->get('updatedFrom');
@@ -61,6 +66,7 @@ trait GodownTrait
         return $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('alias', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%')
                 ->orWhere('contact_1', 'like', '%' . $search . '%')
                 ->orWhere('contact_2', 'like', '%' . $search . '%')
                 ->orWhere('email', 'like', '%' . $search . '%')

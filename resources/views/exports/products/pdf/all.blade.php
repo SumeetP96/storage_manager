@@ -25,8 +25,8 @@
                 <th class="text-center">Lot</th>
                 <th class="text-center">Unit</th>
                 <th class="text-center" style="width: 10%">C Unit</th>
-                <th class="tex-center">Updated</th>
-                <th class="tex-center">Created</th>
+                <th class="text-center">Updated</th>
+                <th class="text-center">Created</th>
             </tr>
         </thead>
         <tbody>
