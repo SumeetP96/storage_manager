@@ -130,63 +130,6 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="fromFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('from') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="fromFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="fromSelectOnly"
-                              :items="fromAutofill"
-                              label="Select accounts"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              clearable
-                              :loading="filterLoading"
-                              :disabled="fromSelectExcept.length > 0 || filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="fromSelectExcept"
-                              :items="fromAutofill"
-                              :disabled="fromSelectOnly.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              label="Select accounts"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              clearable
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
-                              <v-btn dark small @click="removeFilter('from')" tabindex="-1" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('from')" :loading="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
                 </th>
 
                 <!-- To Godown -->
@@ -198,63 +141,6 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
-
-                    <!-- <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="toFilter">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('to') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="toFilter = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="toSelectOnly"
-                              :items="toAutofill"
-                              label="Select godowns"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              :loading="filterLoading"
-                              clearable
-                              :disabled="toSelectExcept.length > 0 || filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="toSelectExcept"
-                              :items="toAutofill"
-                              :disabled="toSelectOnly.length > 0 || filterLoading"
-                              label="Select godowns"
-                              item-value="id"
-                              item-text="name"
-                              multiple
-                              :loading="filterLoading"
-                              clearable
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1" :loding="filterLoading">
-                              <v-btn dark small @click="removeFilter('to')" tabindex="-1">
-                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('to')" :loding="filterLoading">
-                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> -->
                 </th>
 
                 <th v-if="selectedColumns.indexOf('agent') >= 0"
