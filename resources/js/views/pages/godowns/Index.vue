@@ -2,15 +2,22 @@
   <div>
     <AppBar backRoute="home" />
 
+
+    <!-- Main Col wrapper -->
     <v-col cols="12" lg="11" class="mx-auto">
 
       <div class="text-h5 py-4">Godowns</div>
 
+      <!-- Above Table -->
       <v-row align="end">
+        <!-- Left Section -->
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn color="indigo" dark :to="{ name: 'godowns.action' }">
-            <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
-            new godown
+
+          <!-- New record -->
+          <v-btn color="indigo" dark :to="{ name: 'products.action' }"
+            v-shortkey="['alt', 'n']" @shortkey.once="$router.push({ name: 'products.action' })">
+              <v-icon class="mr-1 subtitle-1">mdi-plus</v-icon>
+              new product
           </v-btn>
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -21,9 +28,11 @@
               <v-menu offset-y :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn dark v-bind="attrs" v-on="on"
-                    :color="$vuetify.theme.dark ? '' : 'white purple--text'">
+                    :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+                    v-shortkey="['alt', 's']" @shortkey="focusSearch()">
                       <v-icon class="mr-2">mdi-table-eye</v-icon>
-                      Columns <v-icon class="ml-2">mdi-menu-down</v-icon>
+                      Columns
+                      <v-icon class="ml-2">mdi-menu-down</v-icon>
                   </v-btn>
                 </template>
                 <v-list>
@@ -33,47 +42,80 @@
                 </v-list>
               </v-menu>
             </div>
-          </template>
-        </v-col>
+          </template> <!-- / Column Menu End -->
 
-        <!-- Search -->
-        <v-col cols="12" sm="12" md="4" offset-md="2"
-          class="d-flex justify-end align-center">
-            <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable()"
-              class="mr-2"
-              :loading="refreshLoading" :disabled="records.length == 0">
-                <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                refresh
-            </v-btn>
+          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-            <v-text-field
-              id="searchInput"
-              solo
-              dense
-              clearable
-              hide-details
-              v-model="query"
-              label="Search records"
-              :loading="searchLoading"
-              :disabled="searchLoading"
-              @click:clear="clearSearch()"
-              @keypress.enter="searchRecords()"
-              prepend-inner-icon="mdi-magnify">
-            </v-text-field>
-        </v-col>
-      </v-row>
+          <!-- PDF -->
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+            :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.pdf`">
+              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+          </v-btn>
 
+          <!-- Excel -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
+            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+            :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.xlsx`">
+              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+          </v-btn>
+
+          <!-- Print -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
+            :disabled="disableExport" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              <v-icon class="mr-2">mdi-printer</v-icon> Print
+          </v-btn>
+          <iframe id="all-print" style="display: none"></iframe>
+
+        </v-col> <!-- / Left Section End -->
+
+        <!-- Right Section -->
+        <v-col cols="12" sm="12" md="4" offset-md="2" class="d-flex justify-end align-center">
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable()"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable()"
+            :loading="refreshLoading" :disabled="records.length == 0">
+              <v-icon class="mr-2">mdi-table-refresh</v-icon>
+              refresh
+          </v-btn>
+
+          <!-- Search -->
+          <v-text-field
+            id="searchInput"
+            solo
+            dense
+            clearable
+            hide-details
+            v-model="query"
+            label="Search records"
+            :loading="searchLoading"
+            :disabled="searchLoading"
+            @click:clear="clearSearch()"
+            @keypress.enter="searchRecords()"
+            prepend-inner-icon="mdi-magnify">
+          </v-text-field>
+        </v-col> <!-- / Right Section End -->
+      </v-row> <!-- / Above Table End -->
+
+      <!-- Table Section -->
       <div class="mt-3">
-        <v-skeleton-loader v-bind="attrs"
-          v-if="recordsTableLoading"
-          type="table-row-divider@6"
+        <!-- Table loader -->
+        <v-skeleton-loader v-bind="attrs" v-if="recordsTableLoading" type="table-row-divider@6"
           :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
 
+        <!-- Records Table -->
         <v-simple-table v-else class="elevation-1">
           <template v-slot:default>
             <thead>
               <tr>
+
+                <!-- Name -->
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('name')">Name</span>
@@ -83,6 +125,7 @@
                     </span>
                 </th>
 
+                <!-- Alias -->
                 <th class="subtitle-2 text-center" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'alias' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('alias')">Alias</span>
@@ -90,8 +133,48 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Alias filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="alias_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('alias') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="alias_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="alias" column hide-details>
+                                <v-radio label="With alias" value="with"></v-radio>
+                                <v-radio label="Without alias" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('alias', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('alias', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Alias filter end -->
                 </th>
 
+                <!-- Contact 1 -->
                 <th class="subtitle-2 text-center" :class="sortBy == 'contact_1' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'contact_1' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('contact_1')">Contact 1</span>
@@ -99,8 +182,48 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Contact 1 filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="contact_1_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('contact_1') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="contact_1_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="contact_1" column hide-details>
+                                <v-radio label="With contact number" value="with"></v-radio>
+                                <v-radio label="Without contact number" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('contact_1', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('contact_1', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Contact 1 filter end -->
                 </th>
 
+                <!-- Contact 2 -->
                 <th class="subtitle-2 text-center" :class="sortBy == 'contact_2' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'contact_2' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('contact_2')">Contact 2</span>
@@ -108,8 +231,48 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Contact 2 filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="contact_2_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('contact_2') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="contact_2_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="contact_2" column hide-details>
+                                <v-radio label="With contact number" value="with"></v-radio>
+                                <v-radio label="Without contact number" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('contact_2', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('contact_2', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Contact 2 filter end -->
                 </th>
 
+                <!-- Email -->
                 <th v-if="selectedColumns.indexOf('email') >= 0"
                   class="subtitle-2" :class="sortBy == 'email' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'email' ? 'font-size: 1rem !important' : ''">
@@ -118,8 +281,48 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Email filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" min-width="250px" :value="email_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('email') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="email_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="email" column hide-details>
+                                <v-radio label="With email" value="with"></v-radio>
+                                <v-radio label="Without email" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('email', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('email', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Email filter end -->
                 </th>
 
+                <!-- Remarks -->
                 <th v-if="selectedColumns.indexOf('remarks') >= 0"
                   class="subtitle-2" :class="sortBy == 'remarks' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'remarks' ? 'font-size: 1rem !important' : ''">
@@ -130,6 +333,7 @@
                     </span>
                 </th>
 
+                <!-- Updated at -->
                 <th class="subtitle-2" :class="sortBy == 'updated_at' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'updated_at' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('updated_at')">Last modified on</span>
@@ -137,8 +341,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Updated at filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="updatedRange_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('updatedAt') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="updatedRange_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Date range</div>
+
+                            <v-text-field
+                              v-model="record.updatedFromDate"
+                              hide-details
+                              solo
+                              :loading="filterLoading"
+                              :disabled="filterLoading"
+                              placeholder="From date"
+                              @blur="formatDate('updatedFromDate'); dbUpdatedFromDate = flipToYMD(record.updatedFromDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-3"
+                              dense>
+                            </v-text-field>
+
+                            <v-text-field
+                              v-model="record.updatedToDate"
+                              hide-details
+                              solo
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="To date"
+                              @blur="formatDate('updatedToDate'); dbUpdatedToDate = flipToYMD(record.updatedToDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-2"
+                              dense>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
+                              <v-btn dark small @click="removeFilter('updatedAt', 'updatedRange')" tabindex="-1" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('updatedAt', 'updatedRange')" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Updated at filter end -->
                 </th>
 
+                <!-- Created at -->
                 <th v-if="selectedColumns.indexOf('created_at') >= 0"
                   class="subtitle-2" :class="sortBy == 'created_at' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'created_at' ? 'font-size: 1rem !important' : ''">
@@ -147,10 +409,68 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Created at filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="createdRange_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('createdAt') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="createdRange_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Date range</div>
+
+                            <v-text-field
+                              v-model="record.createdFromDate"
+                              hide-details
+                              solo
+                              :loading="filterLoading"
+                              :disabled="filterLoading"
+                              placeholder="From date"
+                              @blur="formatDate('createdFromDate'); dbCreatedFromDate = flipToYMD(record.createdFromDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-3"
+                              dense>
+                            </v-text-field>
+
+                            <v-text-field
+                              v-model="record.createdToDate"
+                              hide-details
+                              solo
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="To date"
+                              @blur="formatDate('createdToDate'); dbCreatedToDate = flipToYMD(record.createdToDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-2"
+                              dense>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
+                              <v-btn dark small @click="removeFilter('createdAt', 'createdRange')" tabindex="-1" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('createdAt', 'createdRange')" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Created at filter end -->
                 </th>
 
               </tr>
             </thead>
+
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
                 @click="viewRecordDialog = true; loadRecord(record.id)">
@@ -188,15 +508,20 @@
               </tr>
             </tbody>
           </template>
-        </v-simple-table>
+        </v-simple-table> <!-- / Records Table End -->
+
+        <!-- Load more loader -->
         <v-skeleton-loader v-bind="attrs" v-if="addRecordsTableLoading" type="table-row-divider@3"
           :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
 
+        <!-- Below Table -->
         <div class="d-flex justify-space-between mt-3 ml-3">
+          <!-- Records Length -->
           <div v-if="records">
             ( {{ records.length }} of {{ totalRecords }} )
           </div>
+
           <div class="d-flex justify-end align-center">
             Records per page
             <v-select
@@ -209,18 +534,25 @@
               class="ml-3 elevation-0 center-input">
             </v-select>
 
+            <!-- Load more -->
             <v-btn color="indigo white--text" class="ml-5"
               :loading="loadMoreLoading"
               :disabled="totalRecords == records.length"
+              v-shortkey.once="['alt', 'l']"
+              @shortkey="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })"
               @click="loadRecords({ loader: 'addRecordsTableLoading', loadMore: true, reset: false })">
               load more
               <v-icon>mdi-chevron-down</v-icon>
             </v-btn>
           </div>
-        </div>
-      </div>
-    </v-col>
+        </div> <!-- / Below Table End -->
 
+      </div> <!-- / Table Section end -->
+
+    </v-col> <!-- / Main Col wrapper end -->
+
+
+    <!-- View Record Dialog -->
     <v-dialog v-model="viewRecordDialog" max-width="800">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
@@ -292,10 +624,29 @@
         </v-card-text>
 
         <v-card-actions class="d-flex justify-space-between">
-          <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
-            @click="editFromTable({ name: 'godowns.action', params: { id: record.id } })">
-              <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit godown
-          </v-btn>
+          <div class="d-flex">
+            <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
+              @click="editFromTable({ name: 'godowns.action', params: { id: record.id } })">
+                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit godown
+            </v-btn>
+
+            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+            <!-- PDF -->
+            <v-btn color="error" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
+              :href="`/exports/pdf/products/${record.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+            </v-btn>
+
+            <!-- Print -->
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/products/${record.id}`)"
+              text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
+                <v-icon class="mr-2">mdi-printer</v-icon> Print
+            </v-btn>
+            <iframe id="print-record" style="display: none"></iframe>
+          </div>
 
           <v-btn color="error" dark text tabindex="-1" :loading="deleteButtonLoading"
             @click="deleteFromTable(record.id, { dialog: 'viewRecordDialog' })">
@@ -303,7 +654,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> <!-- / View Record Dialog End -->
+
   </div>
 </template>
 
@@ -328,6 +680,37 @@ export default {
 
   components: {
     AppBar: require('../../components/AppBar').default
+  },
+
+  data() {
+    return {
+      alias: '',
+      alias_FILTER: false,
+
+      contact_1: '',
+      contact_1_FILTER: false,
+
+      contact_2: '',
+      contact_2_FILTER: false,
+
+      email: '',
+      email_FILTER: false,
+    }
   }
 }
 </script>
+
+<style scoped>
+  .right-input >>> input {
+    text-align: right
+  }
+
+  .center-input >>> input {
+    text-align: center;
+    padding-left: 2px;
+  }
+
+  .left-input >>> input {
+    padding-left: 10px;
+  }
+</style>

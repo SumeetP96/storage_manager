@@ -21,7 +21,20 @@ export const CommonMixin = {
     CrudHelperMixin,
   ],
 
+  data() {
+    return {
+      disableExport: false,
+    }
+  },
+
   methods: {
+    disableExportButtons(duration = 5) {
+      this.disableExport = true
+      setTimeout(() => {
+        this.disableExport = false
+      }, duration * 1000);
+    },
+
     showRecord(routeName, id) {
       this.$router.push({ name: routeName, params: { id: id }})
     },
@@ -36,9 +49,5 @@ export const CommonMixin = {
       let qty = (parseFloat(quantity) * 100).toFixed(0)
       return qty
     },
-
-    hardRedirect(location) {
-      window.location.href = location
-    }
-  }
+  },
 }

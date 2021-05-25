@@ -64,7 +64,7 @@
 
           <!-- Print -->
           <v-btn tabindex="-1" class="ml-2" style="width: 120px"
-            :color="$vuetify.theme.dark ? 'primary--text' : 'white purple--text'"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
             :disabled="disableExport" @click="disableExportButtons();
               printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
@@ -747,15 +747,17 @@
 
             <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-            <v-btn color="error" text tabindex="-1"
+            <!-- PDF -->
+            <v-btn color="error" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
               :href="`/exports/pdf/products/${record.id}`"
               :download="`${apiRoute}.pdf`">
                 <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
             </v-btn>
 
             <!-- Print -->
-            <v-btn @click="printPage('print-record', `/exports/print/products/${record.id}`)"
-              text tabindex="-1" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/products/${record.id}`)"
+              text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>
             <iframe id="print-record" style="display: none"></iframe>
@@ -818,19 +820,10 @@ export default {
       packingLt: '',
       packingGt: '',
       packing_FILTER: false,
-
-      disableExport: false,
     }
   },
 
   methods: {
-    disableExportButtons() {
-      this.disableExport = true
-      setTimeout(() => {
-        this.disableExport = false
-      }, 5000);
-    },
-
     fetchUnitAutofill() {
       this.filterLoading = true
       this.axios.get('/api/autofills/products/distinct_units')

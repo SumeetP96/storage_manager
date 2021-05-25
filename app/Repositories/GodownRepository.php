@@ -4,39 +4,25 @@ namespace App\Repositories;
 
 use App\Godown;
 use App\StockTransfer;
+use App\Traits\GodownTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GodownRepository
 {
+    use GodownTrait;
+
     /**
      * Fetch all records
      */
     public function fetchAll(Request $request)
     {
-        $is_account = (bool) $request->get('is_account');
+        return [
+            'total' => $this->allRecords($request)->count(),
 
-        $search = $request->get('query');
-        $limit = $request->get('limit');
-        $skip = $request->get('skip');
-        $sortBy = $request->get('sortBy');
-        $flow = $request->get('flow');
-
-        $results = DB::table('godowns')
-            ->where('is_account', $is_account)
-            ->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('alias', 'like', '%' . $search . '%')
-                    ->orWhere('contact_1', 'like', '%' . $search . '%')
-                    ->orWhere('contact_2', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%')
-                    ->orWhere('remarks', 'like', '%' . $search . '%');
-            });
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allRecords($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**
