@@ -43,11 +43,12 @@ class ProductService
             'name'          => 'required|max:255',
             'alias'         => 'nullable|max:10',
             'unit'          => 'required|size:3',
-            'compound_unit' => 'size:3',
-            'packing'       => 'integer'
+            'compound_unit' => 'nullable|size:3',
+            'packing'       => 'nullable|required_unless:compound_unit,""'
         ],[
             'alias.max'         => 'Only 10 letters allowed.',
-            'packing.integer'   => 'Invalid packing.'
+            'packing.integer'   => 'Invalid packing.',
+            'packing.required_unless'   => 'Packing is required'
         ]);
     }
 }

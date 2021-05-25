@@ -31,7 +31,8 @@
                     :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
                     v-shortkey="['alt', 's']" @shortkey="focusSearch()">
                       <v-icon class="mr-2">mdi-table-eye</v-icon>
-                      Columns <v-icon class="ml-2">mdi-menu-down</v-icon>
+                      Columns
+                      <v-icon class="ml-2">mdi-menu-down</v-icon>
                   </v-btn>
                 </template>
                 <v-list>
@@ -46,7 +47,7 @@
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
           <!-- PDF -->
-          <v-btn tabindex="-1" style="width: 120px"
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -54,7 +55,7 @@
           </v-btn>
 
           <!-- Excel -->
-          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport" @click="disableExportButtons()"
             :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
             :href="`/exports/excel/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.xlsx`">
@@ -64,7 +65,8 @@
           <!-- Print -->
           <v-btn tabindex="-1" class="ml-2" style="width: 120px"
             :color="$vuetify.theme.dark ? 'primary--text' : 'white purple--text'"
-            @click="printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+            :disabled="disableExport" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/products?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe id="all-print" style="display: none"></iframe>
@@ -816,10 +818,19 @@ export default {
       packingLt: '',
       packingGt: '',
       packing_FILTER: false,
+
+      disableExport: false,
     }
   },
 
   methods: {
+    disableExportButtons() {
+      this.disableExport = true
+      setTimeout(() => {
+        this.disableExport = false
+      }, 5000);
+    },
+
     fetchUnitAutofill() {
       this.filterLoading = true
       this.axios.get('/api/autofills/products/distinct_units')
