@@ -20,13 +20,17 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="text-left">
                         {{ date('d/m/Y', strtotime($record->date)) }}
-                        <div class="grey-text">{{ $record->invoiceNo ? $record->invoiceNo : '-' }}</div>
+                        <div class="text-secondary">{{ $record->invoiceNo }}</div>
                     </td>
                     <td class="text-left">{{ $record->fromName }}</td>
                     <td class="text-left">{{ $record->toName }}</td>
                     <td class="text-left">
+                        @if ($record->agent || $record->remarks)
                         {{ $record->agent }}
-                        <div class="grey-text">{{ $record->remarks }}</div>
+                        <div class="text-secondary">{{ $record->remarks }}</div>
+                        @else
+                        -
+                        @endif
                     </td>
                 </tr>
                 @endforeach

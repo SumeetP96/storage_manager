@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <header><h3>Storage Manager - Purchase Details</h3></header>
+        <header><h3>Storage Manager - Sale Details</h3></header>
 
         <table class="table table-bordered">
             <tr>
@@ -12,15 +12,15 @@
                 </td>
                 <td style="width: 25%">
                     <div class="heading">Invoice no</div>
-                    <div class="font-weight-bold">{{ $record->invoice_no }}</div>
+                    <div class="font-weight-bold">{{ $record->invoice_no ? $record->invoice_no : '-' }}</div>
                 </td>
                 <td style="width: 25%">
                     <div class="heading">Order no</div>
-                    <div class="font-weight-bold">{{ $record->order_no }}</div>
+                    <div class="font-weight-bold">{{ $record->order_no ? $record->order_no : '-' }}</div>
                 </td>
                 <td style="width: 25%">
                     <div class="heading">Eway Bill no</div>
-                    <div class="font-weight-bold">{{ chunk_split($record->eway_bill_no, 4, ' ') }}</div>
+                    <div class="font-weight-bold">{{ $record->eway_bill_no ? chunk_split($record->eway_bill_no, 4, ' ') : '-' }}</div>
                 </td>
             </tr>
 
@@ -53,7 +53,7 @@
             <tr>
                 <td colspan="4">
                     <span class="heading">Agent : </span>
-                    <span class="font-weight-bold">{{ $record->agentName }}</span>
+                    <span class="font-weight-bold">{{ $record->agentName ? $record->agentName : '-' }}</span>
                 </td>
             </tr>
         </table>
@@ -85,14 +85,14 @@
             <tr>
                 <td>
                     <div class="heading">Transport details</div>
-                    <div>Delivery slip : <span class="font-weight-bold">{{ $record->delivery_slip_no }}</span></div>
-                    <div>Delivered by : <span class="font-weight-bold">{{ $record->transport_details }}</span></div>
+                    <div>Delivery slip : <span class="font-weight-bold">{{ $record->delivery_slip_no ? $record->delivery_slip_no : '-' }}</span></div>
+                    <div>Delivered by : <span class="font-weight-bold">{{ $record->transport_details ? $record->transport_details : '-' }}</span></div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <span class="font-weight-bold">Remarks :  </span>
-                    <span>{{ $record->remarks }}</span>
+                    <span>{{ $record->remarks ? $record->remarks : '-' }}</span>
                 </td>
             </tr>
         </table>

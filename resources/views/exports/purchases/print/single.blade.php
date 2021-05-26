@@ -7,26 +7,26 @@
         <table class="table table-bordered">
             <tr>
                 <td style="width: 25%">
-                    <div class="heading">Date</div>
+                    <div>Date</div>
                     <div class="font-weight-bold">{{ date('d-m-Y', strtotime($record->created_at)) }}</div>
                 </td>
                 <td style="width: 25%">
-                    <div class="heading">Invoice no</div>
-                    <div class="font-weight-bold">{{ $record->invoice_no }}</div>
+                    <div>Invoice no</div>
+                    <div class="font-weight-bold">{{ $record->invoice_no ? $record->invoice_no : '-' }}</div>
                 </td>
                 <td style="width: 25%">
-                    <div class="heading">Order no</div>
-                    <div class="font-weight-bold">{{ $record->order_no }}</div>
+                    <div>Order no</div>
+                    <div class="font-weight-bold">{{ $record->order_no ? $record->order_no : '-' }}</div>
                 </td>
                 <td style="width: 25%">
-                    <div class="heading">Eway Bill no</div>
-                    <div class="font-weight-bold">{{ chunk_split($record->eway_bill_no, 4, ' ') }}</div>
+                    <div>Eway Bill no</div>
+                    <div class="font-weight-bold">{{ $record->eway_bill_no ? chunk_split($record->eway_bill_no, 4, ' ') : '-' }}</div>
                 </td>
             </tr>
 
             <tr>
                 <td style="width: 50%" colspan="2">
-                    <div class="heading">From Account</div>
+                    <div>From Account</div>
                     <div class="font-weight-bold">{{ $record->fromName }}</div>
                     <div>{{ $record->fromAddress }}</div>
                     <div>
@@ -38,7 +38,7 @@
                 </td>
 
                 <td style="width: 50%" colspan="2">
-                    <div class="heading">To Godown</div>
+                    <div>To Godown</div>
                     <div class="font-weight-bold">{{ $record->toName }}</div>
                     <div>{{ $record->toAddress }}</div>
                     <div>
@@ -52,8 +52,8 @@
 
             <tr>
                 <td colspan="4">
-                    <span class="heading">Agent : </span>
-                    <span class="font-weight-bold">{{ $record->agentName }}</span>
+                    <span>Agent : </span>
+                    <span class="font-weight-bold">{{ $record->agentName ? $record->agentName : '-' }}</span>
                 </td>
             </tr>
         </table>
@@ -84,15 +84,15 @@
         <table class="table table-bordered" style="margin-top: 10px">
             <tr>
                 <td>
-                    <div class="heading">Transport details</div>
-                    <div>Delivery slip : <span class="font-weight-bold">{{ $record->delivery_slip_no }}</span></div>
-                    <div>Delivered by : <span class="font-weight-bold">{{ $record->transport_details }}</span></div>
+                    <div>Transport details</div>
+                    <div>Delivery slip : <span class="font-weight-bold">{{ $record->delivery_slip_no ? $record->delivery_slip_no : '-' }}</span></div>
+                    <div>Delivered by : <span class="font-weight-bold">{{ $record->transport_details ? $record->transport_details : '-' }}</span></div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <span class="font-weight-bold">Remarks :  </span>
-                    <span>{{ $record->remarks }}</span>
+                    <span>{{ $record->remarks ? $record->remarks : '-' }}</span>
                 </td>
             </tr>
         </table>

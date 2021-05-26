@@ -49,5 +49,9 @@ export const CommonMixin = {
       let qty = (parseFloat(quantity) * 100).toFixed(0)
       return qty
     },
+
+    formatEwayNo(number) {
+      return (number.toString()).replace(/^(.{4})(.{4})(.*)$/, "$1 $2 $3");
+    }
   },
 }

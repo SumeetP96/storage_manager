@@ -39,4 +39,11 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function(){
     Route::get('/pdf/sales/{id}', 'Exports\SaleExportController@singlePdf');
     Route::get('/print/sales/{id}', 'Exports\SaleExportController@singlePrint');
 
+    // Inter godowns
+    Route::get('/pdf/inter_godowns', 'Exports\InterGodownExportController@allPdf');
+    Route::get('/excel/inter_godowns', 'Exports\InterGodownExportController@allExcel');
+    Route::get('/print/inter_godowns', 'Exports\InterGodownExportController@allPrint');
+    Route::get('/pdf/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePdf');
+    Route::get('/print/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePrint');
+
 });

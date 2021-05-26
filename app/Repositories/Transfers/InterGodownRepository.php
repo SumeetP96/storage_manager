@@ -5,52 +5,22 @@ namespace App\Repositories\Transfers;
 use App\StockTransfer;
 use App\GodownProductsStock;
 use App\StockTransferProduct;
+use App\Traits\InterGodownTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class InterGodownRepository
 {
+    use InterGodownTrait;
+
     public function fetchAll(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allRecords($request)->count(),
 
-        // Filters
-        $toDate = $request->get('to');
-        $fromDate = $request->get('from');
-
-        $query = DB::table('stock_transfers as st')
-            ->where('st.transfer_type_id', StockTransfer::INTER_GODOWN)
-            ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
-            ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id');
-
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
-        }
-
-        $results = $query->where(function ($query) use ($search) {
-            $query->where('fg.name', 'like', '%' . $search . '%')
-                ->orWhere('st.transfer_no', 'like', '%' . $search . '%')
-                ->orWhere('tg.name', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                st.id,
-                st.date,
-                st.remarks,
-                st.invoice_no as invoiceNo,
-                st.updated_at,
-                st.created_at,
-                fg.name as fromName,
-                tg.name as toName
-            ');
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allRecords($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     public function fetchOne($id)

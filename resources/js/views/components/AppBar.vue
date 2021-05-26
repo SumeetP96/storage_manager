@@ -50,7 +50,7 @@
       <v-menu offset-y :value="settingsMenu">
         <template v-slot:activator="{ on, attrs }">
           <v-btn text v-bind="attrs" v-on="on" id="settingsButton"
-            :color="$vuetify.theme.dark ? 'primary' : 'indigo'" tabindex="-1"
+            :color="$vuetify.theme.dark ? 'primary lighten-2' : 'indigo'" tabindex="-1"
             v-shortkey.once="['alt', 't']" @shortkey="toggleSettingMenu()" @click="toggleSettingMenu()">
               <v-icon class="mr-2 text-h6">mdi-cog-outline</v-icon> Settings
           </v-btn>
