@@ -9,14 +9,35 @@
 
     <title>Storage Manager - Print</title>
 
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
     <style>
-        @media print {
-            #nav--links * {
-                display: none;
-            }
+        body {
+            font-size: 0.8rem;
+            font-family: sans-serif
         }
+
+        header {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            page-break-inside: auto;
+            width: 100%
+        }
+
+        th, td {
+            border: 0.5px solid grey;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .grey-text { color: darkslategrey; }
+        .font-bold { font-weight: bold; }
     </style>
 
     <script>window.print()</script>

@@ -6,16 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <style>
+        body { font-size: 0.8rem }
+        header { font-size: 0.9rem; margin-bottom: 10px; font-weight: bold; }
         table { border-collapse: collapse; page-break-inside: auto; width: 100% }
         th, td { border: 1px solid grey; padding: 8px; vertical-align: top; }
         .text-left { text-align: left; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .grey-text { color: darkslategrey; }
+        .font-bold { font-weight: bold; }
     </style>
 </head>
 <body>
-    <header><h3>Storage Manager - Purchases</h3></header>
+    <header>Storage Manager - Purchases</header>
 
     <table>
         <thead>
