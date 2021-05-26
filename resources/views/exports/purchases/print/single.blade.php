@@ -26,7 +26,7 @@
 
             <tr>
                 <td style="width: 50%" colspan="2">
-                    <div class="heading">From Godown</div>
+                    <div class="heading">From Account</div>
                     <div class="font-weight-bold">{{ $record->fromName }}</div>
                     <div>{{ $record->fromAddress }}</div>
                     <div>
@@ -38,7 +38,7 @@
                 </td>
 
                 <td style="width: 50%" colspan="2">
-                    <div class="heading">To Account</div>
+                    <div class="heading">To Godown</div>
                     <div class="font-weight-bold">{{ $record->toName }}</div>
                     <div>{{ $record->toAddress }}</div>
                     <div>

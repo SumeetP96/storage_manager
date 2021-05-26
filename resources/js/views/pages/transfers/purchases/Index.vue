@@ -868,8 +868,6 @@ export default {
       { value: 'remarks', label: 'Remarks' },
       { value: 'created_at', label: 'Created at' },
     ])
-
-    this.selectedColumns = ['agent']
   },
 
   components: {

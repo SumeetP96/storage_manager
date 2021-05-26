@@ -50,8 +50,8 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
         return [
             'Date',
             'Invoice no',
-            'From godown',
-            'To account',
+            'From account',
+            'To godown',
             'Agent',
             'Remarks',
             'Updated at'

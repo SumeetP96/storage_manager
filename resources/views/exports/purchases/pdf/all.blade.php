@@ -22,8 +22,8 @@
             <tr>
                 <th class="text-center" style="width: 1%">#</th>
                 <th class="text-left">Invoice</th>
-                <th class="text-left" style="width: 25%">From godown</th>
-                <th class="text-left" style="width: 25%">To account</th>
+                <th class="text-left" style="width: 25%">From account</th>
+                <th class="text-left" style="width: 25%">To godown</th>
                 <th class="text-left">Agent & remarks</th>
             </tr>
         </thead>
