@@ -8,11 +8,41 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="5" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', 'lotNumber')"
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
           </v-btn>
+
+          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+          <!-- PDF -->
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+            :href="`/exports/pdf/reports/lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.pdf`">
+              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+          </v-btn>
+
+          <!-- Excel -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+            :href="`/exports/excel/reports/lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.xlsx`">
+              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+          </v-btn>
+
+          <!-- Print -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+          :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
+            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/reports/lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              <v-icon class="mr-2">mdi-printer</v-icon> Print
+          </v-btn>
+          <iframe id="all-print" style="display: none"></iframe>
         </v-col>
 
         <!-- Search -->

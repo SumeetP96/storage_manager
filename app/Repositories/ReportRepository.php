@@ -2,12 +2,14 @@
 
 namespace App\Repositories;
 
-use App\Product;
+use App\Traits\Reports\Stock\GodownProductStockTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    use GodownProductStockTrait;
+
     /**
      * Fetch product wise total stock
      *
@@ -16,8 +18,8 @@ class ReportRepository
      */
     public function fetchProductsStock(Request $request)
     {
-        $skip = $request->get('skip');
         $flow = $request->get('flow');
+        $skip = $request->get('skip');
         $limit = $request->get('limit');
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
@@ -37,12 +39,11 @@ class ReportRepository
             ')
             ->groupBy('name', 'unit', 'compound_unit');
 
-        $total = count($results->get());
+        $total = $results->count();
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];
     }
-
 
     /**
      * Fetch godown wise product stock
@@ -52,38 +53,12 @@ class ReportRepository
      */
     public function fetchGodownProductsStock(Request $request)
     {
-        $flow = $request->get('flow');
-        $skip = $request->get('skip');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allGodownProductStock($request)->count(),
 
-        $results = DB::table('godown_products_stocks as gps')
-            ->leftJoin('godowns as gd', 'gps.godown_id', '=', 'gd.id')
-            ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
-            ->where('gps.current_stock', '>', 0)
-            ->where(function ($query) use ($search) {
-                $query->where('pr.name', 'like', '%' . $search . '%')
-                    ->orWhere('gd.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                gps.updated_at,
-                gps.created_at,
-                gps.current_stock as currentStock,
-                gd.name as godownName,
-                pr.name as productName,
-                pr.unit as productUnit,
-                gps.current_stock div pr.packing as compoundStock,
-                pr.packing,
-                pr.compound_unit as compoundUnit,
-                pr.lot_number as productLotNumber
-            ');
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allGodownProductStock($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**

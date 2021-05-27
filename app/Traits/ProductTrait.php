@@ -25,6 +25,9 @@ trait ProductTrait
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('alias', 'like', '%' . $search . '%')
+                    ->orWhere('unit', 'like', '%' . $search . '%')
+                    ->orWhere('packing', 'like', '%' . $search . '%')
+                    ->orWhere('compound_unit', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%')
                     ->orWhere('lot_number', 'like', '%' . $search . '%');
             })->orderBy($sortBy, $flow);

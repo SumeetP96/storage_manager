@@ -19,6 +19,8 @@ Route::prefix('autofills')->group(function () {
 
     Route::get('/agents/with_transactions', 'Autofill\AgentAutofillController@withTransactions');
 
+    Route::get('/godowns/with_stock', 'Autofill\GodownAutofillController@withStock');
+    Route::get('/godowns/with_stock_products', 'Autofill\GodownAutofillController@withStockProducts');
     Route::get('/godowns/to_with_transactions/{transferType}', 'Autofill\GodownAutofillController@toWithTransactions');
     Route::get('/godowns/from_with_transactions/{transferType}', 'Autofill\GodownAutofillController@fromWithTransactions');
 });

@@ -39,4 +39,24 @@ class GodownAutofillController extends Controller
             ->orderBy('gd.name')
             ->get();
     }
+
+    public function withStock()
+    {
+        return DB::table('godown_products_stocks as gps')
+            ->leftJoin('godowns as gd', 'gps.godown_id', '=', 'gd.id')
+            ->where('gps.current_stock', '>', 0)
+            ->select('gd.name', 'gd.id')
+            ->orderBy('gd.name')
+            ->get();
+    }
+
+    public function withStockProducts()
+    {
+        return DB::table('godown_products_stocks as gps')
+            ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
+            ->where('gps.current_stock', '>', 0)
+            ->select('pr.name', 'pr.id')
+            ->orderBy('pr.name')
+            ->get();
+    }
 }

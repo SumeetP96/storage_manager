@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function(){
+Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
 
     // Products
     Route::get('/pdf/products', 'Exports\ProductExportController@allPdf');
@@ -45,5 +45,29 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function(){
     Route::get('/print/inter_godowns', 'Exports\InterGodownExportController@allPrint');
     Route::get('/pdf/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePdf');
     Route::get('/print/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePrint');
+
+    // Inter godowns
+    Route::get('/pdf/inter_godowns', 'Exports\InterGodownExportController@allPdf');
+    Route::get('/excel/inter_godowns', 'Exports\InterGodownExportController@allExcel');
+    Route::get('/print/inter_godowns', 'Exports\InterGodownExportController@allPrint');
+    Route::get('/pdf/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePdf');
+    Route::get('/print/inter_godowns/{id}', 'Exports\InterGodownExportController@singlePrint');
+
+    // Product Stock
+    Route::get('/pdf/reports/product_stock', 'Exports\Reports\Stock\ProductStockExportController@allPdf');
+    Route::get('/excel/reports/product_stock', 'Exports\Reports\Stock\ProductStockExportController@allExcel');
+    Route::get('/print/reports/product_stock', 'Exports\Reports\Stock\ProductStockExportController@allPrint');
+    // Godown Product Stock
+    Route::get('/pdf/reports/godown_product_stock', 'Exports\Reports\Stock\GodownProductStockExportController@allPdf');
+    Route::get('/excel/reports/godown_product_stock', 'Exports\Reports\Stock\GodownProductStockExportController@allExcel');
+    Route::get('/print/reports/godown_product_stock', 'Exports\Reports\Stock\GodownProductStockExportController@allPrint');
+    // Lot Stock
+    Route::get('/pdf/reports/lot_stock', 'Exports\Reports\Stock\LotStockExportController@allPdf');
+    Route::get('/excel/reports/lot_stock', 'Exports\Reports\Stock\LotStockExportController@allExcel');
+    Route::get('/print/reports/lot_stock', 'Exports\Reports\Stock\LotStockExportController@allPrint');
+    // Product Lot Stock
+    Route::get('/pdf/reports/product_lot_stock', 'Exports\Reports\Stock\ProductLotStockExportController@allPdf');
+    Route::get('/excel/reports/product_lot_stock', 'Exports\Reports\Stock\ProductLotStockExportController@allExcel');
+    Route::get('/print/reports/product_lot_stock', 'Exports\Reports\Stock\ProductLotStockExportController@allPrint');
 
 });

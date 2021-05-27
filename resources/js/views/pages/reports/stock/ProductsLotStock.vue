@@ -8,11 +8,41 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', 'lotNumber')"
+          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
           </v-btn>
+
+          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+          <!-- PDF -->
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+            :href="`/exports/pdf/reports/product_lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.pdf`">
+              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+          </v-btn>
+
+          <!-- Excel -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+            :href="`/exports/excel/reports/product_lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.xlsx`">
+              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+          </v-btn>
+
+          <!-- Print -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+          :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
+            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/reports/product_lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              <v-icon class="mr-2">mdi-printer</v-icon> Print
+          </v-btn>
+          <iframe id="all-print" style="display: none"></iframe>
         </v-col>
 
         <!-- Search -->
@@ -62,6 +92,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Product filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="product_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('product') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="product_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="productSelectOnlyId"
+                              :items="products"
+                              label="Products to show"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="productSelectExceptId.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="productSelectExceptId"
+                              :items="products"
+                              :disabled="productSelectOnlyId.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Products to hide"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('product', 'onlyExceptId')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('product', 'onlyExceptId')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Product filter end -->
                 </th>
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
@@ -164,10 +254,31 @@ export default {
     this.sortBy = 'lotNumber'
 
     this.loadRecords()
+    this.fetchGpsProductsWithStock()
   },
 
   components: {
     AppBar: require('../../../components/AppBar').default
+  },
+
+  data() {
+    return {
+      product_FILTER: false,
+      products: [],
+      productSelectOnlyId: [],
+      productSelectExceptId: [],
+    }
+  },
+
+  methods: {
+    fetchGpsProductsWithStock() {
+      this.filterLoading = true
+      this.axios.get('/api/autofills/godowns/with_stock_products')
+        .then(response => {
+          this.products = response.data
+          this.filterLoading = false
+        })
+    },
   }
 }
 </script>
