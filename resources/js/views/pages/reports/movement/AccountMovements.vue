@@ -32,31 +32,35 @@
             </div>
           </div>
 
-          <v-text-field
-            v-model="record.fromDate"
-            hide-details="auto"
-            outlined
-            placeholder="From date"
-            @blur="formatDate('fromDate'); dbFromDate = flipToYMD(record.fromDate); fetchDateRecords()"
-            :disabled="!accountId"
-            prepend-inner-icon="mdi-calendar"
-            :class="$vuetify.theme.dark ? '' : 'white'"
-            class="center-input ml-2"
-            dense>
-          </v-text-field>
+          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-          <v-text-field
-            v-model="record.toDate"
-            hide-details="auto"
-            outlined
-            placeholder="To date"
-            @blur="formatDate('toDate'); dbToDate = flipToYMD(record.toDate); fetchDateRecords()"
-            :disabled="!accountId"
-            prepend-inner-icon="mdi-calendar"
-            :class="$vuetify.theme.dark ? '' : 'white'"
-            class="center-input ml-2"
-            dense>
-          </v-text-field>
+          <!-- PDF -->
+          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+            :href="`/exports/pdf/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.pdf`">
+              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+          </v-btn>
+
+          <!-- Excel -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+            @click="disableExportButtons()" :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+            :href="`/exports/excel/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            :download="`${apiRoute}.xlsx`">
+              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+          </v-btn>
+
+          <!-- Print -->
+          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+            :loading="refreshLoading"
+            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
+            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
+              printPage('all-print', `/exports/print/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              <v-icon class="mr-2">mdi-printer</v-icon> Print
+          </v-btn>
+          <iframe id="all-print" style="display: none"></iframe>
 
         </v-col>
 
@@ -104,6 +108,63 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Date filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="250px" :value="date_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('date') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="date_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Date range</div>
+
+                            <v-text-field
+                              v-model="record.fromDate"
+                              hide-details
+                              solo
+                              :loading="filterLoading"
+                              :disabled="filterLoading"
+                              placeholder="From date"
+                              @blur="formatDate('fromDate'); dbFromDate = flipToYMD(record.fromDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-3"
+                              dense>
+                            </v-text-field>
+
+                            <v-text-field
+                              v-model="record.toDate"
+                              hide-details
+                              solo
+                              :disabled="filterLoading"
+                              :loading="filterLoading"
+                              placeholder="To date"
+                              @blur="formatDate('toDate'); dbToDate = flipToYMD(record.toDate);"
+                              prepend-inner-icon="mdi-calendar"
+                              :class="$vuetify.theme.dark ? '' : 'white'"
+                              class="center-input mt-2"
+                              dense>
+                            </v-text-field>
+
+                            <div class="d-flex justify-space-between align-center mt-5 mb-1">
+                              <v-btn dark small @click="removeFilter('date', 'dateRange')" tabindex="-1" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('date', 'dateRange')" :loading="filterLoading">
+                                <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Date filter end -->
                 </th>
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'transferType' ? 'pink--text font-weight-bold' : ''"
@@ -113,6 +174,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Transfer type filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="transferType_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('transferType') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="transferType_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="transferTypeSelectOnlyId"
+                              :items="transferTypes"
+                              label="Accounts to show"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="transferTypeSelectExceptId.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="transferTypeSelectExceptId"
+                              :items="transferTypes"
+                              :disabled="transferTypeSelectOnlyId.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Accounts to hide"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('transferType', 'onlyExceptId')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('transferType', 'onlyExceptId')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Transfer type filter end -->
                 </th>
 
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
@@ -122,6 +243,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- From Godown filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="fromGodown_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('fromGodown') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="fromGodown_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="fromGodownSelectOnlyId"
+                              :items="fromGodowns"
+                              label="Accounts to show"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="fromGodownSelectExceptId.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="fromGodownSelectExceptId"
+                              :items="fromGodowns"
+                              :disabled="fromGodownSelectOnlyId.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Accounts to hide"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('fromGodown', 'onlyExceptId')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('fromGodown', 'onlyExceptId')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / From Godown filter end -->
                 </th>
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
@@ -131,6 +312,45 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Lot Number filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="lotNumber_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('lotNumber') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="lotNumber_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+
+                            <div class="rounded px-4 pb-4 mt-3"
+                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
+                              <div class="subtitle-2 pt-3">Select records</div>
+                              <v-radio-group v-model="lotNumber" column hide-details>
+                                <v-radio label="With lot number" value="with"></v-radio>
+                                <v-radio label="Without lot number" value="without"></v-radio>
+                              </v-radio-group>
+                            </div>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('lotNumber', 'withWithout')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('lotNumber', 'withWithout')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Lot Number filter end -->
                 </th>
 
                 <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
@@ -140,6 +360,66 @@
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
+
+                    <!-- Product filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="filterProduct_FILTER">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn :color="activeFilters.indexOf('filterProduct') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="filterProduct_FILTER = true">
+                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+                        <v-list-item>
+                          <v-list-item-title>
+                            <div class="subtitle-2 my-1">Select only</div>
+
+                            <v-combobox v-model="filterProductSelectOnlyId"
+                              :items="filterProducts"
+                              label="Products to show"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              :loading="filterLoading"
+                              :disabled="filterProductSelectExceptId.length > 0 || filterLoading"
+                              solo
+                              dense
+                              class="mt-2"
+                            ></v-combobox>
+
+                            <div class="subtitle-2 my-1">Select except</div>
+
+                            <v-combobox v-model="filterProductSelectExceptId"
+                              :items="filterProducts"
+                              :disabled="filterProductSelectOnlyId.length > 0 || filterLoading"
+                              :loading="filterLoading"
+                              label="Products to hide"
+                              item-value="id"
+                              item-text="name"
+                              multiple
+                              clearable
+                              solo
+                              dense
+                            ></v-combobox>
+
+                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
+                              <v-btn dark small @click="removeFilter('filterProduct', 'onlyExceptId')"
+                                tabindex="-1" :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
+                                  clear
+                              </v-btn>
+
+                              <v-btn color="success" dark small @click="addFilter('filterProduct', 'onlyExceptId')"
+                                :loading="filterLoading">
+                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
+                                  filter
+                              </v-btn>
+                            </div>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu> <!-- / Product filter end -->
                 </th>
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundQuantity' ? 'pink--text font-weight-bold' : ''"
@@ -403,18 +683,7 @@ export default {
 
   data() {
     return {
-      record: {
-        fromDate: '',
-        toDate: ''
-      },
-
       dbRecord: {},
-
-      lastFrom: '',
-      lastTo: '',
-
-      dbFromDate: '',
-      dbToDate: '',
 
       recordType: '',
 
@@ -422,6 +691,24 @@ export default {
       accountId: 0,
       accounts: [],
       accountDetails: {},
+
+      lotNumber: '',
+      lotNumber_FILTER: false,
+
+      transferType_FILTER: false,
+      transferTypes: [],
+      transferTypeSelectOnlyId: [],
+      transferTypeSelectExceptId: [],
+
+      filterProduct_FILTER: false,
+      filterProducts: [],
+      filterProductSelectOnlyId: [],
+      filterProductSelectExceptId: [],
+
+      fromGodown_FILTER: false,
+      fromGodowns: [],
+      fromGodownSelectOnlyId: [],
+      fromGodownSelectExceptId: [],
     }
   },
 
@@ -447,32 +734,6 @@ export default {
 
       this.customQuery = `account_id=${this.accountId}`
       this.loadRecords()
-    },
-
-    fetchDateRecords() {
-      if (this.dbFromDate == '' && this.dbToDate == '') {
-        if (this.dbFromDate == this.lastFrom && this.dbToDate == this.lastTo) return
-        this.fetchItemRecords()
-        this.lastFrom = ''
-        this.lastTo = ''
-      }
-
-      if (this.dbFromDate != '' && this.dbToDate != '') {
-        if (this.dbFromDate == this.lastFrom && this.dbToDate == this.lastTo) return
-
-        this.customQuery = `account_id=${this.accountId}&from=${this.dbFromDate}&to=${this.dbToDate}`
-        this.loadRecords()
-        this.lastFrom = this.dbFromDate
-        this.lastTo = this.dbToDate
-      }
-    },
-
-    resetDates() {
-      this.record.fromDate = ''
-      this.record.toDate = ''
-      this.dbFromDate = ''
-      this.dbToDate = ''
-      this.customQuery = `account_id=${this.accountId}`
     },
 
     loadRecordDialog(accountId, transferTypeId, productId) {
@@ -502,7 +763,9 @@ export default {
           this.axios.get(`/api/${apiRoute}/transfer_products/${accountId}`)
             .then(response => this.recordProducts = response.data.record)
         })
-    }
+    },
+
+    
   }
 }
 </script>

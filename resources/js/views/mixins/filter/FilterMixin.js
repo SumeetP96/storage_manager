@@ -188,6 +188,14 @@ export const FilterMixin = {
         const isAccountIndex = this.customQuery.indexOf('is_account')
         if (isAccountIndex >= 0) this.customQuery = 'is_account=' + this.customQuery[isAccountIndex + 11]
       }
+      if (this.apiRoute == 'reports/product_movements') {
+        const productIdIndex = this.customQuery.indexOf('product_id')
+        if (productIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[productIdIndex + 11]
+      }
+      if (this.apiRoute == 'reports/godown_movements') {
+        const godownIdIndex = this.customQuery.indexOf('product_id')
+        if (godownIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[godownIdIndex + 11]
+      }
       else this.customQuery = ''
     },
 

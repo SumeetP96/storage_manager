@@ -23,6 +23,10 @@ Route::prefix('autofills')->group(function () {
     Route::get('/godowns/with_stock_products', 'Autofill\GodownAutofillController@withStockProducts');
     Route::get('/godowns/to_with_transactions/{transferType}', 'Autofill\GodownAutofillController@toWithTransactions');
     Route::get('/godowns/from_with_transactions/{transferType}', 'Autofill\GodownAutofillController@fromWithTransactions');
+    Route::get('/godowns/to_used_by_product/{productId}', 'Autofill\GodownAutofillController@toUsedByProduct');
+    Route::get('/godowns/from_used_by_product/{productId}', 'Autofill\GodownAutofillController@fromUsedByProduct');
+
+    Route::get('/transfer_types/used_by_product/{productId}', 'Autofill\TransferTypeAutofillController@usedByProduct');
 });
 
 Route::prefix('godowns')->group(function () {

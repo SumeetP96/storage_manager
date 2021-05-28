@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Reports\Stock;
+namespace App\Exports\Reports\Movement;
 
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -29,32 +29,33 @@ class ProductMovementExport implements FromQuery, WithMapping, WithHeadings, Sho
 
     public function query()
     {
-        return $this->allProductMovement($this->request);
+        return $this->allProductMovement($this->request, $this->request->product_id);
     }
 
     public function map($record): array
     {
         return [
             Date::dateTimeToExcel(Carbon::parse($record->date)),
-            $record->godownName,
-            $record->productLotNumber,
-            $record->productName,
-            $record->compoundUnit ? $record->compoundStock / 100 : '',
+            $record->transferType,
+            $record->fromName,
+            $record->toName,
+            $record->compoundUnit ? $record->compoundQuantity / 100 : '',
             $record->compoundUnit ? $record->compoundUnit . ' (' . $record->packing / 100 . ')' : '',
-            number_format($record->currentStock / 100, 2),
-            $record->productUnit,
+            number_format($record->quantity / 100, 2),
+            $record->unit,
         ];
     }
 
     public function headings(): array
     {
         return [
-            'Godown',
-            'Lot number',
-            'Product',
-            'C stock',
+            'Date',
+            'Transfer type',
+            'From',
+            'To',
+            'C Quantity',
             'C Unit',
-            'Stock',
+            'Quantity',
             'Unit'
         ];
     }
@@ -62,16 +63,18 @@ class ProductMovementExport implements FromQuery, WithMapping, WithHeadings, Sho
     public function columnFormats(): array
     {
         return [
-            'B' => NumberFormat::FORMAT_TEXT,
-            'E' => NumberFormat::FORMAT_NUMBER_00,
+            'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'E' => NumberFormat::FORMAT_NUMBER,
+            'G' => NumberFormat::FORMAT_NUMBER_00,
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         $sheet->getStyle(1)->getFont()->setBold(true);
+        $sheet->getStyle('A')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('D')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('F')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     }
 }

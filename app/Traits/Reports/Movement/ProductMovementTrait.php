@@ -58,6 +58,31 @@ trait ProductMovementTrait
      */
     public function getFilteredProductMovementQuery($query, Request $request)
     {
+        // Date range filter
+        $toDate = $request->get('to');
+        $fromDate = $request->get('from');
+        if (!is_null($fromDate) && !is_null($toDate)) {
+            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
+        }
+
+        // Transfer type only / except
+        $transferTypeOnlyId = $request->get('transferTypeOnlyId');
+        if (!is_null($transferTypeOnlyId)) $query->whereIn('st.transfer_type_id', explode(',', $transferTypeOnlyId));
+        $transferTypeExceptId = $request->get('transferTypeExceptId');
+        if (!is_null($transferTypeExceptId)) $query->whereNotIn('st.transfer_type_id', explode(',', $transferTypeExceptId));
+
+        // From godown only except
+        $fromGodownOnlyId = $request->get('fromGodownOnlyId');
+        if (!is_null($fromGodownOnlyId)) $query->whereIn('st.from_godown_id', explode(',', $fromGodownOnlyId));
+        $fromGodownExceptId = $request->get('fromGodownExceptId');
+        if (!is_null($fromGodownExceptId)) $query->whereNotIn('st.from_godown_id', explode(',', $fromGodownExceptId));
+
+        // To godown only except
+        $toGodownOnlyId = $request->get('toGodownOnlyId');
+        if (!is_null($toGodownOnlyId)) $query->whereIn('st.to_godown_id', explode(',', $toGodownOnlyId));
+        $toGodownExceptId = $request->get('toGodownExceptId');
+        if (!is_null($toGodownExceptId)) $query->whereNotIn('st.to_godown_id', explode(',', $toGodownExceptId));
+
         return $query;
     }
 }
