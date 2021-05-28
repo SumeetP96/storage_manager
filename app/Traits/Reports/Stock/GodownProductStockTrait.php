@@ -24,7 +24,7 @@ trait GodownProductStockTrait
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where('gps.current_stock', '>', 0);
 
-        return $this->getFilteredQuery($query, $request)
+        return $this->getFilteredProductStockQuery($query, $request)
             ->where(function ($query) use ($search) {
                 $query->where('pr.name', 'like', '%' . $search . '%')
                     ->orWhere('gd.name', 'like', '%' . $search . '%')
@@ -54,9 +54,9 @@ trait GodownProductStockTrait
      * @param  mixed $request
      * @return Object
      */
-    public function getFilteredQuery($query, Request $request)
+    public function getFilteredProductStockQuery($query, Request $request)
     {
-        // Invoice no filters with / without
+        // Lot no filters with / without
         $lotNumber = $request->get('lotNumber');
         if ($lotNumber == 'with') $query->whereNotNull('pr.lot_number');
         if ($lotNumber == 'without') $query->where(function ($query) {

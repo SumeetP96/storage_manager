@@ -78,7 +78,7 @@
               <tr>
                 <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber', 'lotNumber')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -87,7 +87,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('name', 'lotNumber')">Product</span>
+                    <span class="sort-link" @click="sortRecords('name', sortBy)">Product</span>
                     <span v-if="sortBy == 'name'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -156,7 +156,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', 'godownName')">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -165,7 +165,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'currentStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'currentStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('currentStock', 'godownName')">Current Stock</span>
+                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Current Stock</span>
                     <span v-if="sortBy == 'currentStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>

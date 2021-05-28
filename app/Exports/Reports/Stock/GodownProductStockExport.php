@@ -36,8 +36,8 @@ class GodownProductStockExport implements FromQuery, WithMapping, WithHeadings, 
             $record->godownName,
             $record->productLotNumber,
             $record->productName,
-            $record->compoundStock / 100,
-            $record->compoundUnit . ' (' . $record->packing / 100 . ')',
+            $record->compoundUnit ? $record->compoundStock / 100 : '',
+            $record->compoundUnit ? $record->compoundUnit . ' (' . $record->packing / 100 . ')' : '',
             number_format($record->currentStock / 100, 2),
             $record->productUnit,
         ];
@@ -69,6 +69,6 @@ class GodownProductStockExport implements FromQuery, WithMapping, WithHeadings, 
         $sheet->getStyle(1)->getFont()->setBold(true);
         $sheet->getStyle('B')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('D')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('F')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     }
 }

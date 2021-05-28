@@ -37,9 +37,9 @@
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
 
-                <td class="text-center">{{ $record->productLotNumber ? $record->productLotNumber : '-' }}</td>
+                <td class="text-center">{{ $record->lotNumber ? $record->lotNumber : '-' }}</td>
 
-                <td>{{ $record->productName }}</td>
+                <td>{{ $record->name }}</td>
 
                 <td class="text-right font-bold">{{ $record->compoundUnit ? $record->compoundStock : '-' }}</td>
 

@@ -3,11 +3,13 @@
 namespace App\Repositories;
 
 use App\Traits\Reports\Stock\GodownProductStockTrait;
+use App\Traits\Reports\Stock\ProductLotStockTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    use ProductLotStockTrait;
     use GodownProductStockTrait;
 
     /**
@@ -104,35 +106,12 @@ class ReportRepository
      */
     public function fetchProductsLotStock(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allProductLotStock($request)->count(),
 
-        $results = DB::table('godown_products_stocks as gps')
-            ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
-            ->where('gps.current_stock', '>', 0)
-            ->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('lot_number', 'like', '%' . $search . '%')
-                    ->orWhere('unit', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                pr.unit as productUnit,
-                pr.lot_number as lotNumber,
-                pr.name as name,
-                gps.current_stock div pr.packing as compoundStock,
-                pr.packing,
-                pr.compound_unit as compoundUnit,
-                sum(gps.current_stock) as currentStock
-            ')
-            ->groupBy('lot_number', 'unit', 'name', 'compound_unit', 'packing', 'current_stock');
-
-        $total = count($results->get());
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allProductLotStock($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**
