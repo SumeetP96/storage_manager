@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Traits\Reports\Movement\ProductMovementTrait;
 use App\Traits\Reports\Stock\GodownProductStockTrait;
 use App\Traits\Reports\Stock\ProductLotStockTrait;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    use ProductMovementTrait;
     use ProductLotStockTrait;
     use GodownProductStockTrait;
 
@@ -122,52 +124,12 @@ class ReportRepository
      */
     public function fetchProductMovement(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allProductMovement($request, $request->product_id)->count(),
 
-        $toDate = $request->get('to');
-        $fromDate = $request->get('from');
-
-        $productId = $request->get('product_id');
-
-        $query = DB::table('stock_transfers as st')
-            ->where('stp.product_id', $productId)
-            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
-            ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
-            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
-
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
-        }
-
-        $results = $query->where(function ($query) use ($search) {
-                $query->where('tt.name', 'like', '%' . $search . '%')
-                    ->orWhere('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('tg.name', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                stp.quantity,
-                stp.compound_quantity as compoundQuantity,
-                pr.compound_unit as compoundUnit,
-                pr.packing,
-                st.id as id,
-                st.date as date,
-                st.transfer_type_id as ttid,
-                pr.unit as unit,
-                tg.name as toName,
-                fg.name as fromName,
-                tt.name as transferType
-            ');
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allProductMovement($request, $request->product_id)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**

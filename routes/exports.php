@@ -70,4 +70,9 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/excel/reports/product_lot_stock', 'Exports\Reports\Stock\ProductLotStockExportController@allExcel');
     Route::get('/print/reports/product_lot_stock', 'Exports\Reports\Stock\ProductLotStockExportController@allPrint');
 
+    // Product Movement
+    Route::get('/pdf/reports/product_movement', 'Exports\Reports\Movement\ProductMovementExportController@allPdf');
+    Route::get('/excel/reports/product_movement', 'Exports\Reports\Movement\ProductMovementExportController@allExcel');
+    Route::get('/print/reports/product_movement', 'Exports\Reports\Movement\ProductMovementExportController@allPrint');
+
 });
