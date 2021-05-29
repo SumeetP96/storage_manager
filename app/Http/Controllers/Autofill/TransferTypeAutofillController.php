@@ -17,4 +17,17 @@ class TransferTypeAutofillController extends Controller
             ->select('tt.name', 'tt.id')
             ->get(['transfer_type_id']);
     }
+
+    public function usedByGodown($godownId)
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
+            ->where(function ($query) use ($godownId) {
+                $query->where('st.to_godown_id', $godownId)
+                    ->orWhere('st.from_godown_id', $godownId);
+            })
+            ->distinct()
+            ->select('tt.name', 'tt.id')
+            ->get(['tt.id']);
+    }
 }

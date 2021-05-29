@@ -22,7 +22,6 @@ class ProductMovementExportController extends Controller
     {
         $records = $this->allProductMovement($request, $request->product_id)->get();
         $pdf = PDF::loadView('exports.reports.movement.product_movement.pdf.all', compact('records'));
-        return $pdf->stream();
         return $pdf->download('product_movement.pdf');
     }
 

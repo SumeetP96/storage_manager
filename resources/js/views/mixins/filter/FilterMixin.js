@@ -193,8 +193,8 @@ export const FilterMixin = {
         if (productIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[productIdIndex + 11]
       }
       if (this.apiRoute == 'reports/godown_movements') {
-        const godownIdIndex = this.customQuery.indexOf('product_id')
-        if (godownIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[godownIdIndex + 11]
+        const godownIdIndex = this.customQuery.indexOf('account_id')
+        if (godownIdIndex >= 0) this.customQuery = 'account_id=' + this.customQuery[godownIdIndex + 11]
       }
       else this.customQuery = ''
     },

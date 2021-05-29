@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Traits\Reports\Movement\GodownMovementTrait;
 use App\Traits\Reports\Movement\ProductMovementTrait;
 use App\Traits\Reports\Stock\GodownProductStockTrait;
 use App\Traits\Reports\Stock\ProductLotStockTrait;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    use GodownMovementTrait;
     use ProductMovementTrait;
     use ProductLotStockTrait;
     use GodownProductStockTrait;
@@ -140,60 +142,12 @@ class ReportRepository
      */
     public function fetchGodownMovement(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allGodownMovement($request, $request->account_id)->count(),
 
-        $toDate = $request->get('to');
-        $fromDate = $request->get('from');
-
-        $accountId = $request->get('account_id');
-
-        $query = DB::table('stock_transfers as st')
-            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
-            ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
-            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
-
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
-        }
-
-        $results = $query->where(function ($query) use ($accountId) {
-                $query->where('st.to_godown_id', $accountId)
-                    ->orWhere('st.from_godown_id', $accountId);
-            })
-            ->where(function ($query) use ($search) {
-                $query->where('tt.name', 'like', '%' . $search . '%')
-                ->orWhere('fg.name', 'like', '%' . $search . '%')
-                ->orWhere('tg.name', 'like', '%' . $search . '%')
-                ->orWhere('pr.name', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                st.id as id,
-                stp.quantity,
-                stp.compound_quantity as compoundQuantity,
-                pr.compound_unit as compoundUnit,
-                pr.packing,
-                st.date as date,
-                st.from_godown_id as fromId,
-                st.to_godown_id as toId,
-                st.transfer_type_id as ttid,
-                IF(st.from_godown_id = ?, tg.name, fg.name) as name,
-                pr.id as productId,
-                pr.unit as unit,
-                pr.name as productName,
-                pr.lot_number as lotNumber,
-                tt.name as transferType
-            ', [$accountId]);
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allGodownMovement($request, $request->account_id)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**

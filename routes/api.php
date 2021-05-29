@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('autofills')->group(function () {
     Route::get('/products/distinct_units', 'Autofill\ProductAutofillController@distinctUnits');
     Route::get('/products/distinct_compound_units', 'Autofill\ProductAutofillController@distinctCompoundUnits');
+    Route::get('/products/used_by_godowns/{godownId}', 'Autofill\ProductAutofillController@usedByGodown');
 
     Route::get('/agents/with_transactions', 'Autofill\AgentAutofillController@withTransactions');
 
@@ -25,8 +26,10 @@ Route::prefix('autofills')->group(function () {
     Route::get('/godowns/from_with_transactions/{transferType}', 'Autofill\GodownAutofillController@fromWithTransactions');
     Route::get('/godowns/to_used_by_product/{productId}', 'Autofill\GodownAutofillController@toUsedByProduct');
     Route::get('/godowns/from_used_by_product/{productId}', 'Autofill\GodownAutofillController@fromUsedByProduct');
+    Route::get('/godowns/used_by_godowns/{godownId}', 'Autofill\GodownAutofillController@usedByGodown');
 
     Route::get('/transfer_types/used_by_product/{productId}', 'Autofill\TransferTypeAutofillController@usedByProduct');
+    Route::get('/transfer_types/used_by_godowns/{godownId}', 'Autofill\TransferTypeAutofillController@usedByGodown');
 });
 
 Route::prefix('godowns')->group(function () {

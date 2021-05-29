@@ -81,4 +81,21 @@ class GodownAutofillController extends Controller
             ->select('gd.name', 'gd.id')
             ->get(['to_godown_id']);
     }
+
+    public function usedByGodown($godownId)
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
+            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
+            ->where(function ($query) use ($godownId) {
+                $query->where('st.to_godown_id', $godownId)
+                    ->orWhere('st.from_godown_id', $godownId);
+            })
+            ->distinct()
+            ->selectRaw('
+                IF(st.from_godown_id = ?, tg.id, fg.id) as id,
+                IF(st.from_godown_id = ?, tg.name, fg.name) as name
+            ', [$godownId, $godownId])
+            ->get(['id']);
+    }
 }

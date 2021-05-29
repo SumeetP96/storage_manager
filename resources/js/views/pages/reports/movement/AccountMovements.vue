@@ -38,8 +38,8 @@
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
-            :href="`/exports/pdf/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-            :download="`${apiRoute}.pdf`">
+            :href="`/exports/pdf/reports/godown_movement/Account?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            download="account_movements.pdf">
               <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
           </v-btn>
 
@@ -47,8 +47,8 @@
           <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
-            :href="`/exports/excel/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-            :download="`${apiRoute}.xlsx`">
+            :href="`/exports/excel/reports/godown_movement/Account?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+            download="account_movements.xlsx">
               <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
           </v-btn>
 
@@ -57,7 +57,7 @@
             :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
             :disabled="disableExport || records.length == 0" @click="disableExportButtons();
-              printPage('all-print', `/exports/print/reports/account_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+              printPage('all-print', `/exports/print/reports/godown_movement/Account?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe id="all-print" style="display: none"></iframe>
@@ -103,7 +103,7 @@
               <tr>
                 <th class="subtitle-2 text-center" :class="sortBy == 'date' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'date' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('date', 'date')">Date</span>
+                    <span class="sort-link" @click="sortRecords('date', sortBy)">Date</span>
                     <span v-if="sortBy == 'date'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -168,8 +168,8 @@
                 </th>
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'transferType' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'transferType' ? 'font-size: 1rem !important' : ''" style="width: 150px">
-                    <span class="sort-link" @click="sortRecords('transferType', 'date')">Transfer type</span>
+                  :style="sortBy == 'transferType' ? 'font-size: 1rem !important' : ''" style="width: 12%">
+                    <span class="sort-link" @click="sortRecords('transferType', sortBy)">Transfer type</span>
                     <span v-if="sortBy == 'transferType'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -238,17 +238,17 @@
 
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('name', 'date')">Godown</span>
+                    <span class="sort-link" @click="sortRecords('name', sortBy)">Godown</span>
                     <span v-if="sortBy == 'name'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
                     </span>
 
-                    <!-- From Godown filter -->
-                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="fromGodown_FILTER">
+                    <!-- Godown filter -->
+                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="godown_FILTER">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('fromGodown') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="fromGodown_FILTER = true">
+                        <v-btn :color="activeFilters.indexOf('godown') >= 0 ? 'primary' : 'grey'"
+                          icon v-bind="attrs" v-on="on" @click="godown_FILTER = true">
                             <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
                         </v-btn>
                       </template>
@@ -257,15 +257,15 @@
                           <v-list-item-title>
                             <div class="subtitle-2 my-1">Select only</div>
 
-                            <v-combobox v-model="fromGodownSelectOnlyId"
-                              :items="fromGodowns"
-                              label="Accounts to show"
+                            <v-combobox v-model="godownSelectOnlyId"
+                              :items="godowns"
+                              label="Godown to show"
                               item-value="id"
                               item-text="name"
                               multiple
                               clearable
                               :loading="filterLoading"
-                              :disabled="fromGodownSelectExceptId.length > 0 || filterLoading"
+                              :disabled="godownSelectExceptId.length > 0 || filterLoading"
                               solo
                               dense
                               class="mt-2"
@@ -273,11 +273,11 @@
 
                             <div class="subtitle-2 my-1">Select except</div>
 
-                            <v-combobox v-model="fromGodownSelectExceptId"
-                              :items="fromGodowns"
-                              :disabled="fromGodownSelectOnlyId.length > 0 || filterLoading"
+                            <v-combobox v-model="godownSelectExceptId"
+                              :items="godowns"
+                              :disabled="godownSelectOnlyId.length > 0 || filterLoading"
                               :loading="filterLoading"
-                              label="Accounts to hide"
+                              label="Godown to hide"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -287,13 +287,13 @@
                             ></v-combobox>
 
                             <div class="d-flex justify-space-between align-center mt-3 mb-1">
-                              <v-btn dark small @click="removeFilter('fromGodown', 'onlyExceptId')"
+                              <v-btn dark small @click="removeFilter('godown', 'onlyExceptId')"
                                 tabindex="-1" :loading="filterLoading">
                                   <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
                                   clear
                               </v-btn>
 
-                              <v-btn color="success" dark small @click="addFilter('fromGodown', 'onlyExceptId')"
+                              <v-btn color="success" dark small @click="addFilter('godown', 'onlyExceptId')"
                                 :loading="filterLoading">
                                   <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
                                   filter
@@ -302,12 +302,12 @@
                           </v-list-item-title>
                         </v-list-item>
                       </v-list>
-                    </v-menu> <!-- / From Godown filter end -->
+                    </v-menu> <!-- / Godown filter end -->
                 </th>
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber', 'date')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -355,7 +355,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productName', 'date')">Product</span>
+                    <span class="sort-link" @click="sortRecords('productName', sortBy)">Product</span>
                     <span v-if="sortBy == 'productName'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -424,7 +424,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundQuantity' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundQuantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundQuantity', 'date')">Compound</span>
+                    <span class="sort-link" @click="sortRecords('compoundQuantity', sortBy)">Compound</span>
                     <span v-if="sortBy == 'compoundQuantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -433,7 +433,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('quantity', 'date')">Quantity</span>
+                    <span class="sort-link" @click="sortRecords('quantity', sortBy)">Quantity</span>
                     <span v-if="sortBy == 'quantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -705,10 +705,10 @@ export default {
       filterProductSelectOnlyId: [],
       filterProductSelectExceptId: [],
 
-      fromGodown_FILTER: false,
-      fromGodowns: [],
-      fromGodownSelectOnlyId: [],
-      fromGodownSelectExceptId: [],
+      godown_FILTER: false,
+      godowns: [],
+      godownSelectOnlyId: [],
+      godownSelectExceptId: [],
     }
   },
 
@@ -734,6 +734,9 @@ export default {
 
       this.customQuery = `account_id=${this.accountId}`
       this.loadRecords()
+      this.fetchGodownAutofill()
+      this.fetchProductAutofill()
+      this.fetchTransferTypesGodown()
     },
 
     loadRecordDialog(accountId, transferTypeId, productId) {
@@ -765,7 +768,29 @@ export default {
         })
     },
 
-    
+    fetchTransferTypesGodown() {
+      this.axios
+        .get(`/api/autofills/transfer_types/used_by_godowns/${this.accountId}`)
+        .then(response => this.transferTypes = response.data)
+    },
+
+    fetchGodownAutofill() {
+      this.filterLoading = true
+      this.axios.get(`/api/autofills/godowns/used_by_godowns/${this.accountId}`)
+        .then(response => {
+          this.godowns = response.data
+          this.filterLoading = false
+        })
+    },
+
+    fetchProductAutofill() {
+      this.filterLoading = true
+      this.axios.get(`/api/autofills/products/used_by_godowns/${this.accountId}`)
+        .then(response => {
+          this.filterProducts = response.data
+          this.filterLoading = false
+        })
+    },
   }
 }
 </script>
