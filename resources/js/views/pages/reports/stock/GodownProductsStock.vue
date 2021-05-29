@@ -8,7 +8,10 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('godownName', sortBy)"
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable(sortBy)"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -19,6 +22,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/godown_product_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -78,7 +82,7 @@
               <tr>
                 <th class="subtitle-2" :class="sortBy == 'godownName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'godownName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('godownName', 'godownName')">Godown</span>
+                    <span class="sort-link" @click="sortRecords('godownName', sortBy)">Godown</span>
                     <span v-if="sortBy == 'godownName'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -147,7 +151,7 @@
 
                 <th class="subtitle-2 text-center" :class="sortBy == 'productLotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productLotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productLotNumber', 'godownName')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('productLotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'productLotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -195,7 +199,7 @@
 
                 <th class="subtitle-2" :class="sortBy == 'productName' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productName' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('productName', 'godownName')">Product</span>
+                    <span class="sort-link" @click="sortRecords('productName', sortBy)">Product</span>
                     <span v-if="sortBy == 'productName'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -264,7 +268,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', 'godownName')">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -273,7 +277,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'currentStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'currentStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('currentStock', 'godownName')">Current Stock</span>
+                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Current Stock</span>
                     <span v-if="sortBy == 'currentStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>

@@ -8,7 +8,10 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', sortBy)"
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable(sortBy)"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -19,6 +22,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/product_lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -66,10 +70,8 @@
       </v-row>
 
       <div class="mt-3">
-        <v-skeleton-loader v-bind="attrs"
-          v-if="recordsTableLoading"
-          type="table-row-divider@6"
-          :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
+        <v-skeleton-loader v-bind="attrs" v-if="recordsTableLoading"
+          type="table-row-divider@6" :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
 
         <v-simple-table v-else class="elevation-1">
@@ -175,7 +177,7 @@
               </tr>
             </thead>
             <tbody v-if="records.length > 0">
-              <tr v-for="record in records" :key="record.name">
+              <tr v-for="(record, index) in records" :key="index">
                   <td class="subtitle-1 text-center font-weight-bold">
                     {{ record.lotNumber ? record.lotNumber : 'Unassigned' }}
                   </td>

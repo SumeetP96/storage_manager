@@ -8,7 +8,10 @@
 
       <v-row align="end">
         <v-col cols="12" sm="12" md="5" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', sortBy)"
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable(sortBy)"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -19,6 +22,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/lot_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -78,7 +82,7 @@
               <tr>
                 <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber', 'lotNumber')">Lot number</span>
+                    <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -87,7 +91,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', 'name')">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -96,7 +100,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'stock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'stock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('stock', 'name')">Total stock</span>
+                    <span class="sort-link" @click="sortRecords('stock', sortBy)">Total stock</span>
                     <span v-if="sortBy == 'stock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>

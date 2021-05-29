@@ -106,10 +106,8 @@
 
       <!-- Table Section -->
       <div class="mt-3">
-        <v-skeleton-loader v-bind="attrs"
-          v-if="recordsTableLoading"
-          type="table-row-divider@6"
-          :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
+        <v-skeleton-loader v-bind="attrs" v-if="recordsTableLoading"
+          type="table-row-divider@6" :class="$vuetify.theme.dark ? '' : 'white'" class="px-4">
         </v-skeleton-loader>
 
         <v-simple-table v-else class="elevation-1">

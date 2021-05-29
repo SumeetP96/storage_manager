@@ -37,6 +37,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/godown_movement/Godown?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             download="godown_movements.pdf">
@@ -66,11 +67,13 @@
 
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
-            <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="refreshTable('date', `account_id=${accountId}`);"
-                :loading="refreshLoading" :disabled="records.length == 0">
-                  <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                  refresh
+            <!-- Refresh -->
+            <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+              @click="refreshTable(sortBy, customQuery)"
+              class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy, customQuery)"
+              :loading="refreshLoading" :disabled="records.length == 0">
+                <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                refresh
             </v-btn>
 
             <v-text-field
@@ -443,7 +446,7 @@
               </tr>
             </thead>
             <tbody v-if="records.length > 0">
-              <tr v-for="record in records" :key="record.id">
+              <tr v-for="(record, index) in records" :key="index">
                   <td class="subtitle-1 text-center font-weight-bold">{{ record.date | moment('DD/MM/YYYY') }}</td>
 
                   <td class="subtitle-1 text-center">

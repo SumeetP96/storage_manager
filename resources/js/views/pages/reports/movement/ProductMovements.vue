@@ -37,6 +37,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -66,11 +67,13 @@
 
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
-            <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="refreshTable('date', `product_id=${productId}`);"
-                :loading="refreshLoading" :disabled="records.length == 0">
-                  <v-icon class="mr-2">mdi-table-refresh</v-icon>
-                  refresh
+            <!-- Refresh -->
+            <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+              @click="refreshTable(sortBy, customQuery)"
+              class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy, customQuery)"
+              :loading="refreshLoading" :disabled="records.length == 0">
+                <v-icon class="mr-2">mdi-table-refresh</v-icon>
+                refresh
             </v-btn>
 
             <v-text-field
@@ -103,7 +106,7 @@
               <tr>
                 <th class="subtitle-2 text-center" :class="sortBy == 'date' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'date' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('date', 'date')">Date</span>
+                    <span class="sort-link" @click="sortRecords('date', sortBy)">Date</span>
                     <span v-if="sortBy == 'date'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -518,6 +521,51 @@
                   <td class="subtitle-1 font-weight-bold text-left">To godown</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
                     {{ dbRecord.toName }}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
+                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
+
+                    <div class="rounded px-2" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                      <table style="width: 100%">
+                        <tr>
+                          <th class="text-left"><small>Name</small></th>
+                          <th class="text-center"><small>Lot no</small></th>
+                          <th class="text-right"><small>C Quantity</small></th>
+                          <th class="text-right"><small>Quantity</small></th>
+                        </tr>
+
+                        <tr v-for="(product, index) in recordProducts" :key="index">
+                          <td style="border: none; padding: 1px 0">
+                            <span>{{ product.name }}</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0;" class="px-2 text-center">
+                            <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                              ({{ product.lotNumber }})
+                            </span>
+                            <span v-else>-</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                            <span v-if="product.compoundUnit && product.compoundQuantity">
+                              <span class="font-weight-bold">{{ formatQuantity(product.compoundQuantity, 0) }}</span>
+                              <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                                {{ product.compoundUnit }}
+                              </span>
+                            </span>
+                            <span v-else>-</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                            <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                            <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                              {{ product.unit }}
+                            </span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+
                   </td>
                 </tr>
 

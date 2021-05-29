@@ -49,7 +49,7 @@ class ReportRepository
             ')
             ->groupBy('name', 'unit', 'compound_unit');
 
-        $total = $results->count();
+        $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
 
         return ['records' => $records, 'total' => $total];

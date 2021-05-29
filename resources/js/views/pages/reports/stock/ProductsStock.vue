@@ -2,13 +2,19 @@
   <div>
     <AppBar backRoute="reports.index" />
 
+    <!-- Main Col Wrapper -->
     <v-col cols="12" lg="8" class="mx-auto">
 
       <div class="text-h5 py-4">Products Stock</div>
 
+      <!-- Above Table -->
       <v-row align="end">
+        <!-- Left Section -->
         <v-col cols="12" sm="12" md="6" class="text-h5 d-flex">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'" @click="refreshTable('name', sortBy)"
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable(sortBy)"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy)"
             :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
@@ -19,6 +25,7 @@
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
             @click="disableExportButtons()" :loading="refreshLoading"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/product_stock?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
             :download="`${apiRoute}.pdf`">
@@ -43,28 +50,29 @@
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe id="all-print" style="display: none"></iframe>
-        </v-col>
+        </v-col> <!-- / Left Section end -->
 
-        <!-- Search -->
-        <v-col cols="12" sm="12" md="4" offset-md="2"
-          class="d-flex justify-end">
-            <v-text-field
-              id="searchInput"
-              solo
-              dense
-              clearable
-              hide-details
-              v-model="query"
-              label="Search records"
-              :loading="searchLoading"
-              :disabled="searchLoading"
-              @click:clear="clearSearch()"
-              @keypress.enter="searchRecords()"
-              prepend-inner-icon="mdi-magnify">
-            </v-text-field>
-        </v-col>
-      </v-row>
+        <!-- Right Section -->
+        <v-col cols="12" sm="12" md="4" offset-md="2" class="d-flex justify-end">
+          <!-- Search -->
+          <v-text-field
+            id="searchInput"
+            solo
+            dense
+            clearable
+            hide-details
+            v-model="query"
+            label="Search records"
+            :loading="searchLoading"
+            :disabled="searchLoading"
+            @click:clear="clearSearch()"
+            @keypress.enter="searchRecords()"
+            prepend-inner-icon="mdi-magnify">
+          </v-text-field>
+        </v-col> <!-- / Right Section End -->
+      </v-row> <!-- / Above Table End -->
 
+      <!--  -->
       <div class="mt-3">
         <v-skeleton-loader v-bind="attrs"
           v-if="recordsTableLoading"
@@ -78,7 +86,7 @@
               <tr>
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('name', 'name')">Product</span>
+                    <span class="sort-link" @click="sortRecords('name', sortBy)">Product</span>
                     <span v-if="sortBy == 'name'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -87,7 +95,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', 'name')">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -96,7 +104,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'stock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'stock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('stock', 'name')">Total stock</span>
+                    <span class="sort-link" @click="sortRecords('stock', sortBy)">Total stock</span>
                     <span v-if="sortBy == 'stock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -164,7 +172,7 @@
         </div>
       </div>
 
-    </v-col>
+    </v-col> <!-- / Main Col Wrapper End -->
 
   </div>
 </template>
