@@ -6,11 +6,15 @@ use App\Traits\Reports\Movement\GodownMovementTrait;
 use App\Traits\Reports\Movement\ProductMovementTrait;
 use App\Traits\Reports\Stock\GodownProductStockTrait;
 use App\Traits\Reports\Stock\ProductLotStockTrait;
+use App\Traits\Reports\Transfers\AgentTransfersTrait;
+use App\Traits\Reports\Transfers\AllTransfersTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
+    use AllTransfersTrait;
+    use AgentTransfersTrait;
     use GodownMovementTrait;
     use ProductMovementTrait;
     use ProductLotStockTrait;
@@ -158,49 +162,12 @@ class ReportRepository
      */
     public function fetchAgentTransfers(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allAgentTransfers($request, $request->agent_id)->count(),
 
-        $toDate = $request->get('to');
-        $fromDate = $request->get('from');
-
-        $agentId = $request->get('agent_id');
-
-        $query = DB::table('stock_transfers as st')
-            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
-            ->where('st.agent_id', $agentId)
-            ->where('st.agent_id', '!=', null);
-
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
-        }
-
-        $results = $query->where(function ($query) use ($search) {
-                $query->where('tt.name', 'like', '%' . $search . '%')
-                ->orWhere('fg.name', 'like', '%' . $search . '%')
-                ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
-                ->orWhere('tg.name', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                st.id as id,
-                st.date as date,
-                st.invoice_no as invoiceNo,
-                st.updated_at,
-                st.transfer_type_id as ttid,
-                tg.name as toName,
-                fg.name as fromName,
-                tt.name as transferType
-            ');
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allAgentTransfers($request, $request->agent_id)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 
     /**
@@ -211,45 +178,11 @@ class ReportRepository
      */
     public function fetchAllTransfers(Request $request)
     {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        return [
+            'total' => $this->allTransfers($request)->count(),
 
-        $toDate = $request->get('to');
-        $fromDate = $request->get('from');
-
-
-        $query = DB::table('stock_transfers as st')
-            ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')
-            ->leftJoin('godowns as fg', 'fg.id', '=', 'st.from_godown_id')
-            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id');
-
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $query->whereDate('st.date', '<=', $toDate)->whereDate('st.date', '>=', $fromDate);
-        }
-
-        $results = $query->where(function ($query) use ($search) {
-                $query->where('tt.name', 'like', '%' . $search . '%')
-                ->orWhere('fg.name', 'like', '%' . $search . '%')
-                ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
-                ->orWhere('tg.name', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                st.id as id,
-                st.invoice_no as invoiceNo,
-                st.date as date,
-                st.updated_at,
-                st.transfer_type_id as ttid,
-                tg.name as toName,
-                fg.name as fromName,
-                tt.name as transferType
-            ');
-
-        $total = $results->count();
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
+            'records' => $this->allTransfers($request)
+                ->skip($request->skip)->limit($request->limit)->get(),
+        ];
     }
 }

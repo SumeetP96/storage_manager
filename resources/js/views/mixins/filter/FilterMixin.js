@@ -196,6 +196,10 @@ export const FilterMixin = {
         const godownIdIndex = this.customQuery.indexOf('account_id')
         if (godownIdIndex >= 0) this.customQuery = 'account_id=' + this.customQuery[godownIdIndex + 11]
       }
+      if (this.apiRoute == 'reports/agent_transfers') {
+        const agentIdIndex = this.customQuery.indexOf('agent_id')
+        if (agentIdIndex >= 0) this.customQuery = 'agent_id=' + this.customQuery[agentIdIndex + 9]
+      }
       else this.customQuery = ''
     },
 

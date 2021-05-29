@@ -98,4 +98,42 @@ class GodownAutofillController extends Controller
             ', [$godownId, $godownId])
             ->get(['id']);
     }
+
+    public function fromUsedByAgent($agentId)
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('godowns as gd', 'gd.id', '=', 'st.from_godown_id')
+            ->where('st.agent_id', $agentId)
+            ->distinct()
+            ->select('gd.name', 'gd.id')
+            ->get(['gd.id']);
+    }
+
+    public function toUsedByAgent($agentId)
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('godowns as gd', 'gd.id', '=', 'st.to_godown_id')
+            ->where('st.agent_id', $agentId)
+            ->distinct()
+            ->select('gd.name', 'gd.id')
+            ->get(['gd.id']);
+    }
+
+    public function toAll()
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('godowns as gd', 'gd.id', '=', 'st.to_godown_id')
+            ->distinct()
+            ->select('gd.name', 'gd.id')
+            ->get(['gd.id']);
+    }
+
+    public function fromAll()
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('godowns as gd', 'gd.id', '=', 'st.from_godown_id')
+            ->distinct()
+            ->select('gd.name', 'gd.id')
+            ->get(['gd.id']);
+    }
 }

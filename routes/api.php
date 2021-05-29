@@ -27,9 +27,15 @@ Route::prefix('autofills')->group(function () {
     Route::get('/godowns/to_used_by_product/{productId}', 'Autofill\GodownAutofillController@toUsedByProduct');
     Route::get('/godowns/from_used_by_product/{productId}', 'Autofill\GodownAutofillController@fromUsedByProduct');
     Route::get('/godowns/used_by_godowns/{godownId}', 'Autofill\GodownAutofillController@usedByGodown');
+    Route::get('/godowns/to_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@toUsedByAgent');
+    Route::get('/godowns/from_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@fromUsedByAgent');
+    Route::get('/godowns/to_all', 'Autofill\GodownAutofillController@toAll');
+    Route::get('/godowns/from_all', 'Autofill\GodownAutofillController@fromAll');
 
     Route::get('/transfer_types/used_by_product/{productId}', 'Autofill\TransferTypeAutofillController@usedByProduct');
     Route::get('/transfer_types/used_by_godowns/{godownId}', 'Autofill\TransferTypeAutofillController@usedByGodown');
+    Route::get('/transfer_types/used_by_agent/{agentId}', 'Autofill\TransferTypeAutofillController@usedByAgent');
+    Route::get('/transfer_types/all', 'Autofill\TransferTypeAutofillController@all');
 });
 
 Route::prefix('godowns')->group(function () {

@@ -65,7 +65,9 @@ trait SaleTrait
 
         // Invoice no filters with / without
         $invoiceNo = $request->get('invoiceNo');
-        if ($invoiceNo == 'with') $query->whereNotNull('st.invoice_no');
+        if ($invoiceNo == 'with') $query->where(function ($query) {
+            $query->whereNotNull('st.invoice_no')->where('st.invoice_no', '!=', '');
+        });
         if ($invoiceNo == 'without') $query->where(function ($query) {
             $query->whereNull('st.invoice_no')->orWhere('st.invoice_no', '');
         });

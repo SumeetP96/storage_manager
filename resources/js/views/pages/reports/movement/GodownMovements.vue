@@ -67,7 +67,7 @@
         <!-- Search -->
         <v-col cols="12" md="4" class="d-flex justify-end align-center">
             <v-btn class="mr-2" :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-              @click="resetDates(); refreshTable('date', `account_id=${accountId}`);"
+              @click="refreshTable('date', `account_id=${accountId}`);"
                 :loading="refreshLoading" :disabled="records.length == 0">
                   <v-icon class="mr-2">mdi-table-refresh</v-icon>
                   refresh

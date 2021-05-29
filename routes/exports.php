@@ -79,4 +79,14 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/excel/reports/godown_movement/{godownType}', 'Exports\Reports\Movement\GodownMovementExportController@allExcel');
     Route::get('/print/reports/godown_movement/{godownType}', 'Exports\Reports\Movement\GodownMovementExportController@allPrint');
 
+    // Agent Transfers
+    Route::get('/pdf/reports/agent_transfers', 'Exports\Reports\Transfers\AgentTransfersExportController@allPdf');
+    Route::get('/excel/reports/agent_transfers', 'Exports\Reports\Transfers\AgentTransfersExportController@allExcel');
+    Route::get('/print/reports/agent_transfers', 'Exports\Reports\Transfers\AgentTransfersExportController@allPrint');
+
+    // All Transfers
+    Route::get('/pdf/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allPdf');
+    Route::get('/excel/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allExcel');
+    Route::get('/print/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allPrint');
+
 });

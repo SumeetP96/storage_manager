@@ -30,4 +30,23 @@ class TransferTypeAutofillController extends Controller
             ->select('tt.name', 'tt.id')
             ->get(['tt.id']);
     }
+
+    public function usedByAgent($agentId)
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
+            ->where('st.agent_id', $agentId)
+            ->distinct()
+            ->select('tt.name', 'tt.id')
+            ->get(['tt.id']);
+    }
+
+    public function all()
+    {
+        return DB::table('stock_transfers as st')
+            ->leftJoin('transfer_types as tt', 'tt.id', '=', 'st.transfer_type_id')
+            ->distinct()
+            ->select('tt.name', 'tt.id')
+            ->get(['tt.id']);
+    }
 }
