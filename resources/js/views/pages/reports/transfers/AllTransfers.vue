@@ -8,8 +8,11 @@
 
       <v-row align="center">
         <v-col cols="12" md="6" class="text-h5 d-flex align-start">
-          <v-btn :color="$vuetify.theme.dark ? '' : 'white purple--text'"
-            @click="resetDates(); refreshTable('date');" :loading="refreshLoading" :disabled="records.length == 0">
+          <!-- Refresh -->
+          <v-btn :color="$vuetify.theme.dark ? 'purple--text text--lighten-3' : 'white purple--text'"
+            @click="refreshTable(sortBy, customQuery)"
+            class="mr-2" v-shortkey.once="['alt', 'r']" @shortkey="refreshTable(sortBy, customQuery)"
+            :loading="refreshLoading" :disabled="records.length == 0">
               <v-icon class="mr-2">mdi-table-refresh</v-icon>
               refresh
           </v-btn>
@@ -18,6 +21,7 @@
 
           <!-- PDF -->
           <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
             @click="disableExportButtons()" :loading="refreshLoading"
             :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
             :href="`/exports/pdf/reports/all_transfers?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
@@ -48,20 +52,20 @@
 
         <!-- Search -->
         <v-col cols="12" md="3" offset-md="3" class="d-flex justify-end align-center">
-            <v-text-field
-              id="searchInput"
-              solo
-              dense
-              clearable
-              hide-details
-              v-model="query"
-              label="Search records"
-              :loading="searchLoading"
-              :disabled="searchLoading"
-              @click:clear="clearSearch()"
-              @keypress.enter="searchRecords()"
-              prepend-inner-icon="mdi-magnify">
-            </v-text-field>
+          <v-text-field
+            id="searchInput"
+            solo
+            dense
+            clearable
+            hide-details
+            v-model="query"
+            label="Search records"
+            :loading="searchLoading"
+            :disabled="searchLoading"
+            @click:clear="clearSearch()"
+            @keypress.enter="searchRecords()"
+            prepend-inner-icon="mdi-magnify">
+          </v-text-field>
         </v-col>
       </v-row>
 
@@ -584,25 +588,43 @@
                   <td class="subtitle-1 font-weight-bold text-left">Products</td>
                   <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
 
-                    <table>
-                      <tr v-for="(product, index) in recordProducts" :key="index">
-                        <td style="border: none; padding: 1px 0">
-                          <span>{{ product.name }}</span>
-                        </td>
-                        <td style="border: none; padding: 1px 0" class="px-2 text-center">
-                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                            ( {{ product.lotNumber }} )
-                          </span>
-                          <span v-else>-</span>
-                        </td>
-                        <td style="border: none; padding: 1px 0" class="text-right pl-5">
-                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
-                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                            {{ product.unit }}
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
+                    <div class="rounded px-2" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                      <table style="width: 100%">
+                        <tr>
+                          <th class="text-left"><small>Name</small></th>
+                          <th class="text-center"><small>Lot no</small></th>
+                          <th class="text-right"><small>C Quantity</small></th>
+                          <th class="text-right"><small>Quantity</small></th>
+                        </tr>
+
+                        <tr v-for="(product, index) in recordProducts" :key="index">
+                          <td style="border: none; padding: 1px 0">
+                            <span>{{ product.name }}</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0;" class="px-2 text-center">
+                            <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                              ({{ product.lotNumber }})
+                            </span>
+                            <span v-else>-</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                            <span v-if="product.compoundUnit && product.compoundQuantity">
+                              <span class="font-weight-bold">{{ formatQuantity(product.compoundQuantity, 0) }}</span>
+                              <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                                {{ product.compoundUnit }}
+                              </span>
+                            </span>
+                            <span v-else>-</span>
+                          </td>
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                            <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
+                            <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
+                              {{ product.unit }}
+                            </span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
 
                   </td>
                 </tr>

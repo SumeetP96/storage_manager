@@ -20,10 +20,32 @@ export const CrudMixin = {
 
       apiRoute: '',
       customQuery: '',
+
+      disablePackingEdit: true,
     }
   },
 
   methods: {
+    editPacking() {
+      this.$swal({
+        title: 'Warning!',
+        text: "Editing product packing will reset all the packing fields entered in the transactions, and you will have to manually enter them again. Are you sure you want to continue?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, continue!',
+        focusCancel: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.disablePackingEdit = false
+        } else {
+          this.disablePackingEdit = true
+        }
+      })
+    },
+
+
     /**
      * Load all records
      * @param {Object} payload Options

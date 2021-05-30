@@ -538,16 +538,19 @@
                         </tr>
 
                         <tr v-for="(product, index) in recordProducts" :key="index">
-                          <td style="border: none; padding: 1px 0">
+                          <td style="border: none; padding: 1px 0"
+                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
                             <span>{{ product.name }}</span>
                           </td>
-                          <td style="border: none; padding: 1px 0;" class="px-2 text-center">
+                          <td style="border: none; padding: 1px 0;" class="px-2 text-center"
+                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
                             <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
                               ({{ product.lotNumber }})
                             </span>
                             <span v-else>-</span>
                           </td>
-                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5"
+                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
                             <span v-if="product.compoundUnit && product.compoundQuantity">
                               <span class="font-weight-bold">{{ formatQuantity(product.compoundQuantity, 0) }}</span>
                               <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
@@ -556,7 +559,8 @@
                             </span>
                             <span v-else>-</span>
                           </td>
-                          <td style="border: none; padding: 1px 0" class="text-right pl-5">
+                          <td style="border: none; padding: 1px 0" class="text-right pl-5"
+                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
                             <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
                             <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
                               {{ product.unit }}
@@ -565,36 +569,6 @@
                         </tr>
                       </table>
                     </div>
-
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-
-                    <table class="inter-view-table">
-                      <tr v-for="(product, index) in recordProducts" :key="index">
-                        <td style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;"
-                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
-                            <span>{{ product.name }}</span>
-                        </td>
-                        <td class="text-center"
-                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
-                          <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                            ( {{ product.lotNumber }} )
-                          </span>
-                          <span v-else>-</span>
-                        </td>
-                        <td class="text-right" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
-                          :class="product.productId == productId ? 'yellow lighten-3 black--text' : ''">
-                          <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
-                          <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                            {{ product.unit }}
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
 
                   </td>
                 </tr>
