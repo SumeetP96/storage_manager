@@ -76,6 +76,13 @@
           </v-list-item>
 
           <v-list-item link @click="changePassword(); toggleSettingMenu()">
+            <v-list-item-icon><v-icon>mdi-lock</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Lock transactions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item link @click="changePassword(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-form-textbox-password</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>Change password</v-list-item-title>
