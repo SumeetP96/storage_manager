@@ -93,7 +93,7 @@
                 dense>
               </v-text-field>
 
-              <v-btn dark icon class="indigo white--text ml-1" elevation="1" @click="editPacking()">
+              <v-btn v-if="disablePackingEdit" dark icon class="indigo white--text ml-1" elevation="1" @click="editPacking()">
                 <v-icon>mdi-circle-edit-outline</v-icon>
               </v-btn>
             </div>

@@ -21,7 +21,7 @@ export const CrudMixin = {
       apiRoute: '',
       customQuery: '',
 
-      disablePackingEdit: true,
+      disablePackingEdit: false,
     }
   },
 
@@ -102,6 +102,10 @@ export const CrudMixin = {
 
         .then(response => {
           this.record = response.data.record
+          if (this.record.hasOwnProperty('recordTransactions')) {
+            if (this.record.recordTransactions > 0) this.disablePackingEdit = true
+            else this.disablePackingEdit = false
+          }
           this[loader] = false
         })
     },

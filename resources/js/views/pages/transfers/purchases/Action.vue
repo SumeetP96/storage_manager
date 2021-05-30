@@ -674,16 +674,23 @@
             <v-col cols="3">
               <label class="subtitle-1">Packing
                 <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.packingRaw"
-                @blur="dialogRecord.packing = setFormatQuantity(dialogRecord.packingRaw)"
-                hide-details="auto"
-                outlined
-                filled
-                :error-messages="errors.packing"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
+              <div class="d-flex align-start">
+                <v-text-field
+                  v-model="dialogRecord.packingRaw"
+                  @blur="dialogRecord.packing = setFormatQuantity(dialogRecord.packingRaw)"
+                  hide-details="auto"
+                  outlined
+                  filled
+                  :disabled="disablePackingEdit"
+                  :error-messages="errors.packing"
+                  :class="$vuetify.theme.dark ? '' : 'white'"
+                  dense>
+                </v-text-field>
+
+                <v-btn v-if="disablePackingEdit" dark icon class="indigo white--text ml-1" elevation="1" @click="editPacking()">
+                  <v-icon>mdi-circle-edit-outline</v-icon>
+                </v-btn>
+              </div>
             </v-col>
 
             <v-col cols="3">

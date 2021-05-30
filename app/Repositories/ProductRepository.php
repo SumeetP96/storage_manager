@@ -34,7 +34,7 @@ class ProductRepository
      */
     public function fetchOne($id)
     {
-        return DB::table('products')->where('id', $id)
+        $record = DB::table('products')->where('id', $id)
             ->selectRaw('
                 id,
                 name,
@@ -49,6 +49,10 @@ class ProductRepository
                 updated_at
             ')
             ->first();
+
+        $record->recordTransactions = StockTransferProduct::where('product_id', $id)->count();
+
+        return $record;
     }
 
     /**
@@ -111,6 +115,8 @@ class ProductRepository
                 ->where('godown_id', $godownId)->first()
                 ->current_stock;
         }
+
+        $product->recordTransactions = StockTransferProduct::where('product_id', $id)->count();
 
         return $product;
     }
