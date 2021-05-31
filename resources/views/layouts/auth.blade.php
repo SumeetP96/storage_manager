@@ -10,12 +10,54 @@
   <title>Storage Manager Login</title>
 
   <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+  <style>
+    body,
+    html {
+      height: 100%;
+    }
+
+    .login-wrapper {
+      height: 100%;
+      width: 100%;
+      background-image: url({{ url('images/login_page/2.jpg')}});
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .left-side {
+      color: white;
+      padding-left: 10%;
+      margin-top: 22%;
+    }
+    .right-side {
+      width: 35%;
+      padding-right: 10%;
+      margin-top: 13%;
+    }
+  </style>
 </head>
 
-<body class="py-4 bg-light">
-  <main>
-    @yield('content')
-  </main>
+<body>
+  <div class="login-wrapper d-flex flex-column justify-content-between">
+
+    <div class="d-flex justify-content-between">
+
+      <div class="left-side">
+        <div class="display-4">Welcome to Storage Manager</div>
+        <h5 class="mt-2 pl-1">A simple stock management system for your business</h5>
+      </div>
+
+      <div class="right-side">
+        @yield('content')
+      </div>
+
+    </div>
+
+    <div class="text-center mb-3 text-light">
+      <div>Designed and developed by Sumeet Prajapati</div>
+      <small>Copyright &#169; 2021 Rameshwar Trading Company. All rights reserved.</small>
+    </div>
+  </div>
 </body>
 
 </html>
