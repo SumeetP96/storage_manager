@@ -131,7 +131,9 @@ export const PurchaseMixin = {
     /**
      * Fetch selected product's details
      */
-    fetchProductDetails(index) {
+    fetchProductDetails(index, clear) {
+      this.productDetails[index].remarks = ''
+      if (!this.inputProducts[index].id || clear) return
       this.axios.get(`/api/products/${this.inputProducts[index].id}/details`)
         .then(response => {
           if (response.data.hasOwnProperty('recordTransactions')) {

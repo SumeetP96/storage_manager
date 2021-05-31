@@ -190,7 +190,8 @@
                           placeholder="Select product"
                           auto-select-first
                           :items="products"
-                          @input="fetchProductDetails(index)"
+                          @change="fetchProductDetails(index)"
+                          @click:clear="fetchProductDetails(index, true)"
                           item-text="name"
                           item-value="id"
                           :error-messages="errors[`product_${index}_id`]"
@@ -225,6 +226,8 @@
                           inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
                           calculateQuantity(index)
                           "
+                        :disabled="!inputProducts[index].id || !productDetails[index].compoundUnit"
+                        :filled="!inputProducts[index].id || !productDetails[index].compoundUnit"
                         placeholder="0.00"
                         :error-messages="errors[`product_${index}_compound_quantity`]"
                         :class="$vuetify.theme.dark ? '' : 'white'"

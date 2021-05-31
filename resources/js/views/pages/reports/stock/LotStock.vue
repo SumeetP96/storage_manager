@@ -116,11 +116,14 @@
                   </td>
 
                   <td class="subtitle-1 text-right font-weight-bold">
-                    <span v-if="record.compoundStock < 0" class="error--text">{{ formatQuantity(record.compoundStock) }}</span>
-                    <span v-else>{{ record.compoundStock }}</span>
-                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.compoundUnit }}
-                    </span>
+                    <div v-if="record.compoundUnit">
+                      <span v-if="record.compoundStock < 0" class="error--text">{{ formatQuantity(record.compoundStock) }}</span>
+                      <span v-else>{{ record.compoundStock }}</span>
+                      <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                        {{ record.compoundUnit }}
+                      </span>
+                    </div>
+                    <div v-else>-</div>
                   </td>
 
                   <td class="subtitle-1 text-right font-weight-bold">

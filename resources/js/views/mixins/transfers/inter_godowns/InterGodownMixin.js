@@ -130,7 +130,9 @@ export const InterGodownMixin = {
     /**
      * Fetch selected product's details
      */
-     fetchProductDetails(index) {
+     fetchProductDetails(index, clear) {
+      this.productDetails[index].remarks = ''
+      if (!this.inputProducts[index].id || clear) return
       this.axios.get(`/api/products/${this.inputProducts[index].id}/details/${this.record.from_godown_id}`)
         .then(response => {
           this.productDetails[index].unit = response.data.unit

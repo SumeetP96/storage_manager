@@ -22,8 +22,7 @@ trait LotStockTrait
         return DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
             ->where(function ($query) use ($search) {
-                $query->where('pr.lot_number', 'like', '%' . $search . '%')
-                    ->orWhere('pr.unit', 'like', '%' . $search . '%');
+                $query->where('pr.lot_number', 'like', '%' . $search . '%');
             })
             ->selectRaw('
                 pr.unit as unit,

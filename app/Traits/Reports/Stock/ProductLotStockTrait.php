@@ -17,27 +17,31 @@ trait ProductLotStockTrait
     {
         $flow = $request->get('flow');
         $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
+        $sortBy = $request->get('sortBy') == 'lotNumber' ? 'lot_number' : '';
 
         $query = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
-            ->where('gps.current_stock', '>', 0);
+            ->where('gps.current_stock', '>', 0)
+            ->where(function ($query) {
+                $query->where('pr.lot_number', '!=', '')
+                    ->orWhereNotNull('pr.lot_number');
+            });
 
         return $this->getFilteredProductLotQuery($query, $request)
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('lot_number', 'like', '%' . $search . '%')
-                    ->orWhere('unit', 'like', '%' . $search . '%');
+                    ->orWhere('lot_number', 'like', '%' . $search . '%');
             })
             ->selectRaw('
                 pr.unit as productUnit,
                 pr.lot_number as lotNumber,
                 pr.name as name,
-                gps.current_stock div pr.packing as compoundStock,
+                sum(gps.current_stock div pr.packing) as compoundStock,
+                sum(gps.current_stock) as currentStock,
                 pr.packing,
-                pr.compound_unit as compoundUnit,
-                gps.current_stock as currentStock
+                pr.compound_unit as compoundUnit
             ')
+            ->groupBy('lot_number', 'name', 'compound_unit', 'unit', 'packing')
             ->orderBy($sortBy, $flow);
     }
 

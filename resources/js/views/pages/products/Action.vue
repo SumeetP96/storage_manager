@@ -69,6 +69,7 @@
               :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
             </v-text-field>
+            <small>( 3 Letters )</small>
           </v-col>
 
           <v-col cols="1" class="text-center mt-10 subtitle-1 d-flex px-2">
@@ -110,6 +111,7 @@
               :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
             </v-text-field>
+            <small>( 3 Letters )</small>
           </v-col>
         </v-row>
 

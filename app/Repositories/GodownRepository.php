@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Godown;
+use App\Http\Requests\CreateGodownRequest;
+use App\Http\Requests\UpdateGodownRequest;
 use App\StockTransfer;
 use App\Traits\GodownTrait;
 use Illuminate\Http\Request;
@@ -93,7 +95,7 @@ class GodownRepository
     /**
      * Store record in database
      */
-    public function create(Request $request)
+    public function create(CreateGodownRequest $request)
     {
         return Godown::create([
             'is_account'    => $request->is_account,
@@ -110,7 +112,7 @@ class GodownRepository
     /**
      * Update record in database
      */
-    public function update(Request $request, $id)
+    public function update(UpdateGodownRequest $request, $id)
     {
         Godown::find($id)->update([
             'name'      => $request->name,

@@ -715,7 +715,7 @@
                     <div class="rounded px-2" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                       <table style="width: 100%">
                         <tr>
-                          <th class="text-left"><small>Products</small></th>
+                          <th class="text-left"><small>Name</small></th>
                           <th class="text-center"><small>Lot no</small></th>
                           <th class="text-right"><small>C Quantity</small></th>
                           <th class="text-right"><small>Quantity</small></th>
