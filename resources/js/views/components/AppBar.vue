@@ -68,14 +68,15 @@
           </v-list-item>
 
           <v-list-item link v-shortkey.once="['alt', 'b']"
-            @shortkey="openBackupDialog(); toggleSettingMenu()">
+            @shortkey="openBackupDialog(); toggleSettingMenu()"
+            @click="openBackupDialog(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-cloud-upload</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>Backup data</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item link @click="changePassword(); toggleSettingMenu()">
+          <v-list-item link @click="changeTransactionLockDate(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-lock</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>Lock transactions</v-list-item-title>
@@ -147,6 +148,56 @@
 
       </v-card>
     </v-dialog> <!-- / Backup Dialog End -->
+
+    <!-- Transaction Lock Dialog -->
+    <v-dialog v-model="transactionLockDialog" max-width="700"
+      @click:outside="restrictDateEdit = true"
+      @keydown.esc="restrictDateEdit = true">
+      <v-card>
+        <v-card-title class="headline d-flex justify-space-between align-center">
+          <div>Update Transaction Lock Date</div>
+          <v-btn icon
+            @click="transactionLockDialog = false; restrictDateEdit = true;">
+              <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="py-5">
+          <v-alert type="info" border="left" prominent text>
+            Please note that, all the data (masters, invoices, transfers & reports), prior to the transaction lock date will be inaccesible. To access that data again you have to update the transaction lock date accordingly.
+          </v-alert>
+
+          <div class="subtitle-1 pb-1 mt-2" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">
+            Set transaction lock date
+          </div>
+
+          <v-text-field
+            v-model="lockDateRaw"
+            id="lockDateRaw"
+            @blur="formatDate('lockDateRaw'); lockDate = flipToYMD(lockDateRaw)"
+            outlined
+            dense
+            :filled="restrictDateEdit"
+            :readonly="restrictDateEdit"
+            :error-messages="errors.date"
+            placeholder="DD-MM-YYYY">
+          </v-text-field>
+
+          <div class="d-flex align-center justify-center mt-5">
+            <v-btn dark color="error" class="mr-2"
+              @click="changeDate()">
+                change date
+            </v-btn>
+            <v-btn dark color="indigo" class="ml-2"
+              :loading="lockDateLoading" @click="updateLockDate()">
+                <v-icon class="mr-3 text-h6">mdi-lock</v-icon>
+                lock transactions
+            </v-btn>
+          </div>
+        </v-card-text>
+
+      </v-card>
+    </v-dialog> <!-- / Transaction Lock Dialog End -->
 
     <!-- Keyboard Shortct Dialog -->
     <v-dialog v-model="keyboardShortcutDialog" max-width="1000">

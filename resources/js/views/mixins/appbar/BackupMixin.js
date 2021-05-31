@@ -24,7 +24,6 @@ export const BackupMixin = {
       this.axios
         .get(`/api/backup/run?path=${this.backupPath}`)
         .then(response => {
-          console.log(response.data);
           this.backupDialog = false
           this.$swal('Complete!', 'Data backup successful.', 'success')
           this.backupLoading = false
