@@ -19,7 +19,7 @@
     .login-wrapper {
       height: 100%;
       width: 100%;
-      background-image: url({{ url('images/login_page/2.jpg')}});
+      background-image: url({{ url('images/login_page/1.jpg')}});
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;
