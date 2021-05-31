@@ -2,13 +2,15 @@ import { UserMixin } from "./UserMixin";
 import { ThemeMixin } from "./ThemeMIxin";
 import { BackupMixin } from "./BackupMixin";
 import { LockDateMixin } from "./LockDateMixin";
+import { TransactionDateMixin } from "./TransactionDateMixin";
 
 export const AppBarMixin = {
   mixins: [
     UserMixin,
     ThemeMixin,
     BackupMixin,
-    LockDateMixin
+    LockDateMixin,
+    TransactionDateMixin
  ],
 
   data() {

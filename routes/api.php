@@ -125,3 +125,8 @@ Route::prefix('backup')->group(function () {
     Route::get('/run', 'BackupController@index');
     Route::get('/get_path', 'BackupController@getDefaultPath');
 });
+
+Route::prefix('settings')->group(function () {
+    Route::get('/get_lock_date', 'SettingController@getLockDate');
+    Route::post('/lock_date/update', 'SettingController@update');
+});

@@ -32,7 +32,16 @@
         |
       </div>
 
-      <v-app-bar-title class="ml-2 ml-sm-0">Storage Manager</v-app-bar-title>
+      <v-app-bar-title class="ml-2 ml-sm-0">
+        Storage Manager
+        <span v-if="transactionDate" class="pl-2">
+          ( from :
+            <span :class="$vuetify.theme.dark ? 'primary--text' : 'indigo--text'">
+              {{ transactionDate | moment('DD-MM-YYYY') }}
+            </span>
+          )
+        </span>
+      </v-app-bar-title>
 
       <v-spacer></v-spacer>
 
@@ -172,9 +181,9 @@
           </div>
 
           <v-text-field
-            v-model="lockDateRaw"
+            v-model="record.lockDateRaw"
             id="lockDateRaw"
-            @blur="formatDate('lockDateRaw'); lockDate = flipToYMD(lockDateRaw)"
+            @blur="formatDate('lockDateRaw'); record.lockDate = flipToYMD(record.lockDateRaw)"
             outlined
             dense
             :filled="restrictDateEdit"
@@ -184,9 +193,8 @@
           </v-text-field>
 
           <div class="d-flex align-center justify-center mt-5">
-            <v-btn dark color="error" class="mr-2"
-              @click="changeDate()">
-                change date
+            <v-btn dark color="error" class="mr-2" @click="changeDate()">
+              change date
             </v-btn>
             <v-btn dark color="indigo" class="ml-2"
               :loading="lockDateLoading" @click="updateLockDate()">
@@ -338,6 +346,7 @@ export default {
 
   mounted() {
     this.setApplicationTheme()
+    this.fetchTransactionDate()
   },
 }
 </script>
