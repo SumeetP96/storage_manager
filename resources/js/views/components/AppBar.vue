@@ -230,7 +230,7 @@
 
                 <tr class="subtitle-1">
                   <td class="font-weight-bold" style="width: 60%">Toggle settings</td>
-                  <td :class="$vuetify.theme.dark ? '' : 'black--text'">Alt + S</td>
+                  <td :class="$vuetify.theme.dark ? '' : 'black--text'">Alt + T</td>
                 </tr>
 
                 <tr class="subtitle-1">
