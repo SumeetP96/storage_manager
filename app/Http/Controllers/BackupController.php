@@ -63,9 +63,10 @@ class BackupController extends Controller
         Artisan::call('backup:clean');
         Artisan::call('backup:run');
 
-        $command = 'call ROBOCOPY "'. $this->backupStorage .'" "'. $request->path .'" /MIR';
+        // $command = 'call ROBOCOPY "'. $this->backupStorage .'" "'. $request->path .'" /MIR';
+        $backupArchive = 'call ROBOCOPY "'. $this->backupStorage .'" "'. $request->path .'" /M';
 
-        system($command, $output);
+        system($backupArchive, $output);
 
         return $this->responseService->success(null, $output);
     }
