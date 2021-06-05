@@ -329,7 +329,7 @@
 
           <v-btn v-else
             color="indigo" dark :loading="createButtonLoading"
-            v-shortkey="['alt', 's']" @shortkey="createTransfer($route.params.id, 'inter_godowns.index')"
+            v-shortkey="['alt', 's']" @shortkey="createTransfer('inter_godowns.index')"
             @click="createTransfer('inter_godowns.index')">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save transfer
           </v-btn>

@@ -424,7 +424,7 @@
 
           <v-btn v-else
             color="indigo" dark :loading="createButtonLoading"
-            v-shortkey="['alt', 's']" @shortkey="createTransfer($route.params.id, 'sales.index')"
+            v-shortkey="['alt', 's']" @shortkey="createTransfer('sales.index')"
             @click="createTransfer('sales.index')">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save sale
           </v-btn>
