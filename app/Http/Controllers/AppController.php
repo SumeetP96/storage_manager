@@ -27,7 +27,17 @@ class AppController extends Controller
      */
     public function index()
     {
-        return view('app');
+        $user = User::find(1);
+        $trialExpired = Hash::check(date('Ymd'), $user->dm_token) ? TRUE : FALSE;
+        $trialPeriod = (!$trialExpired && !Hash::check('full-version', $user->dm_token)) ? TRUE : FALSE;
+        $fullVersion = (Hash::check('full-version', $user->dm_token)) ? TRUE : FALSE;
+
+        if ($trialPeriod || $fullVersion) {
+            return view('app');
+        } else {
+            return redirect()->route('login');
+            Auth::logout();
+        }
     }
 
     /**
