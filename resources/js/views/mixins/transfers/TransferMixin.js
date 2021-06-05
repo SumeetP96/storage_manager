@@ -38,10 +38,10 @@ export const TransferMixin = {
       this.createFromForm({ redirect: redirectRoute })
     },
 
-    updateTransfer(id, redirectRoute) {
+    updateTransfer(id, redirectRoute, payload) {
       this.clearUnusedInputs()
       this.record.products = this.inputProducts
-      this.updateFromForm(id, { redirect: redirectRoute })
+      this.updateFromForm(id, { redirect: redirectRoute, payload: payload })
     },
 
     addProductInputRow() {

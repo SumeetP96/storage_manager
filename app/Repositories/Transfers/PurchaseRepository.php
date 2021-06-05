@@ -146,8 +146,6 @@ class PurchaseRepository
         $this->undoPreviousGPSChanges($id);
 
         StockTransfer::find($id)->delete();
-
-        $this->cleanNoStock();
     }
 
     /**
@@ -175,20 +173,11 @@ class PurchaseRepository
             'godown_id'     => $request->to_godown_id,
             'current_stock' => $product['quantity']
         ]);
-
-        $this->cleanNoStock();
     }
 
     public function updateGPS(GodownProductsStock $godownStock, $productQuantity)
     {
         $godownStock->current_stock += $productQuantity;
         $godownStock->save();
-
-        $this->cleanNoStock();
-    }
-
-    public function cleanNoStock()
-    {
-        GodownProductsStock::where('current_stock', 0)->delete();
     }
 }

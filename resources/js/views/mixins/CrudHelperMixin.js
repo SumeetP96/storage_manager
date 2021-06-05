@@ -59,7 +59,8 @@ export const CrudHelperMixin = {
     updateFromForm(id, payload = {}) {
       this.updateRecord(id, {
         loader: payload.hasOwnProperty('loader') ? payload.loader : undefined,
-        redirect: payload.hasOwnProperty('redirect') ? payload.redirect : undefined
+        redirect: payload.hasOwnProperty('redirect') ? payload.redirect : undefined,
+        payload: payload.hasOwnProperty('payload') ? payload.payload : undefined
       })
     },
 

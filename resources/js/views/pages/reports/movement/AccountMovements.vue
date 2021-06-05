@@ -10,7 +10,7 @@
         <v-col cols="12" md="8" class="text-h5 d-flex align-start">
           <div style="width: 100%">
             <v-autocomplete
-              autofocus
+              :autofocus="$route.params.hasOwnProperty('payload') && $route.params.payload == {}"
               v-model="accountId"
               hide-details
               clearable
@@ -691,6 +691,14 @@
             </v-col>
           </v-row>
         </v-card-text>
+
+        <v-card-actions class="d-flex justify-space-between">
+          <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
+            @click="editFromTable({ name: `${recordApiRoute}.action`,
+              params: { id: dbRecord.id, backRoute: 'reports.account_movements', payload: { accountId: accountId } } })">
+              <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit {{ recordType }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -708,6 +716,7 @@ export default {
       dbRecord: {},
 
       recordType: '',
+      recordApiRoute: '',
 
       productId: '',
       accountId: 0,
@@ -735,12 +744,13 @@ export default {
   },
 
   mounted() {
+    this.axios.get('/api/godowns/autocomplete_with_transfers')
+      .then(response => this.accounts = response.data.records)
+
+    if (this.$route.params.payload) this.accountId = this.$route.params.payload.accountId
     this.apiRoute = 'reports/godown_movements'
     this.customQuery = `account_id=${this.accountId}`
     this.sortBy = 'date'
-
-    this.axios.get('/api/godowns/autocomplete_with_transfers')
-      .then(response => this.accounts = response.data.records)
 
     if (this.accounts) this.loadRecords()
   },
@@ -769,14 +779,17 @@ export default {
 
       if (transferTypeId == 1) {
         this.recordType = 'Inter Godown'
+        this.recordApiRoute = 'inter_godowns'
         apiRoute = 'inter_godowns'
       }
       if (transferTypeId == 2) {
         this.recordType = 'Purchase'
+        this.recordApiRoute = 'purchases'
         apiRoute = 'purchases'
       }
       if (transferTypeId == 3) {
         this.recordType = 'Sale'
+        this.recordApiRoute = 'sales'
         apiRoute = 'sales'
       }
 

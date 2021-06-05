@@ -3,7 +3,7 @@
     <v-app-bar dense app>
 
       <div v-if="disableBack">
-        <v-btn v-if="$route.name != 'home'" tabindex="-1" icon @click="$router.push({ name: backRoute })">
+        <v-btn v-if="$route.name != 'home'" tabindex="-1" icon @click="$router.push({ name: backRoute, params: { payload: payload } })">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
 
@@ -14,8 +14,8 @@
 
       <div v-else>
         <v-btn v-if="$route.name != 'home'" tabindex="-1" icon
-          v-shortkey.once="['alt', 'q']" @shortkey="$router.push({ name: backRoute })"
-          @click="$router.push({ name: backRoute })">
+          v-shortkey.once="['alt', 'q']" @shortkey="$router.push({ name: backRoute, params: { payload: payload } })"
+          @click="$router.push({ name: backRoute, params: { payload: payload } })">
             <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
 
@@ -340,7 +340,7 @@ import { CommonMixin } from '../mixins/CommonMixin'
 import { AppBarMixin } from '../mixins/appbar/AppBarMixin'
 
 export default {
-  props: ['backRoute', 'disableBack'],
+  props: ['backRoute', 'disableBack', 'payload'],
 
   mixins: [CommonMixin, AppBarMixin],
 

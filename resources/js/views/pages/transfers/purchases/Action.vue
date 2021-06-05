@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppBar backRoute="purchases.index" :disableBack="true" />
+    <AppBar :backRoute="backRoute" :payload="payload" :disableBack="true" />
 
     <v-col cols="12" class="px-8">
 
@@ -426,8 +426,8 @@
         <div class="my-8">
           <v-btn v-if="record.id"
             color="indigo" dark :loading="updateButtonLoading"
-            v-shortkey="['alt', 's']" @shortkey="updateTransfer($route.params.id, 'purchases.index')"
-            @click="updateTransfer($route.params.id, 'purchases.index')">
+            v-shortkey="['alt', 's']" @shortkey="updateTransfer($route.params.id, backRoute, payload)"
+            @click="updateTransfer($route.params.id, backRoute, payload)">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update purchase
           </v-btn>
 
@@ -1041,8 +1041,19 @@ export default {
     AppBar: require('../../../components/AppBar').default
   },
 
+  data() {
+    return {
+      backRoute: '',
+      payload: {}
+    }
+  },
+
   mounted() {
     this.apiRoute = 'purchases'
+
+    if (this.$route.params.backRoute) this.backRoute = this.$route.params.backRoute
+    else this.backRoute = 'purchases.index'
+    if (this.$route.params.payload) this.payload = this.$route.params.payload
 
     if (this.$route.params.id) {
       this.customFetchRecord(this.$route.params.id, true)

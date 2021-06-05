@@ -209,7 +209,7 @@ export const CrudMixin = {
                 'Record has been updated.',
                 'success'
               )
-              this.$router.push({ name: payload.redirect })
+              this.$router.push({ name: payload.redirect, params: { payload: payload.payload } })
             }
 
             if (!response.data.success) {
