@@ -50,7 +50,7 @@ class InterGodownService
             if (array_key_exists($productId, $runningStock)) $runningStock[$productId] += $productQuantity;
             else $runningStock[$productId] = $productQuantity;
 
-            if ($runningStock[$productId] > $gps->current_stock) {
+            if ($runningStock[$productId] > $gps->current_stock + $runningStock[$productId]) {
                 $errors['product_' . $key . '_quantity'] = ['Quantity exceeds stock.'];
             }
         }
