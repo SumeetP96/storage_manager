@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::view('terms_of_use', 'terms_of_use');
+
 Auth::routes();
 
 Route::get('/user/password/change', 'AppController@changePassword');

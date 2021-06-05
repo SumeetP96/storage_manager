@@ -55,7 +55,17 @@
 
     <div class="text-center mb-3 text-light">
       <div>Designed and developed by Sumeet Prajapati</div>
-      <small>Copyright &#169; 2021 Rameshwar Trading Company. All rights reserved.</small>
+      @php $currentYear = date('Y') @endphp
+      <small>
+        Copyright &#169;
+        @if($currentYear == '2021')
+          {{ $currentYear }}
+        @else
+          2021-{{ $currentYear }}
+        @endif
+        Rameshwar Trading Company. All rights reserved.
+        <a class="text-light" href="/terms_of_use.html">Terms of use.</a>
+      </small>
     </div>
   </div>
 </body>
