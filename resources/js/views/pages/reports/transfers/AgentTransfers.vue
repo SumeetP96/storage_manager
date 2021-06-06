@@ -10,7 +10,7 @@
         <v-col cols="12" md="8" class="text-h5 d-flex align-start">
           <div style="width: 100%">
             <v-autocomplete
-              autofocus
+              :autofocus="$route.params.hasOwnProperty('payload') && $route.params.payload == {}"
               v-model="agentId"
               hide-details
               clearable
@@ -720,6 +720,33 @@
             </v-col>
           </v-row>
         </v-card-text>
+
+        <v-card-actions class="d-flex justify-space-between">
+          <div class="d-flex">
+            <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
+              @click="editFromTable({ name: `${recordApiRoute}.action`,
+                params: { id: dbRecord.id, backRoute: 'reports.agent_transfers', payload: { agentId: agentId } } })">
+                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit {{ recordType }}
+            </v-btn>
+
+            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+            <!-- PDF -->
+            <v-btn color="error" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
+              :href="`/exports/pdf/${recordApiRoute}/${dbRecord.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+            </v-btn>
+
+            <!-- Print -->
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/${recordApiRoute}/${dbRecord.id}`)"
+              text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
+                <v-icon class="mr-2">mdi-printer</v-icon> Print
+            </v-btn>
+            <iframe id="print-record" style="display: none"></iframe>
+          </div>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -736,6 +763,7 @@ export default {
     return {
       dbRecord: {},
       recordType: '',
+      recordApiRoute: '',
 
       agentId: '',
       agents: [],
@@ -762,12 +790,13 @@ export default {
   },
 
   mounted() {
+    this.axios.get('/api/agents/autocomplete_with_transfers')
+      .then(response => this.agents = response.data.records)
+
+    if (this.$route.params.payload) this.agentId = this.$route.params.payload.agentId
     this.apiRoute = 'reports/agent_transfers'
     this.customQuery = `agent_id=${this.agentId}`
     this.sortBy = 'date'
-
-    this.axios.get('/api/agents/autocomplete_with_transfers')
-      .then(response => this.agents = response.data.records)
 
     if (this.agents) this.loadRecords()
   },
@@ -795,14 +824,17 @@ export default {
 
       if (transferTypeId == 1) {
         this.recordType = 'Inter Godown'
+        this.recordApiRoute = 'inter_godowns'
         apiRoute = 'inter_godowns'
       }
       if (transferTypeId == 2) {
         this.recordType = 'Purchase'
+        this.recordApiRoute = 'purchases'
         apiRoute = 'purchases'
       }
       if (transferTypeId == 3) {
         this.recordType = 'Sale'
+        this.recordApiRoute = 'sales'
         apiRoute = 'sales'
       }
 
