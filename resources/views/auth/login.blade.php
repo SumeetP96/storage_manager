@@ -62,7 +62,7 @@
 
     <p class="mt-4">
       Your trial period has expired.
-      You can contact the developer and purchase the full version if you want to continue using this application.
+      If you want to continue using this application you can contact the developer and purchase the full version.
     </p>
 
     <p class="mt-4">
