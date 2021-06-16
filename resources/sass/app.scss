@@ -63,5 +63,33 @@ body {
             padding: 10px 12px;
         }
     }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            padding: 8px 12px;
+            vertical-align: top;
+        }
+
+        th {
+            padding: 2px 12px;
+        }
+
+        .left-round {
+            border-bottom-left-radius: 6px;
+            border-top-left-radius: 6px;
+        }
+
+        .right-round {
+            border-bottom-right-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .footer-th {
+            padding: 4px 5px;
+        }
+    }
 }
 

@@ -33,7 +33,7 @@
       </div>
 
       <v-app-bar-title class="ml-2 ml-sm-0">
-        Storage Manager
+        {{ title ? title : 'Storage Manager' }}
         <!-- <span v-if="transactionDate" class="pl-2">
           ( from :
             <span :class="$vuetify.theme.dark ? 'primary--text' : 'indigo--text'">
@@ -340,7 +340,7 @@ import { CommonMixin } from '../mixins/CommonMixin'
 import { AppBarMixin } from '../mixins/appbar/AppBarMixin'
 
 export default {
-  props: ['backRoute', 'disableBack', 'payload'],
+  props: ['backRoute', 'disableBack', 'payload', 'title'],
 
   mixins: [CommonMixin, AppBarMixin],
 

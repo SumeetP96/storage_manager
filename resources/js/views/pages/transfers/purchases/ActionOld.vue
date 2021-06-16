@@ -1,7 +1,6 @@
 <template>
   <div>
-    <AppBar :backRoute="backRoute" :payload="payload" :disableBack="true"
-      :title="$route.params.id ? 'Update Purchase' : 'Create New Purchase'" />
+    <AppBar :backRoute="backRoute" :payload="payload" :disableBack="true" />
 
     <v-col cols="12" class="px-8">
 
@@ -10,76 +9,62 @@
       </v-skeleton-loader>
 
       <div v-else>
+        <div v-if="record.id" class="text-h5 py-5">Update Purchase</div>
+        <div v-else class="text-h5 py-5">Create new Purchase</div>
 
         <!-- Top -->
-        <div class="overline grey--text" style="font-size: 0.9rem !important">Purchase details</div>
-        <v-row no-gutters>
+        <v-row>
           <!-- Left Side -->
-          <v-col cols="4" class="rounded px-4 pb-3 pt-1"
-            :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+          <v-col cols="12" md="5">
             <v-row>
-              <!-- Purchase No -->
-              <v-col cols="4">
-                <div class="subtitle-1 font-weight-bold">Purchase no
-                  <span class="red--text text-h6"></span></div>
-                <v-text-field
-                  v-model="record.purchase_no"
-                  hide-details="auto"
-                  outlined
-                  disabled
-                  placeholder="10"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  dense>
-                </v-text-field>
-              </v-col>
-
               <!-- Date -->
-              <v-col cols="4">
-                <label class="subtitle-1 font-weight-bold">Date
-                  <span class="red--text text-h6">*</span>
-                </label>
-                <v-text-field
-                  autofocus
-                  v-model="record.dateRaw"
-                  hide-details="auto"
-                  outlined
-                  placeholder="DD-MM-YY"
-                  @blur="formatDate('dateRaw');
-                    record.date = flipToYMD(record.dateRaw)"
-                  :error-messages="errors.date"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  dense>
-                </v-text-field>
-                <div v-if="record.dateRaw" class="subtitle-2 px-3 rounded"
-                  :class="$vuetify.theme.dark ? 'primary--text text--lighten-2' : 'primary--text white'">
-                    {{ record.date | moment('dddd') }}
+              <v-col cols="12" md="6">
+                <label class="subtitle-1">Date
+                  <span class="red--text text-h6">*</span></label>
+                <div class="d-flex align-start">
+                  <v-text-field
+                    autofocus
+                    v-model="record.dateRaw"
+                    hide-details="auto"
+                    outlined
+                    placeholder="Purchase date ( DD-MM-YY )"
+                    @blur="formatDate('dateRaw');
+                      record.date = flipToYMD(record.dateRaw)"
+                    prepend-inner-icon="mdi-calendar"
+                    :error-messages="errors.date"
+                    :class="$vuetify.theme.dark ? '' : 'white'"
+                    class="center-input"
+                    dense>
+                  </v-text-field>
+                  <div v-if="record.dateRaw"
+                    class="text-right px-3 ml-2 mt-1 text-h6 indigo white--text rounded">
+                      {{ record.date | moment('dddd') }}
+                  </div>
                 </div>
               </v-col>
 
               <!-- Invoice No -->
-              <v-col cols="4">
-                <div class="subtitle-1 font-weight-bold">Invoice number
+              <v-col cols="12" md="5">
+                <div class="subtitle-1">Invoice number
                   <span class="red--text text-h6"></span></div>
                 <v-text-field
                   v-model="record.invoice_no"
                   hide-details="auto"
                   outlined
                   placeholder="INVOICE#"
+                  prepend-inner-icon="mdi-file-document-outline"
                   :error-messages="errors.invoice_no"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? '' : 'white'"
+                  class="left-input mr-1"
                   dense>
                 </v-text-field>
               </v-col>
             </v-row>
-          </v-col> <!-- / Left Side End -->
 
-          <!-- Right Side -->
-          <v-col cols="8" class="pl-3">
-            <v-row no-gutters class="rounded px-4 pb-3 pt-1"
-              :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-              <!-- Account -->
-              <v-col cols="6" class="pr-2">
-                <label class="subtitle-1 font-weight-bold">From account
+            <!-- Account -->
+            <v-row>
+              <v-col cols="11">
+                <label class="subtitle-1">From account
                   <span class="red--text text-h6">*</span></label>
                 <div class="d-flex">
                   <div style="width: 100%">
@@ -98,13 +83,13 @@
                       @input="fetchAccountDetails()"
                       prepend-inner-icon="mdi-briefcase-variant-outline"
                       :error-messages="errors.from_godown_id"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? '' : 'white'"
                       class="left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="accountDetails.address || accountDetails.contact_1 || accountDetails.contact_2"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                      class="subtitle-2 px-2 py-1 rounded">
+                      :class="$vuetify.theme.dark ? '' : 'white'"
+                      class="subtitle-2 px-3 py-1 rounded">
                         <span v-if="accountDetails.address">{{ accountDetails.address }}</span>
                         <span v-if="accountDetails.address && (accountDetails.contact_1 || accountDetails.contact_2)"> - </span>
                         <span v-if="!accountDetails.address && (accountDetails.contact_1 || accountDetails.contact_2)">Contact - </span>
@@ -124,10 +109,12 @@
                   </v-btn>
                 </div>
               </v-col>
+            </v-row>
 
-              <!-- Godown -->
-              <v-col cols="6" class="pl-2">
-                <label class="subtitle-1 font-weight-bold">To godown
+            <!-- Godown -->
+            <v-row no-gutters class="mt-3">
+              <v-col cols="11">
+                <label class="subtitle-1">To godown
                   <span class="red--text text-h6">*</span></label>
                 <div class="d-flex">
                   <div style="width: 100%">
@@ -146,13 +133,13 @@
                       item-value="id"
                       prepend-inner-icon="mdi-store"
                       :error-messages="errors.to_godown_id"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? '' : 'white'"
                       class="left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="godownDetails.address || godownDetails.contact_1 || godownDetails.contact_2"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                      class="subtitle-2 px-2 py-1 rounded">
+                      :class="$vuetify.theme.dark ? '' : 'white'"
+                      class="subtitle-2 px-3 py-1 rounded">
                         <span v-if="godownDetails.address">{{ godownDetails.address }}</span>
                         <span v-if="godownDetails.address && (godownDetails.contact_1 || godownDetails.contact_2)"> - </span>
                         <span v-if="!godownDetails.address && (godownDetails.contact_1 || godownDetails.contact_2)">Contact - </span>
@@ -173,227 +160,152 @@
                 </div>
               </v-col>
             </v-row>
-          </v-col> <!-- / Right side end -->
-        </v-row> <!-- / Top End -->
+          </v-col> <!-- / Left Side End -->
 
 
-        <!-- Center -->
-        <div class="overline grey--text mt-5" style="font-size: 0.9rem !important">Products</div>
-        <div class="rounded px-4 py-3"
-          :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+          <!-- Right Side -->
+          <v-col cols="12" md="7">
+            <!-- Product -->
+            <v-row>
+              <v-col cols="12" class="rounded elevation-1 px-4"
+                :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
 
-          <table class="invoice-table">
-            <!-- Headings -->
-            <tr>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-left left-round" style="width: 1%">#</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-left">Product</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 10%">Lot no</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 10%">Rent</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 10%">Labour</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Compound</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-left" style="width: 1%"></th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Quantity</th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-left" style="width: 1%"></th>
-              <td :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right right-round" style="width: 1%"></td>
-            </tr>
+                <v-row no-gutters>
+                  <v-col cols="12" md="7">
+                    <label class="subtitle-1">Product
+                      <span class="red--text text-h6">*</span></label>
+                  </v-col>
+                  <v-col cols="12" md="2">
+                    <div class="subtitle-1 text-right" :class="inputProducts.length > 1 ? 'pr-10' : 'pr-2'"
+                      style="width: 100%">Compound
+                      <span class="red--text text-h6"></span></div>
+                  </v-col>
+                  <v-col cols="12" md="3">
+                    <div class="subtitle-1 text-right" :class="inputProducts.length > 1 ? 'pr-10' : ''"
+                      style="width: 100%">Quantity
+                      <span class="red--text text-h6">*</span></div>
+                  </v-col>
+                </v-row>
 
-            <tr v-for="(product, index) in inputProducts" :key="index">
-              <td class="subtitle-1 font-weight-bold">{{ index + 1 }}</td>
+                <v-row v-for="(product, index) in inputProducts" :key="index" no-gutters class="mb-2">
+                  <v-col cols="12" md="7">
+                    <div class="d-flex">
+                      <div style="width: 100%">
+                        <v-autocomplete
+                          v-model="inputProducts[index].id"
+                          hide-details="auto"
+                          clearable
+                          outlined
+                          :disabled="productLoading"
+                          :loading="productLoading"
+                          :id="`productBox${index}`"
+                          placeholder="Select product"
+                          auto-select-first
+                          :items="products"
+                          @change="fetchProductDetails(index)"
+                          @click:clear="fetchProductDetails(index, true)"
+                          item-text="name"
+                          item-value="id"
+                          :error-messages="errors[`product_${index}_id`]"
+                          :class="$vuetify.theme.dark ? '' : 'white'"
+                          dense>
+                        </v-autocomplete>
+                        <div v-if="productDetails[index].remarks"
+                          :class="$vuetify.theme.dark ? '' : 'white'" class="subtitle-2 px-3 py-1 rounded">
+                            {{ productDetails[index].remarks }}
+                        </div>
+                      </div>
 
-              <!-- Product -->
-              <td>
-                <div class="d-flex">
-                  <div style="width: 100%">
-                  <v-autocomplete
-                      v-model="inputProducts[index].id"
-                      hide-details="auto"
-                      clearable
-                      outlined
-                      :disabled="productLoading"
-                      :loading="productLoading"
-                      :id="`productBox${index}`"
-                      placeholder="Select product"
-                      auto-select-first
-                      :items="products"
-                      @change="fetchProductDetails(index)"
-                      @click:clear="fetchProductDetails(index, true)"
-                      item-text="name"
-                      item-value="id"
-                      :error-messages="errors[`product_${index}_id`]"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                      dense>
-                  </v-autocomplete>
-                  <div v-if="productDetails[index].remarks"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'" class="subtitle-2 px-3 py-1 rounded">
-                      {{ productDetails[index].remarks }}
-                  </div>
-                  </div>
+                      <v-btn v-if="!inputProducts[index].id" dark icon class="indigo white--text ml-1" elevation="1"
+                        @click="openDialog('productDialog', '', '', false, index)">
+                          <v-icon>mdi-plus</v-icon>
+                      </v-btn>
+                      <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
+                        @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
+                          <v-icon>mdi-circle-edit-outline</v-icon>
+                      </v-btn>
+                    </div>
+                  </v-col>
 
-                  <v-btn v-if="!inputProducts[index].id" dark icon class="indigo white--text ml-1" elevation="1"
-                  @click="openDialog('productDialog', '', '', false, index)">
-                      <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
-                  @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
-                      <v-icon>mdi-circle-edit-outline</v-icon>
-                  </v-btn>
-                </div>
-              </td>
+                  <!-- Compound Quantity -->
+                  <v-col cols="12" md="2" class="pl-5">
+                    <div>
+                      <v-text-field
+                        v-model="inputProducts[index].compoundQuantityRaw"
+                        hide-details="auto"
+                        outlined
+                        @blur="
+                          inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
+                          calculateQuantity(index)
+                          "
+                        :disabled="!inputProducts[index].id || !productDetails[index].compoundUnit"
+                        :filled="!inputProducts[index].id || !productDetails[index].compoundUnit"
+                        placeholder="0.00"
+                        :error-messages="errors[`product_${index}_compound_quantity`]"
+                        :class="$vuetify.theme.dark ? '' : 'white'"
+                        class="right-input"
+                        dense>
+                      </v-text-field>
 
-              <!-- Lot number -->
-              <td>
-                <v-text-field
-                  v-model="inputProducts[index].lot_number"
-                  hide-details="auto"
-                  outlined
-                  @blur="calculateQuantity(index)"
-                  :disabled="!inputProducts[index].id"
-                  :filled="!inputProducts[index].id"
-                  placeholder="LOT#"
-                  :error-messages="errors[`product_${index}_lot_number`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
-                  dense>
-                </v-text-field>
-              </td>
+                      <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
+                        :class="$vuetify.theme.dark ? '' : 'white'"
+                        class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
+                          <span class="pink--text">{{ productDetails[index].compoundUnit }}</span>
+                          <span class="primary--text">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
+                      </div>
+                    </div>
+                  </v-col> <!-- / Compound Quantity End -->
 
-              <!-- Rent -->
-              <td>
-                <v-text-field
-                  v-model="inputProducts[index].rent"
-                  hide-details="auto"
-                  outlined
-                  @blur="calculateQuantity(index)"
-                  :disabled="!inputProducts[index].id"
-                  :filled="!inputProducts[index].id"
-                  placeholder="0.00"
-                  :error-messages="errors[`product_${index}_rent`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
-                  dense>
-                </v-text-field>
-              </td>
+                  <!-- Quantity -->
+                  <v-col cols="12" md="3" class="pl-5">
+                    <div class="d-flex align-start justify-end">
+                      <div>
+                        <v-text-field
+                          v-model="inputProducts[index].quantityRaw"
+                          hide-details="auto"
+                          outlined
+                          @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
+                          @input="
+                            inputProducts[index].compoundQuantity = undefined;
+                            inputProducts[index].compoundQuantityRaw = undefined;
+                            "
+                          placeholder="0.00"
+                          :error-messages="errors[`product_${index}_quantity`]"
+                          :class="$vuetify.theme.dark ? '' : 'white'"
+                          class="right-input"
+                          dense>
+                        </v-text-field>
+                        <div v-if="inputProducts[index].id"
+                          :class="$vuetify.theme.dark ? '' : 'white'"
+                          class="subtitle-2 px-3 py-1 rounded text-right font-weight-bold">
+                            <span class="pink--text pl-1">{{ productDetails[index].unit }}</span>
+                        </div>
+                      </div>
 
-              <!-- Labour -->
-              <td>
-                <v-text-field
-                  v-model="inputProducts[index].labour"
-                  hide-details="auto"
-                  outlined
-                  @blur="calculateQuantity(index)"
-                  :disabled="!inputProducts[index].id"
-                  :filled="!inputProducts[index].id"
-                  placeholder="0.00"
-                  :error-messages="errors[`product_${index}_labour`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
-                  dense>
-                </v-text-field>
-              </td>
+                      <v-btn v-if="inputProducts.length > 1"
+                        dark icon class="error white--text ml-1 elevation-1" tabindex="-1"
+                        @click="removeProductInputRow(index)">
+                          <v-icon class="text-h6">mdi-close</v-icon>
+                      </v-btn>
+                    </div>
+                  </v-col>
+                </v-row>
 
-              <!-- Compound -->
-              <td class="pr-1">
-                <v-text-field
-                  v-model="inputProducts[index].compoundQuantityRaw"
-                  hide-details="auto"
-                  outlined
-                  @blur="
-                    inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
-                    calculateQuantity(index)
-                    "
-                  :disabled="!inputProducts[index].id || !productDetails[index].compoundUnit"
-                  :filled="!inputProducts[index].id || !productDetails[index].compoundUnit"
-                  placeholder="0.00"
-                  :error-messages="errors[`product_${index}_compound_quantity`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
-                  dense>
-                </v-text-field>
-              </td>
-
-              <td class="pl-0">
-                <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="subtitle-1 px-1 rounded text-right font-weight-bold mt-1">
-                    <span class="pink--text">
-                      {{ productDetails[index].compoundUnit }}<span class="primary--text pl-1">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
-                    </span>
-                </div>
-              </td>
-
-              <!-- Quantity -->
-              <td class="pr-1">
-                <v-text-field
-                  v-model="inputProducts[index].quantityRaw"
-                  hide-details="auto"
-                  outlined
-                  @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
-                  @input="
-                    inputProducts[index].compoundQuantity = undefined;
-                    inputProducts[index].compoundQuantityRaw = undefined;
-                    "
-                  :disabled="!inputProducts[index].id"
-                  :filled="!inputProducts[index].id"
-                  placeholder="0.00"
-                  :error-messages="errors[`product_${index}_quantity`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
-                  dense>
-                </v-text-field>
-              </td>
-
-              <td class="pl-0">
-                <div v-if="inputProducts[index].id"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="subtitle-1 px-1 rounded text-right mt-1 font-weight-bold">
-                  <span class="pink--text">{{ productDetails[index].unit }}</span>
-                </div>
-              </td>
-
-              <td>
-                <v-btn v-if="inputProducts.length > 1"
-                  dark icon class="error white--text ml-1 elevation-1" tabindex="-1"
-                  @click="removeProductInputRow(index)">
-                    <v-icon class="text-h6">mdi-close</v-icon>
-                </v-btn>
-              </td>
-            </tr>
-
-            <tr :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
-              <th class="text-left left-round footer-th" colspan="2">
-                <v-btn small color="success" :disabled="invalidAddition()" @click="addProductInputRow()">
+                <v-btn small color="success" :disabled="invalidAddition()" @click="addProductInputRow()" class="mt-2 mb-1 float-right">
                   <v-icon class="text-h6 mr-2">mdi-plus</v-icon> Add product
                 </v-btn>
-              </th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-            </tr>
-          </table>
-        </div> <!-- / Center End -->
+              </v-col>
+            </v-row>
+          </v-col> <!-- / Right Side End -->
+
+        </v-row> <!-- / Top End -->
 
         <!-- Bottom -->
-        <div class="overline grey--text mt-5" style="font-size: 0.9rem !important">Additional details</div>
-        <v-row no-gutters class="rounded px-4 pb-3 pt-1"
-          :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+        <div class="overline grey--text mt-8" style="font-size: 0.9rem !important">Additional details</div>
+        <v-row>
           <!-- Agent -->
-          <v-col cols="3">
-            <label class="subtitle-1 font-weight-bold">Agent
+          <v-col cols="12" md="3">
+            <label class="subtitle-1">Agent
               <span class="red--text text-h6"></span></label>
             <div class="d-flex">
               <v-autocomplete
@@ -410,7 +322,7 @@
                 item-value="id"
                 prepend-inner-icon="mdi-account-supervisor-circle-outline"
                 :error-messages="errors.agent_id"
-                :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                :class="$vuetify.theme.dark ? '' : 'white'"
                 class="left-input"
                 dense>
               </v-autocomplete>
@@ -427,8 +339,8 @@
           </v-col>
 
           <!-- Order No -->
-          <v-col cols="2" class="pl-6">
-            <div class="subtitle-1 font-weight-bold">Order number
+          <v-col cols="12" md="2">
+            <div class="subtitle-1">Order number
               <span class="red--text text-h6"></span></div>
             <v-text-field
               v-model="record.order_no"
@@ -437,15 +349,49 @@
               placeholder="ORDER#"
               prepend-inner-icon="mdi-clipboard-text-outline"
               :error-messages="errors.order_no"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? '' : 'white'"
+              class="left-input"
+              dense>
+            </v-text-field>
+          </v-col>
+
+          <!-- Eway Bill no -->
+          <v-col cols="12" md="2">
+            <div class="subtitle-1">E-way bill number
+              <span class="red--text text-h6"></span></div>
+            <v-text-field
+              v-model="record.eway_bill_no"
+              hide-details="auto"
+              placeholder="EWAYBILL#"
+              outlined
+              prepend-inner-icon="mdi-file-document-outline"
+              :error-messages="errors.eway_bill_no"
+              :class="$vuetify.theme.dark ? '' : 'white'"
+              class="left-input"
+              dense>
+            </v-text-field>
+          </v-col>
+
+          <!-- Delivery Slip No -->
+          <v-col cols="12" md="2">
+            <div class="subtitle-1">Delivery slip number
+              <span class="red--text text-h6"></span></div>
+            <v-text-field
+              v-model="record.delivery_slip_no"
+              hide-details="auto"
+              placeholder="DELIVERY#"
+              outlined
+              prepend-inner-icon="mdi-receipt"
+              :error-messages="errors.delivery_slip_no"
+              :class="$vuetify.theme.dark ? '' : 'white'"
               class="left-input"
               dense>
             </v-text-field>
           </v-col>
 
           <!-- Transport Details -->
-          <v-col cols="3" class="pl-6">
-            <div class="subtitle-1 font-weight-bold">Transport details
+          <v-col cols="12" md="3">
+            <div class="subtitle-1">Transport details
               <span class="red--text text-h6"></span></div>
             <v-text-field
               v-model="record.transport_details"
@@ -454,26 +400,28 @@
               placeholder="Driver / Vehicle details"
               prepend-inner-icon="mdi-truck-fast-outline"
               :error-messages="errors.transport_details"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? '' : 'white'"
               class="left-input"
               dense>
             </v-text-field>
           </v-col>
+        </v-row> <!-- / Bottom End -->
 
-          <!-- Remarks -->
-          <v-col cols="4" class="pl-6">
-            <label class="subtitle-1 font-weight-bold">Remarks
+        <!-- Remarks -->
+        <v-row no-gutters class="mt-2">
+          <v-col cols="12">
+            <label class="subtitle-1">Remarks
               <span class="red--text text-h6"></span></label>
             <v-text-field
               v-model="record.remarks"
               hide-details="auto"
               outlined
               placeholder="Additional details or notes"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
             </v-text-field>
           </v-col>
-        </v-row> <!-- / Bottom End -->
+        </v-row>
 
         <div class="my-8">
           <v-btn v-if="record.id"
@@ -1111,6 +1059,8 @@ export default {
       this.customFetchRecord(this.$route.params.id, true)
     } else {
       this.customFetchAll()
+      this.record.dateRaw = this.todayDate()
+      this.record.date = this.flipToYMD(this.todayDate())
     }
 
     this.record.transfer_type = this.transferTypes.purchase

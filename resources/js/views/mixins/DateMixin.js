@@ -2,6 +2,7 @@ export const DateMixin = {
   methods: {
     formatDate(fieldName) {
       let inputDate = this.record[fieldName]
+      this.record[fieldName] = ''
       if (!inputDate) return
 
       if (inputDate.search('-') < 0) {
@@ -82,7 +83,6 @@ export const DateMixin = {
           }
         }
       }
-
       this.record[fieldName] = DD + '-' + MM + '-' + YYYY
     },
 
@@ -90,6 +90,15 @@ export const DateMixin = {
       if (!dateDMY) return ''
       let date = dateDMY.split('-')
       return date[2] + '/' + date[1] + '/' + date[0]
-    }
+    },
+
+    setTodayDate() {
+      var today = new Date()
+      var dd = String(today.getDate()).padStart(2, '0')
+      var mm = String(today.getMonth() + 1).padStart(2, '0')
+      var yyyy = today.getFullYear()
+
+      return dd + '-' + mm + '-' + yyyy
+    },
   }
 }
