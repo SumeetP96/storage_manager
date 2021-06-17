@@ -51,16 +51,6 @@ body {
         }
     }
 
-    .left-input {
-        .v-input__control {
-            .v-input__slot {
-                .v-input__prepend-inner {
-                    margin-right: 8px !important;
-                }
-            }
-        }
-    }
-
     .right-input {
         .v-input__control {
             .v-input__slot {
@@ -69,6 +59,9 @@ body {
                         text-align: right !important;
                     }
                 }
+            }
+            .v-messages {
+                text-align: right !important;
             }
         }
     }
@@ -146,6 +139,36 @@ body {
 
         .footer-th {
             padding: 4px 5px;
+        }
+    }
+
+    .left-round-top {
+        border-top-left-radius: 6px;
+    }
+
+    .right-round-top {
+        border-top-right-radius: 6px;
+    }
+
+    .left-round-bottom {
+        border-bottom-left-radius: 6px;
+    }
+
+    .right-round-bottom {
+        border-bottom-right-radius: 6px;
+    }
+
+    .invoice-record-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            padding: 4px 8px;
+            vertical-align: top;
+        }
+
+        th {
+            padding: 2px 12px;
         }
     }
 }

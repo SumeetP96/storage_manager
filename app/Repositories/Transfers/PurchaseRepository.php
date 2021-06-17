@@ -40,7 +40,13 @@ class PurchaseRepository
                 st.*,
                 DATE_FORMAT(st.date, "%d-%m-%Y") as dateRaw,
                 fg.name as fromName,
+                fg.address as fromAddress,
+                fg.contact_1 as fromContact1,
+                fg.contact_2 as fromContact2,
                 tg.name as toName,
+                tg.address as toAddress,
+                tg.contact_1 as toContact1,
+                tg.contact_2 as toContact2,
                 ag.name as agentName
             ')
             ->first();
@@ -53,15 +59,20 @@ class PurchaseRepository
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
                 stp.id,
+                stp.lot_number as lotNumber,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
-                pr.compound_unit as compoundUnit,
                 stp.compound_quantity as compoundQuantity,
                 stp.compound_quantity div 100 as compoundQuantityRaw,
+                stp.rent,
+                stp.rent div 100 as rentRaw,
+                stp.labour,
+                stp.labour div 100 as labourRaw,
+                pr.compound_unit as compoundUnit,
+                pr.packing,
                 pr.id as productId,
                 pr.name as name,
-                pr.unit as unit,
-                pr.lot_number as lotNumber
+                pr.unit as unit
             ')
             ->get();
     }
@@ -71,8 +82,6 @@ class PurchaseRepository
      */
     public function create(Request $request, $purchaseService)
     {
-        dd($request->all());
-
         $id = StockTransfer::create([
             'purchase_no'       => $request->purchase_no,
             'transfer_type_id'  => StockTransfer::PURCHASE,
@@ -90,11 +99,14 @@ class PurchaseRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
+                'lot_number'        => $product['lot_number'] ?? NULL,
+                'rent'              => (int) $product['rent'],
+                'labour'            => (int) $product['labour'],
+                'quantity'          => (int) $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
             ]);
 
-            if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
+            if ($existingGPS = $purchaseService->checkExistingGPS($request, $product)) {
                 $this->updateGPS($existingGPS, $product['quantity']);
             } else {
                 $this->createGPS($request, $product);
@@ -115,8 +127,6 @@ class PurchaseRepository
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
-            'eway_bill_no'      => strtoupper($request->eway_bill_no),
-            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
             'transport_details' => strtoupper($request->transport_details),
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
@@ -128,8 +138,11 @@ class PurchaseRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
+                'lot_number'        => $product['lot_number'] ?? NULL,
+                'rent'              => (int) $product['rent'],
+                'labour'            => (int) $product['labour'],
+                'quantity'          => (int) $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {

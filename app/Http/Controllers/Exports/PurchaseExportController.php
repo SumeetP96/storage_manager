@@ -115,9 +115,11 @@ class PurchaseExportController extends Controller
                 pr.compound_unit as compoundUnit,
                 stp.compound_quantity as compoundQuantity,
                 stp.compound_quantity div 100 as compoundQuantityRaw,
+                stp.rent,
+                stp.labour,
                 pr.name as name,
                 pr.unit as unit,
-                pr.lot_number as lotNumber
+                stp.lot_number as lotNumber
             ')
             ->get();
 

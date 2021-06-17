@@ -59,11 +59,11 @@ body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {
   margin-right: 8px !important;
 }
 
-body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {
-  margin-right: 8px !important;
+body .right-input .v-input__control .v-input__slot .v-text-field__slot input {
+  text-align: right !important;
 }
 
-body .right-input .v-input__control .v-input__slot .v-text-field__slot input {
+body .right-input .v-input__control .v-messages {
   text-align: right !important;
 }
 
@@ -132,5 +132,35 @@ body .invoice-table .right-round {
 
 body .invoice-table .footer-th {
   padding: 4px 5px;
+}
+
+body .left-round-top {
+  border-top-left-radius: 6px;
+}
+
+body .right-round-top {
+  border-top-right-radius: 6px;
+}
+
+body .left-round-bottom {
+  border-bottom-left-radius: 6px;
+}
+
+body .right-round-bottom {
+  border-bottom-right-radius: 6px;
+}
+
+body .invoice-record-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .invoice-record-table td {
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+body .invoice-record-table th {
+  padding: 2px 12px;
 }
 

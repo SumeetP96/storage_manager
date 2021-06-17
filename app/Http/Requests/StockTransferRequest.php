@@ -29,7 +29,6 @@ class StockTransferRequest extends FormRequest
             'to_godown_id'      => 'different:from_godown_id|required|integer',
             'order_no'          => 'nullable|max:20',
             'invoice_no'        => 'nullable|max:20',
-            'eway_bill_no'      => 'nullable|max:20',
             'transport.details' => 'nullable|max:100',
         ];
     }

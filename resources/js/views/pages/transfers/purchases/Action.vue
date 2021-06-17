@@ -1123,8 +1123,6 @@ export default {
           this.customFetchAll()
         })
     }
-
-    this.record.transfer_type = this.transferTypes.purchase
   },
 }
 </script>

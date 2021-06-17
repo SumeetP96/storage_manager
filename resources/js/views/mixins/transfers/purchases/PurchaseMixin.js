@@ -50,9 +50,14 @@ export const PurchaseMixin = {
 
                     this.inputProducts[index].id = product.productId
                     this.inputProducts[index].quantity = product.quantity
+                    this.inputProducts[index].lot_number = product.lotNumber
                     this.inputProducts[index].quantityRaw = product.quantityRaw
                     this.inputProducts[index].compoundQuantity = product.compoundQuantity
                     this.inputProducts[index].compoundQuantityRaw = product.compoundQuantityRaw
+                    this.inputProducts[index].rent = product.rent
+                    this.inputProducts[index].rentRaw = product.rentRaw
+                    this.inputProducts[index].labour = product.labour
+                    this.inputProducts[index].labourRaw = product.labourRaw
 
                     this.fetchProductDetails(index)
                   })

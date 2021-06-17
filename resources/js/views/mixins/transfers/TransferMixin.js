@@ -17,7 +17,10 @@ export const TransferMixin = {
 
       dialogRecord: {},
       dialogErrors: {},
-      inputProducts: [{ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' }],
+      inputProducts: [{
+        id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '',
+        rent: '', rentRaw: '', labour: '', labourRaw: ''
+      }],
 
       agents: [],
       godowns: [],
@@ -47,7 +50,10 @@ export const TransferMixin = {
     addProductInputRow() {
       const last = this.inputProducts.length
       this.productDetails.push({ unit: '', stock: '', remarks: '' })
-      this.inputProducts.push({ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' })
+      this.inputProducts.push({
+        id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '',
+        rent: '', rentRaw: '', labour: '', labourRaw: ''
+      })
       setTimeout(() => document.getElementById(`productBox${last}`).focus(), 100);
     },
 
@@ -60,7 +66,15 @@ export const TransferMixin = {
     removeProductInputRow(index) {
       this.inputProducts = this.inputProducts.filter((product, ind) => ind != index)
       this.productDetails[index] = { unit: '', remarks: '', packing: '', compoundUnit: '' }
+      this.clearProductErrors()
       this.clearUnusedInputs()
+    },
+
+    clearProductErrors() {
+      this.errors[`product_${index}_rent`] = ''
+      this.errors[`product_${index}_labour`] = ''
+      this.errors[`product_${index}_compound_quantity`] = ''
+      this.errors[`product_${index}_quantity`] = ''
     },
 
     clearUnusedInputs() {
