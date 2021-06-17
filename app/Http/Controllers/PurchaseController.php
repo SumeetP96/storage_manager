@@ -127,4 +127,17 @@ class PurchaseController extends Controller
 
         return $this->responseService->success();
     }
+
+    /**
+     * New purchase.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function new()
+    {
+        return $this->responseService
+            ->record(
+                $this->purchaseRepository->new()
+            );
+    }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\GodownProductsStock;
 use App\StockTransferProduct;
 use App\Traits\PurchaseTrait;
+use App\TransferType;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRepository
@@ -70,15 +71,16 @@ class PurchaseRepository
      */
     public function create(Request $request, $purchaseService)
     {
+        dd($request->all());
+
         $id = StockTransfer::create([
-            'transfer_type_id'  => $request->transfer_type,
+            'purchase_no'       => $request->purchase_no,
+            'transfer_type_id'  => StockTransfer::PURCHASE,
             'date'              => $request->date,
             'from_godown_id'    => $request->from_godown_id,
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
-            'eway_bill_no'      => strtoupper($request->eway_bill_no),
-            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
             'transport_details' => strtoupper($request->transport_details),
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
@@ -146,6 +148,19 @@ class PurchaseRepository
         $this->undoPreviousGPSChanges($id);
 
         StockTransfer::find($id)->delete();
+    }
+
+    /**
+     * New purchase
+     */
+    public function new()
+    {
+        $purchaseNo = StockTransfer::max('purchase_no');
+        return [
+            'purchase_no'   => is_null($purchaseNo) ? 1 : $purchaseNo + 1,
+            'dateRaw'       => date('d-m-Y'),
+            'date'          => date('Y-m-d')
+        ];
     }
 
     /**

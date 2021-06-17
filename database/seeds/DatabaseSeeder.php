@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             UserSeeder::class,
             TransferTypeSeeder::class,
-            // GodownSeeder::class,
+            GodownSeeder::class,
             ProductSeeder::class,
         ]);
     }

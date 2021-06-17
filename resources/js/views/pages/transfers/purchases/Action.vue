@@ -27,7 +27,7 @@
                   hide-details="auto"
                   outlined
                   disabled
-                  placeholder="10"
+                  placeholder="#"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
                   class="smaller-input"
                   dense>
@@ -259,7 +259,6 @@
                   v-model="inputProducts[index].lot_number"
                   hide-details="auto"
                   outlined
-                  @blur="calculateQuantity(index)"
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
                   placeholder="LOT#"
@@ -273,10 +272,10 @@
               <!-- Rent -->
               <td>
                 <v-text-field
-                  v-model="inputProducts[index].rent"
+                  v-model="inputProducts[index].rentRaw"
                   hide-details="auto"
                   outlined
-                  @blur="calculateQuantity(index)"
+                  @blur="inputProducts[index].rent = setFormatQuantity(inputProducts[index].rentRaw)"
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
@@ -290,10 +289,10 @@
               <!-- Labour -->
               <td>
                 <v-text-field
-                  v-model="inputProducts[index].labour"
+                  v-model="inputProducts[index].labourRaw"
                   hide-details="auto"
                   outlined
-                  @blur="calculateQuantity(index)"
+                  @blur="inputProducts[index].labour = setFormatQuantity(inputProducts[index].labourRaw)"
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
@@ -324,6 +323,7 @@
                 </v-text-field>
               </td>
 
+              <!-- Unit -->
               <td class="pl-0">
                 <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
@@ -355,6 +355,7 @@
                 </v-text-field>
               </td>
 
+              <!-- Unit -->
               <td class="pl-0">
                 <div v-if="inputProducts[index].id"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
@@ -363,6 +364,7 @@
                 </div>
               </td>
 
+              <!-- Delete -->
               <td>
                 <v-btn icon small class="ml-1 elevation-1" tabindex="-1"
                   :class="$vuetify.theme.dark ? 'grey darken-4 error--text' : 'white error--text'"
@@ -1115,7 +1117,11 @@ export default {
     if (this.$route.params.id) {
       this.customFetchRecord(this.$route.params.id, true)
     } else {
-      this.customFetchAll()
+      this.axios.get('/api/purchases/new')
+        .then(response => {
+          this.record = response.data.record
+          this.customFetchAll()
+        })
     }
 
     this.record.transfer_type = this.transferTypes.purchase

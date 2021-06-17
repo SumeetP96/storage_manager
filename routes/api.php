@@ -75,6 +75,7 @@ Route::prefix('agents')->group(function () {
 
 Route::prefix('purchases')->group(function () {
     Route::get('/', 'PurchaseController@index');
+    Route::get('/new', 'PurchaseController@new');
     Route::get('/{id}/show', 'PurchaseController@show');
     Route::get('/transfer_products/{purchaseId}', 'PurchaseController@showTransferProducts');
     Route::post('/store', 'PurchaseController@store');
