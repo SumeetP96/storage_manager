@@ -18,13 +18,65 @@ body {
         width: 100%;
     }
 
-    .v-text-field__details {
-        margin-bottom: 0 !important;
+    .smaller-input {
+        .v-input__control {
+            .v-input__slot {
+                padding: 0 7px !important;
+                min-height: 18px !important;
 
-        .v-messages__message {
-            padding: 0 0 4px 0;
-            line-height: 1.2em;
-            font-size: 0.9rem;
+                .v-input__prepend-inner, .v-input__append-inner {
+                    margin-top: 4px !important;
+                }
+            }
+        }
+
+        .v-text-field__details {
+            margin-bottom: 0 !important;
+            padding: 0 3px !important;
+        }
+    }
+
+    .left-input {
+        .v-input__control {
+            .v-input__slot {
+                .v-input__prepend-inner {
+                    margin-right: 8px !important;
+                }
+            }
+        }
+    }
+
+    .left-input {
+        .v-input__control {
+            .v-input__slot {
+                .v-input__prepend-inner {
+                    margin-right: 8px !important;
+                }
+            }
+        }
+    }
+
+    .right-input {
+        .v-input__control {
+            .v-input__slot {
+                .v-text-field__slot {
+                    input {
+                        text-align: right !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .center-input {
+        .v-input__control {
+            .v-input__slot {
+                .v-text-field__slot {
+                    input {
+                        text-align: center !important;
+                    }
+                }
+            }
         }
     }
 

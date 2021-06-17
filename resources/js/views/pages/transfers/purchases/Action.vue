@@ -13,6 +13,69 @@
 
         <!-- Top -->
         <div class="overline grey--text" style="font-size: 0.9rem !important">Purchase details</div>
+        <div class="d-flex justify-space-between">
+
+          <!-- Left side -->
+          <div class="rounded px-4 pb-3 pt-1 d-flex align-start justify-space-between" style="width: 28%"
+            :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+              <!-- Purchase No -->
+              <div style="width: 30%">
+                <div class="subtitle-1 font-weight-bold">Purchase no
+                  <span class="red--text text-h6"></span></div>
+                <v-text-field
+                  v-model="record.purchase_no"
+                  hide-details="auto"
+                  outlined
+                  disabled
+                  placeholder="10"
+                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input"
+                  dense>
+                </v-text-field>
+              </div>
+
+              <!-- Date -->
+              <div style="width: 31%" class="ml-4">
+                <label class="subtitle-1 font-weight-bold">Date
+                  <span class="red--text text-h6">*</span>
+                </label>
+                <v-text-field
+                  autofocus
+                  v-model="record.dateRaw"
+                  hide-details="auto"
+                  outlined
+                  placeholder="DD-MM-YY"
+                  @blur="formatDate('dateRaw');
+                    record.date = flipToYMD(record.dateRaw)"
+                  :error-messages="errors.date"
+                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input center-input"
+                  dense>
+                </v-text-field>
+                <div v-if="record.dateRaw" class="subtitle-2 px-3 rounded"
+                  :class="$vuetify.theme.dark ? 'primary--text text--lighten-2' : 'primary--text white'">
+                    {{ record.date | moment('dddd') }}
+                </div>
+              </div>
+
+              <!-- Invoice No -->
+              <div class="ml-4">
+                <div class="subtitle-1 font-weight-bold">Invoice number
+                  <span class="red--text text-h6"></span></div>
+                <v-text-field
+                  v-model="record.invoice_no"
+                  hide-details="auto"
+                  outlined
+                  placeholder="INVOICE#"
+                  :error-messages="errors.invoice_no"
+                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input"
+                  dense>
+                </v-text-field>
+              </div>
+          </div> <!-- / Left side end -->
+
+        </div>
         <v-row no-gutters>
           <!-- Left Side -->
           <v-col cols="4" class="rounded px-4 pb-3 pt-1"
@@ -29,6 +92,7 @@
                   disabled
                   placeholder="10"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input"
                   dense>
                 </v-text-field>
               </v-col>
@@ -48,6 +112,7 @@
                     record.date = flipToYMD(record.dateRaw)"
                   :error-messages="errors.date"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input"
                   dense>
                 </v-text-field>
                 <div v-if="record.dateRaw" class="subtitle-2 px-3 rounded"
@@ -67,6 +132,7 @@
                   placeholder="INVOICE#"
                   :error-messages="errors.invoice_no"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  class="smaller-input"
                   dense>
                 </v-text-field>
               </v-col>
@@ -99,7 +165,7 @@
                       prepend-inner-icon="mdi-briefcase-variant-outline"
                       :error-messages="errors.from_godown_id"
                       :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                      class="left-input"
+                      class="smaller-input left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="accountDetails.address || accountDetails.contact_1 || accountDetails.contact_2"
@@ -114,11 +180,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="!record.from_godown_id" dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!record.from_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('accountDialog')">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('accountDialog', 'godowns', record.from_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -147,7 +213,7 @@
                       prepend-inner-icon="mdi-store"
                       :error-messages="errors.to_godown_id"
                       :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                      class="left-input"
+                      class="smaller-input left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="godownDetails.address || godownDetails.contact_1 || godownDetails.contact_2"
@@ -162,11 +228,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="!record.to_godown_id" dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!record.to_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog')">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog', 'godowns', record.to_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -231,6 +297,7 @@
                       item-value="id"
                       :error-messages="errors[`product_${index}_id`]"
                       :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      class="smaller-input"
                       dense>
                   </v-autocomplete>
                   <div v-if="productDetails[index].remarks"
@@ -239,11 +306,11 @@
                   </div>
                   </div>
 
-                  <v-btn v-if="!inputProducts[index].id" dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!inputProducts[index].id" dark small icon class="indigo white--text ml-1" elevation="1"
                   @click="openDialog('productDialog', '', '', false, index)">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
                   @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -262,7 +329,7 @@
                   placeholder="LOT#"
                   :error-messages="errors[`product_${index}_lot_number`]"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
+                  class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
@@ -279,7 +346,7 @@
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_rent`]"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
+                  class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
@@ -296,7 +363,7 @@
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_labour`]"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
+                  class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
@@ -316,7 +383,7 @@
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_compound_quantity`]"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
+                  class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
@@ -347,7 +414,7 @@
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_quantity`]"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="right-input"
+                  class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
@@ -362,7 +429,7 @@
 
               <td>
                 <v-btn v-if="inputProducts.length > 1"
-                  dark icon class="error white--text ml-1 elevation-1" tabindex="-1"
+                  dark icon small class="error white--text ml-1 elevation-1" tabindex="-1"
                   @click="removeProductInputRow(index)">
                     <v-icon class="text-h6">mdi-close</v-icon>
                 </v-btn>
@@ -375,13 +442,13 @@
                   <v-icon class="text-h6 mr-2">mdi-plus</v-icon> Add product
                 </v-btn>
               </th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
-              <th class="right-round footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
+              <th class="footer-th"></th>
               <th class="right-round footer-th"></th>
             </tr>
           </table>
@@ -1117,18 +1184,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>

@@ -24,6 +24,7 @@
               autofocus
               :error-messages="errors.name"
               :class="$vuetify.theme.dark ? '' : 'white'"
+              class="smaller-input"
               dense>
             </v-text-field>
           </v-col>
@@ -166,19 +167,4 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>
 

@@ -35,14 +35,35 @@ body .content {
   width: 100%;
 }
 
-body .v-text-field__details {
-  margin-bottom: 0 !important;
+body .smaller-input .v-input__control .v-input__slot {
+  padding: 0 7px !important;
+  min-height: 18px !important;
 }
 
-body .v-text-field__details .v-messages__message {
-  padding: 0 0 4px 0;
-  line-height: 1.2em;
-  font-size: 0.9rem;
+body .smaller-input .v-input__control .v-input__slot .v-input__prepend-inner,
+body .smaller-input .v-input__control .v-input__slot .v-input__append-inner {
+  margin-top: 4px !important;
+}
+
+body .smaller-input .v-text-field__details {
+  margin-bottom: 0 !important;
+  padding: 0 3px !important;
+}
+
+body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {
+  margin-right: 8px !important;
+}
+
+body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {
+  margin-right: 8px !important;
+}
+
+body .right-input .v-input__control .v-input__slot .v-text-field__slot input {
+  text-align: right !important;
+}
+
+body .center-input .v-input__control .v-input__slot .v-text-field__slot input {
+  text-align: center !important;
 }
 
 body .sort-link:focus,
