@@ -52,7 +52,7 @@
                   class="smaller-input center-input"
                   dense>
                 </v-text-field>
-                <div v-if="record.dateRaw" class="subtitle-2 px-3 rounded"
+                <div v-if="record.dateRaw" class="subtitle-2 px-2 rounded"
                   :class="$vuetify.theme.dark ? 'primary--text text--lighten-2' : 'primary--text white'">
                     {{ record.date | moment('dddd') }}
                 </div>
@@ -75,76 +75,11 @@
               </div>
           </div> <!-- / Left side end -->
 
-        </div>
-        <v-row no-gutters>
-          <!-- Left Side -->
-          <v-col cols="4" class="rounded px-4 pb-3 pt-1"
+          <!-- Right side -->
+          <div class="rounded px-4 pb-3 pt-1 d-flex align-start justify-space-between" style="width: 71%"
             :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-            <v-row>
-              <!-- Purchase No -->
-              <v-col cols="4">
-                <div class="subtitle-1 font-weight-bold">Purchase no
-                  <span class="red--text text-h6"></span></div>
-                <v-text-field
-                  v-model="record.purchase_no"
-                  hide-details="auto"
-                  outlined
-                  disabled
-                  placeholder="10"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="smaller-input"
-                  dense>
-                </v-text-field>
-              </v-col>
-
-              <!-- Date -->
-              <v-col cols="4">
-                <label class="subtitle-1 font-weight-bold">Date
-                  <span class="red--text text-h6">*</span>
-                </label>
-                <v-text-field
-                  autofocus
-                  v-model="record.dateRaw"
-                  hide-details="auto"
-                  outlined
-                  placeholder="DD-MM-YY"
-                  @blur="formatDate('dateRaw');
-                    record.date = flipToYMD(record.dateRaw)"
-                  :error-messages="errors.date"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="smaller-input"
-                  dense>
-                </v-text-field>
-                <div v-if="record.dateRaw" class="subtitle-2 px-3 rounded"
-                  :class="$vuetify.theme.dark ? 'primary--text text--lighten-2' : 'primary--text white'">
-                    {{ record.date | moment('dddd') }}
-                </div>
-              </v-col>
-
-              <!-- Invoice No -->
-              <v-col cols="4">
-                <div class="subtitle-1 font-weight-bold">Invoice number
-                  <span class="red--text text-h6"></span></div>
-                <v-text-field
-                  v-model="record.invoice_no"
-                  hide-details="auto"
-                  outlined
-                  placeholder="INVOICE#"
-                  :error-messages="errors.invoice_no"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="smaller-input"
-                  dense>
-                </v-text-field>
-              </v-col>
-            </v-row>
-          </v-col> <!-- / Left Side End -->
-
-          <!-- Right Side -->
-          <v-col cols="8" class="pl-3">
-            <v-row no-gutters class="rounded px-4 pb-3 pt-1"
-              :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
               <!-- Account -->
-              <v-col cols="6" class="pr-2">
+              <div class="pr-2" style="width: 50%">
                 <label class="subtitle-1 font-weight-bold">From account
                   <span class="red--text text-h6">*</span></label>
                 <div class="d-flex">
@@ -189,10 +124,10 @@
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
-              </v-col>
+              </div>
 
               <!-- Godown -->
-              <v-col cols="6" class="pl-2">
+              <div class="pl-2" style="width: 50%">
                 <label class="subtitle-1 font-weight-bold">To godown
                   <span class="red--text text-h6">*</span></label>
                 <div class="d-flex">
@@ -237,10 +172,10 @@
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
-              </v-col>
-            </v-row>
-          </v-col> <!-- / Right side end -->
-        </v-row> <!-- / Top End -->
+              </div>
+          </div> <!-- / Right side end -->
+
+        </div>  <!-- / Top End -->
 
 
         <!-- Center -->
@@ -258,9 +193,9 @@
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-right pr-5" style="width: 10%">Lot no</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 10%">Rent</th>
+                class="text-right pr-5" style="width: 8%">Rent</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 10%">Labour</th>
+                class="text-right pr-5" style="width: 8%">Labour</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-right pr-3" style="width: 10%">Compound</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
@@ -273,6 +208,7 @@
                 class="text-right right-round" style="width: 1%"></td>
             </tr>
 
+            <!-- Body -->
             <tr v-for="(product, index) in inputProducts" :key="index">
               <td class="subtitle-1 font-weight-bold">{{ index + 1 }}</td>
 
@@ -280,7 +216,7 @@
               <td>
                 <div class="d-flex">
                   <div style="width: 100%">
-                  <v-autocomplete
+                    <v-autocomplete
                       v-model="inputProducts[index].id"
                       hide-details="auto"
                       clearable
@@ -299,19 +235,19 @@
                       :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
                       class="smaller-input"
                       dense>
-                  </v-autocomplete>
-                  <div v-if="productDetails[index].remarks"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'" class="subtitle-2 px-3 py-1 rounded">
-                      {{ productDetails[index].remarks }}
-                  </div>
+                    </v-autocomplete>
+                    <div v-if="productDetails[index].remarks"
+                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'" class="subtitle-2 px-2 rounded">
+                        {{ productDetails[index].remarks }}
+                    </div>
                   </div>
 
                   <v-btn v-if="!inputProducts[index].id" dark small icon class="indigo white--text ml-1" elevation="1"
-                  @click="openDialog('productDialog', '', '', false, index)">
+                    @click="openDialog('productDialog', '', '', false, index)">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
                   <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
-                  @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
+                    @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
@@ -391,7 +327,7 @@
               <td class="pl-0">
                 <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="subtitle-1 px-1 rounded text-right font-weight-bold mt-1">
+                  class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
                     <span class="pink--text">
                       {{ productDetails[index].compoundUnit }}<span class="primary--text pl-1">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
                     </span>
@@ -422,21 +358,22 @@
               <td class="pl-0">
                 <div v-if="inputProducts[index].id"
                   :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                  class="subtitle-1 px-1 rounded text-right mt-1 font-weight-bold">
+                  class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
                   <span class="pink--text">{{ productDetails[index].unit }}</span>
                 </div>
               </td>
 
               <td>
-                <v-btn v-if="inputProducts.length > 1"
-                  dark icon small class="error white--text ml-1 elevation-1" tabindex="-1"
+                <v-btn icon small class="ml-1 elevation-1" tabindex="-1"
+                  :class="$vuetify.theme.dark ? 'grey darken-4 error--text' : 'white error--text'"
                   @click="removeProductInputRow(index)">
                     <v-icon class="text-h6">mdi-close</v-icon>
                 </v-btn>
               </td>
             </tr>
 
-            <tr :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <!-- Footer -->
+            <tr>
               <th class="text-left left-round footer-th" colspan="2">
                 <v-btn small color="success" :disabled="invalidAddition()" @click="addProductInputRow()">
                   <v-icon class="text-h6 mr-2">mdi-plus</v-icon> Add product
@@ -445,9 +382,9 @@
               <th class="footer-th"></th>
               <th class="footer-th"></th>
               <th class="footer-th"></th>
+              <th class="footer-th text-right">{{ calculateTotalCompound() }}</th>
               <th class="footer-th"></th>
-              <th class="footer-th"></th>
-              <th class="footer-th"></th>
+              <th class="footer-th text-right">{{ calculateTotalQuantity() }}</th>
               <th class="footer-th"></th>
               <th class="right-round footer-th"></th>
             </tr>
@@ -478,15 +415,15 @@
                 prepend-inner-icon="mdi-account-supervisor-circle-outline"
                 :error-messages="errors.agent_id"
                 :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-                class="left-input"
+                class="left-input smaller-input"
                 dense>
               </v-autocomplete>
 
-              <v-btn v-if="!record.agent_id" dark icon class="indigo white--text ml-1" elevation="1"
+              <v-btn v-if="!record.agent_id" dark small icon class="indigo white--text ml-1" elevation="1"
                 @click="openDialog('agentDialog')">
                   <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-btn v-else dark icon class="indigo white--text ml-1" elevation="1"
+              <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
                 @click="openDialog('agentDialog', 'agents', record.agent_id)">
                   <v-icon>mdi-circle-edit-outline</v-icon>
               </v-btn>
@@ -505,7 +442,7 @@
               prepend-inner-icon="mdi-clipboard-text-outline"
               :error-messages="errors.order_no"
               :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-              class="left-input"
+              class="left-input smaller-input"
               dense>
             </v-text-field>
           </v-col>
@@ -522,7 +459,7 @@
               prepend-inner-icon="mdi-truck-fast-outline"
               :error-messages="errors.transport_details"
               :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
-              class="left-input"
+              class="left-input smaller-input"
               dense>
             </v-text-field>
           </v-col>
@@ -537,6 +474,7 @@
               outlined
               placeholder="Additional details or notes"
               :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              class="smaller-input"
               dense>
             </v-text-field>
           </v-col>

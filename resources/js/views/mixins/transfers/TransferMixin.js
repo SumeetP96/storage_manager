@@ -59,6 +59,7 @@ export const TransferMixin = {
 
     removeProductInputRow(index) {
       this.inputProducts = this.inputProducts.filter((product, ind) => ind != index)
+      this.productDetails[index] = { unit: '', remarks: '', packing: '', compoundUnit: '' }
       this.clearUnusedInputs()
     },
 
