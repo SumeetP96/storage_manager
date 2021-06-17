@@ -15,11 +15,6 @@
     </tr>
 
     <tr>
-        <th class="text-left">Lot number</th>
-        <td>{{ $record->lot_number ? $record->lot_number : '-' }}</td>
-    </tr>
-
-    <tr>
         <th class="text-left">Unit</th>
         <td>{{ $record->unit }}</td>
     </tr>

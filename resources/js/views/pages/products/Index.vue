@@ -118,56 +118,6 @@
           <template v-slot:default>
             <thead>
               <tr>
-
-                <!-- Lot number -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'lot_number' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'lot_number' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lot_number')">Lot number</span>
-                    <span v-if="sortBy == 'lot_number'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-
-                    <!-- Lot Number filter -->
-                    <v-menu offset-y :close-on-content-click="false" max-width="800px" :value="lotNumber_FILTER">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('lotNumber') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="lotNumber_FILTER = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-
-                            <div class="rounded px-4 pb-4 mt-3"
-                              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'">
-                              <div class="subtitle-2 pt-3">Select records</div>
-                              <v-radio-group v-model="lotNumber" column hide-details>
-                                <v-radio label="With lot number" value="with"></v-radio>
-                                <v-radio label="Without lot number" value="without"></v-radio>
-                              </v-radio-group>
-                            </div>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
-                              <v-btn dark small @click="removeFilter('lotNumber', 'withWithout')"
-                                tabindex="-1" :loading="filterLoading">
-                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                  clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('lotNumber', 'withWithout')"
-                                :loading="filterLoading">
-                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                  filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> <!-- / Lot Number filter end -->
-                </th>
-
                 <!-- Name -->
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
@@ -581,11 +531,6 @@
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
                 @click="viewRecordDialog = true; loadRecord(record.id)">
-                  <td class="subtitle-1 text-center font-weight-bold">
-                    <span v-if="record.lot_number">{{ record.lot_number }}</span>
-                    <span v-else>-</span>
-                  </td>
-
                   <td class="subtitle-1">{{ record.name }}</td>
 
                   <td class="subtitle-1 text-center">{{ record.alias ? record.alias : '-' }}</td>
@@ -676,13 +621,6 @@
 
         <v-card-text class="pt-6 pb-10">
           <table class="view-record-table">
-            <tr>
-              <td class="subtitle-1 font-weight-bold text-left" style="width: 20%">Lot number</td>
-              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                {{ record.lot_number ? record.lot_number : '-' }}
-              </td>
-            </tr>
-
             <tr>
               <td class="subtitle-1 font-weight-bold text-left" style="width: 20%">Name</td>
               <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">

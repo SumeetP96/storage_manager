@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
 
 trait ProductTrait
@@ -28,8 +29,7 @@ trait ProductTrait
                     ->orWhere('unit', 'like', '%' . $search . '%')
                     ->orWhere('packing', 'like', '%' . $search . '%')
                     ->orWhere('compound_unit', 'like', '%' . $search . '%')
-                    ->orWhere('remarks', 'like', '%' . $search . '%')
-                    ->orWhere('lot_number', 'like', '%' . $search . '%');
+                    ->orWhere('remarks', 'like', '%' . $search . '%');
             })->orderBy($sortBy, $flow);
     }
 
@@ -42,13 +42,6 @@ trait ProductTrait
      */
     public function getFilteredQuery($query, Request $request)
     {
-        // Lot number filters with / without
-        $lotNumber = $request->get('lotNumber');
-        if ($lotNumber == 'with') $query->whereNotNull('lot_number');
-        if ($lotNumber == 'without') $query->where(function ($query) {
-            $query->whereNull('lot_number')->orWhere('lot_number', '');
-        });
-
         // Alias filters with / without
         $alias = $request->get('alias');
         if ($alias == 'with') $query->whereNotNull('alias');

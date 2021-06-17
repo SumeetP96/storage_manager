@@ -19,8 +19,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
 class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnFormatting, ShouldAutoSize, WithStyles
 {
-    use Exportable;
-    use ProductTrait;
+    use Exportable, ProductTrait;
 
     public function __construct(Request $request)
     {
@@ -37,7 +36,6 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
         return [
             $product->name,
             $product->alias,
-            $product->lot_number,
             $product->unit,
             $product->compound_unit,
             $product->packing / 100,
@@ -52,7 +50,6 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
         return [
             'Name',
             'Alias',
-            'Lot number',
             'Unit',
             'Compound unit',
             'Packing',
@@ -65,17 +62,16 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
     public function columnFormats(): array
     {
         return [
-            'C' => NumberFormat::FORMAT_TEXT,
-            'F' => NumberFormat::FORMAT_TEXT,
-            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY
+            'E' => NumberFormat::FORMAT_TEXT,
+            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         $sheet->getStyle(1)->getFont()->setBold(true);
+        $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 }

@@ -55,10 +55,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        if ($duplicate = $this->productService->findDuplicateProductLot($request)) {
-            return $this->responseService->error($duplicate);
-        }
-
         $this->productService->validateRequest($request);
 
         return $this->responseService
@@ -88,11 +84,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($duplicate = $this->productService->findDuplicateProductLot($request, $id)) {
-            return $this->responseService->error($duplicate);
-        }
-
-        $this->productService->validateRequest($request);
+        $this->productService->validateRequest($request, $id);
 
         DB::transaction(function () use ($request, $id) {
             $this->productRepository->update($request, $id);

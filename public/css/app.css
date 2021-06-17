@@ -35,6 +35,16 @@ body .content {
   width: 100%;
 }
 
+body .v-text-field__details {
+  margin-bottom: 0 !important;
+  padding: 0 3px !important;
+}
+
+body .v-text-field__details .v-messages__message {
+  font-size: 0.8rem !important;
+  padding-bottom: 2px !important;
+}
+
 body .smaller-input .v-input__control .v-input__slot {
   padding: 0 7px !important;
   min-height: 18px !important;
@@ -43,11 +53,6 @@ body .smaller-input .v-input__control .v-input__slot {
 body .smaller-input .v-input__control .v-input__slot .v-input__prepend-inner,
 body .smaller-input .v-input__control .v-input__slot .v-input__append-inner {
   margin-top: 4px !important;
-}
-
-body .smaller-input .v-text-field__details {
-  margin-bottom: 0 !important;
-  padding: 0 3px !important;
 }
 
 body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {

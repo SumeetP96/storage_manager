@@ -18,6 +18,16 @@ body {
         width: 100%;
     }
 
+    .v-text-field__details {
+        margin-bottom: 0 !important;
+        padding: 0 3px !important;
+
+        .v-messages__message {
+            font-size: 0.8rem !important;
+            padding-bottom: 2px !important;
+        }
+    }
+
     .smaller-input {
         .v-input__control {
             .v-input__slot {
@@ -28,11 +38,6 @@ body {
                     margin-top: 4px !important;
                 }
             }
-        }
-
-        .v-text-field__details {
-            margin-bottom: 0 !important;
-            padding: 0 3px !important;
         }
     }
 

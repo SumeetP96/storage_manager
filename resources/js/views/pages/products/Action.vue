@@ -8,11 +8,11 @@
         type="list-item-three-line, card-heading, list-item-three-line, card-heading, image, actions">
       </v-skeleton-loader>
 
-      <div v-else>
-        <div v-if="record.id" class="text-h5 py-5">Update Product</div>
-        <div v-else class="text-h5 py-5">Create new Product</div>
+      <div v-else class="rounded px-4 py-4 mt-5" :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+        <div v-if="record.id" class="text-h5">Update Product</div>
+        <div v-else class="text-h5">Create new Product</div>
 
-        <v-row>
+        <v-row class="mt-4">
           <v-col cols="12" md="9">
             <label class="subtitle-1">Name
               <span class="red--text text-h6">*</span></label>
@@ -24,7 +24,6 @@
               autofocus
               :error-messages="errors.name"
               :class="$vuetify.theme.dark ? '' : 'white'"
-              class="smaller-input"
               dense>
             </v-text-field>
           </v-col>
@@ -37,21 +36,6 @@
               hide-details="auto"
               outlined
               :error-messages="errors.alias"
-              :class="$vuetify.theme.dark ? '' : 'white'"
-              dense>
-            </v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12" md="3">
-            <label class="subtitle-1">Lot number
-              <span class="red--text text-h6"></span></label>
-            <v-text-field
-              v-model="record.lot_number"
-              hide-details="auto"
-              outlined
-              :error-messages="errors.lot_number"
               :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
             </v-text-field>
@@ -143,7 +127,6 @@
           @click="createFromForm({ redirect: 'products.index' })">
             <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save product
         </v-btn>
-
       </div>
 
     </v-col>

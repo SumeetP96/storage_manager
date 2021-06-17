@@ -8,7 +8,6 @@
         <tr>
             <th class="text-center" style="width: 1%">#</th>
             <th class="text-left" style="width: 40%">Name</th>
-            <th class="text-center">Lot</th>
             <th class="text-center">Unit</th>
             <th class="text-center" style="width: 10%">C Unit</th>
             <th class="text-center">Updated</th>
@@ -26,7 +25,6 @@
                 </span>
                 <div class="grey-text">{{ $record->remarks }}</div>
             </td>
-            <td class="text-center">{{ $record->lot_number }}</td>
             <td class="text-center">{{ $record->unit }}</td>
             <td class="text-center">{{ $record->compound_unit }} ({{ $record->packing / 100 }})</td>
             <td class="text-center">{{ date('d/m/Y', strtotime($record->updated_at)) }}</td>

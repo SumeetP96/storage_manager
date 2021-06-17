@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Exports;
 
 use PDF;
+use App\Product;
 use App\Traits\ProductTrait;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Exports\ProductExport;
-use App\Product;
+use App\Http\Controllers\Controller;
 
 class ProductExportController extends Controller
 {

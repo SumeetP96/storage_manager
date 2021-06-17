@@ -4,9 +4,9 @@ namespace App\Repositories;
 
 use App\Product;
 use App\GodownProductsStock;
-use App\StockTransferProduct;
 use App\Traits\ProductTrait;
 use Illuminate\Http\Request;
+use App\StockTransferProduct;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository
@@ -35,19 +35,7 @@ class ProductRepository
     public function fetchOne($id)
     {
         $record = DB::table('products')->where('id', $id)
-            ->selectRaw('
-                id,
-                name,
-                alias,
-                lot_number,
-                unit,
-                compound_unit,
-                packing,
-                packing div 100 as packingRaw,
-                remarks,
-                created_at,
-                updated_at
-            ')
+            ->selectRaw('*, packing div 100 as packingRaw')
             ->first();
 
         $record->recordTransactions = StockTransferProduct::where('product_id', $id)->count();
@@ -56,14 +44,53 @@ class ProductRepository
     }
 
     /**
+     * Store record in database
+     */
+    public function create(Request $request)
+    {
+        return Product::create([
+            'name'          => $request->name,
+            'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
+            'unit'          => strtoupper($request->unit),
+            'packing'       => $request->packing,
+            'compound_unit' => strtoupper($request->compound_unit),
+            'remarks'       => $request->remarks
+        ])->id;
+    }
+
+    /**
+     * Update record in database
+     */
+    public function update(Request $request, $id)
+    {
+        Product::find($id)->update([
+            'name'          => $request->name,
+            'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
+            'unit'          => strtoupper($request->unit),
+            'packing'       => $request->packing,
+            'compound_unit' => strtoupper($request->compound_unit),
+            'remarks'       => $request->remarks
+        ]);
+
+        $stps = StockTransferProduct::where('product_id', $id)
+            ->update(['compound_quantity' => NULL]);
+    }
+
+    /**
+     * Delete record from database
+     */
+    public function destroy($id)
+    {
+        $product = Product::find($id)->delete();
+    }
+
+
+    /**
      * Fetch records for autocomplete
      */
     public function fetchAutocompletes()
     {
-        return Product::selectRaw("
-            id, CONCAT_WS(' - ', name, CONCAT('( ', lot_number, ' )'), alias) AS name
-        ")->orderBy('name')
-        ->get();
+        return Product::selectRaw("id, CONCAT_WS(' - ', name, alias) AS name")->orderBy('name')->get();
     }
 
     /**
@@ -119,48 +146,5 @@ class ProductRepository
         $product->recordTransactions = StockTransferProduct::where('product_id', $id)->count();
 
         return $product;
-    }
-
-    /**
-     * Store record in database
-     */
-    public function create(Request $request)
-    {
-        return Product::create([
-            'name'          => $request->name,
-            'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
-            'lot_number'    => ($request->lot_number != '') ? $request->lot_number : NULL,
-            'unit'          => strtoupper($request->unit),
-            'packing'       => $request->packing,
-            'compound_unit' => strtoupper($request->compound_unit),
-            'remarks'       => $request->remarks
-        ])->id;
-    }
-
-    /**
-     * Update record in database
-     */
-    public function update(Request $request, $id)
-    {
-        Product::find($id)->update([
-            'name'          => $request->name,
-            'alias'         => ($request->alias != '') ? strtoupper($request->alias) : NULL,
-            'lot_number'    => ($request->lot_number != '') ? $request->lot_number : NULL,
-            'unit'          => strtoupper($request->unit),
-            'packing'       => $request->packing,
-            'compound_unit' => strtoupper($request->compound_unit),
-            'remarks'       => $request->remarks
-        ]);
-
-        $stps = StockTransferProduct::where('product_id', $id)
-            ->update(['compound_quantity' => NULL]);
-    }
-
-    /**
-     * Delete record from database
-     */
-    public function destroy($id)
-    {
-        $product = Product::find($id)->delete();
     }
 }
