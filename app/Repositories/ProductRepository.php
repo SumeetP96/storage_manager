@@ -123,9 +123,7 @@ class ProductRepository
 
         if (!is_null($id)) $query->where('gps.godown_id', $id);
 
-        return $query->selectRaw("
-                pr.id, CONCAT_WS(' - ', pr.name, CONCAT('( ', pr.lot_number, ' )'), alias) AS name
-            ")->get();
+        return $query->selectRaw("pr.id, CONCAT_WS(' - ', pr.name, alias) AS name")->get();
     }
 
     /**
@@ -138,13 +136,31 @@ class ProductRepository
             ->first();
 
         if (!is_null($godownId)) {
-            $product->stock = GodownProductsStock::where('product_id', $id)
-                ->where('godown_id', $godownId)->first()
-                ->current_stock;
+            $product->lotNumbers = GodownProductsStock::where('product_id', $id)
+                ->where('godown_id', $godownId)
+                ->select('lot_number')
+                ->get();
         }
 
         $product->recordTransactions = StockTransferProduct::where('product_id', $id)->count();
 
         return $product;
+    }
+
+    /**
+     * Fetch selected record details
+     */
+    public function stockDetails($id, $godownId, $lotNumber)
+    {
+        $gps = GodownProductsStock::where('product_id', $id)
+            ->where('godown_id', $godownId)
+            ->where('lot_number', $lotNumber)
+            ->first();
+        $gps->details = StockTransferProduct::where('product_id', $id)
+            ->where('lot_number', $lotNumber)
+            ->select('rent', 'labour')
+            ->first();
+
+        return $gps;
     }
 }

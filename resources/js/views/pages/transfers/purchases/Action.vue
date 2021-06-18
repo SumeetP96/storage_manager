@@ -28,7 +28,7 @@
                   outlined
                   disabled
                   placeholder="#"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="smaller-input"
                   dense>
                 </v-text-field>
@@ -53,7 +53,7 @@
                   dense>
                 </v-text-field>
                 <div v-if="record.dateRaw" class="subtitle-2 px-2 rounded"
-                  :class="$vuetify.theme.dark ? 'primary--text text--lighten-2' : 'primary--text white'">
+                  :class="$vuetify.theme.dark ? 'primary--text text--lighten-2 grey darken-4' : 'primary--text white'">
                     {{ record.date | moment('dddd') }}
                 </div>
               </div>
@@ -68,7 +68,7 @@
                   outlined
                   placeholder="INVOICE#"
                   :error-messages="errors.invoice_no"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="smaller-input"
                   dense>
                 </v-text-field>
@@ -80,7 +80,7 @@
             :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
               <!-- Account -->
               <div class="pr-2" style="width: 50%">
-                <label class="subtitle-1 font-weight-bold">From account
+                <label class="subtitle-1 font-weight-bold">From supplier
                   <span class="red--text text-h6">*</span></label>
                 <div class="d-flex">
                   <div style="width: 100%">
@@ -99,12 +99,12 @@
                       @input="fetchAccountDetails()"
                       prepend-inner-icon="mdi-briefcase-variant-outline"
                       :error-messages="errors.from_godown_id"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                       class="smaller-input left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="accountDetails.address || accountDetails.contact_1 || accountDetails.contact_2"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                       class="subtitle-2 px-2 py-1 rounded">
                         <span v-if="accountDetails.address">{{ accountDetails.address }}</span>
                         <span v-if="accountDetails.address && (accountDetails.contact_1 || accountDetails.contact_2)"> - </span>
@@ -147,12 +147,12 @@
                       item-value="id"
                       prepend-inner-icon="mdi-store"
                       :error-messages="errors.to_godown_id"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                       class="smaller-input left-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="godownDetails.address || godownDetails.contact_1 || godownDetails.contact_2"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                       class="subtitle-2 px-2 py-1 rounded">
                         <span v-if="godownDetails.address">{{ godownDetails.address }}</span>
                         <span v-if="godownDetails.address && (godownDetails.contact_1 || godownDetails.contact_2)"> - </span>
@@ -232,12 +232,12 @@
                       item-text="name"
                       item-value="id"
                       :error-messages="errors[`product_${index}_id`]"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                       class="smaller-input"
                       dense>
                     </v-autocomplete>
                     <div v-if="productDetails[index].remarks"
-                      :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'" class="subtitle-2 px-2 rounded">
+                      :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'" class="subtitle-2 px-2 rounded">
                         {{ productDetails[index].remarks }}
                     </div>
                   </div>
@@ -263,7 +263,7 @@
                   :filled="!inputProducts[index].id"
                   placeholder="LOT#"
                   :error-messages="errors[`product_${index}_lot_number`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
@@ -280,7 +280,7 @@
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_rent`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
@@ -297,7 +297,7 @@
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_labour`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
@@ -317,7 +317,7 @@
                   :filled="!inputProducts[index].id || !productDetails[index].compoundUnit"
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_compound_quantity`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
@@ -326,7 +326,7 @@
               <!-- Unit -->
               <td class="pl-0">
                 <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
                     <span class="pink--text">
                       {{ productDetails[index].compoundUnit }}<span class="primary--text pl-1">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
@@ -349,7 +349,7 @@
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_quantity`]"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
@@ -358,7 +358,7 @@
               <!-- Unit -->
               <td class="pl-0">
                 <div v-if="inputProducts[index].id"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
                   <span class="pink--text">{{ productDetails[index].unit }}</span>
                 </div>
@@ -416,7 +416,7 @@
                 item-value="id"
                 prepend-inner-icon="mdi-account-supervisor-circle-outline"
                 :error-messages="errors.agent_id"
-                :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                 class="left-input smaller-input"
                 dense>
               </v-autocomplete>
@@ -443,7 +443,7 @@
               placeholder="ORDER#"
               prepend-inner-icon="mdi-clipboard-text-outline"
               :error-messages="errors.order_no"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
               class="left-input smaller-input"
               dense>
             </v-text-field>
@@ -460,7 +460,7 @@
               placeholder="Driver / Vehicle details"
               prepend-inner-icon="mdi-truck-fast-outline"
               :error-messages="errors.transport_details"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
               class="left-input smaller-input"
               dense>
             </v-text-field>
@@ -475,7 +475,7 @@
               hide-details="auto"
               outlined
               placeholder="Additional details or notes"
-              :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+              :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
               class="smaller-input"
               dense>
             </v-text-field>

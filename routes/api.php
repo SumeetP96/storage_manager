@@ -61,6 +61,7 @@ Route::prefix('products')->group(function () {
     Route::get('/{id}/details/{godownId?}', 'ProductController@details');
     Route::get('/autocomplete', 'ProductController@autocomplete');
     Route::get('/autocomplete_with_stock/{id?}', 'ProductController@autocompleteWithStock');
+    Route::get('/{id}/stock_details/{godownId}/{lotNumber}', 'ProductController@stockDetails');
 });
 
 Route::prefix('agents')->group(function () {

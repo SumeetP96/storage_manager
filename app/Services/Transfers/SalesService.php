@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 
 class SalesService
 {
-    public function checkExistingGPS(Request $request, $productId)
+    public function checkExistingGPS(Request $request, $product)
     {
         $existingGPS = GodownProductsStock::where('godown_id', $request->from_godown_id)
-            ->where('product_id', $productId)
+            ->where('product_id', $product)
+            ->where('lot_number', $product['lot_number'])
             ->first();
 
         if (is_null($existingGPS)) {

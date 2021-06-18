@@ -65,14 +65,12 @@ class SalesRepository
     public function create(Request $request, $salesService)
     {
         $id = StockTransfer::create([
-            'transfer_type_id'  => $request->transfer_type,
+            'transfer_type_id'  => StockTransfer::SALES,
             'date'              => $request->date,
             'from_godown_id'    => $request->from_godown_id,
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
-            'eway_bill_no'      => strtoupper($request->eway_bill_no),
-            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
             'transport_details' => strtoupper($request->transport_details),
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
@@ -82,12 +80,13 @@ class SalesRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
+                'lot_number'        => $product['lot_number'],
                 'quantity'          => $product['quantity'],
                 'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
             ]);
 
-            if ($existingGPS = $salesService->checkExistingGPS($request, $product['id'])) {
-                $this->updateGPS($existingGPS, $product['quantity']);
+            if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
+                $this->updateGPS($existingGPS, $product);
             } else {
                 $this->createGPS($request, $product);
             }
@@ -107,8 +106,6 @@ class SalesRepository
             'to_godown_id'      => $request->to_godown_id,
             'order_no'          => strtoupper($request->order_no),
             'invoice_no'        => strtoupper($request->invoice_no),
-            'eway_bill_no'      => strtoupper($request->eway_bill_no),
-            'delivery_slip_no'  => strtoupper($request->delivery_slip_no),
             'transport_details' => strtoupper($request->transport_details),
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
@@ -177,14 +174,16 @@ class SalesRepository
     {
         GodownProductsStock::create([
             'product_id'    => $product['id'],
+            'lot_number'    => $product['lot_number'],
             'godown_id'     => $request->from_godown_id,
             'current_stock' => -$product['quantity']
         ]);
     }
 
-    public function updateGPS(GodownProductsStock $godownStock, $productQuantity)
+    public function updateGPS(GodownProductsStock $godownStock, $product)
     {
-        $godownStock->current_stock -= $productQuantity;
+        $godownStock->current_stock -= $product['quantity'];
+        $godownStock->lot_number = $product['lot_number'];
         $godownStock->save();
     }
 }

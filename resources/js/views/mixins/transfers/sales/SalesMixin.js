@@ -150,10 +150,21 @@ export const SalesMixin = {
       this.axios.get(`/api/products/${this.inputProducts[index].id}/details/${this.record.from_godown_id}`)
         .then(response => {
           this.productDetails[index].unit = response.data.unit
-          this.productDetails[index].stock = response.data.stock
           this.productDetails[index].remarks = response.data.remarks
           this.productDetails[index].compoundUnit = response.data.compoundUnit
           this.productDetails[index].packing = response.data.packing
+          this.productDetails[index].lotNumbers = response.data.lotNumbers
+        })
+    },
+
+    fetchStockDetails(index, clear) {
+      this.productDetails[index].stock = ''
+      if (!this.inputProducts[index].id || clear) return
+      this.axios.get(`/api/products/${this.inputProducts[index].id}/stock_details/${this.record.from_godown_id}/${this.inputProducts[index].lot_number}`)
+        .then(response => {
+          this.productDetails[index].stock = response.data.current_stock
+          this.inputProducts[index].rentRaw = this.formatQuantity(response.data.details.rent, 2)
+          this.inputProducts[index].labourRaw = this.formatQuantity(response.data.details.labour, 2)
         })
     },
 

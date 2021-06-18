@@ -30,7 +30,7 @@ export const TransferMixin = {
 
       godownDetails: {},
       accountDetails: {},
-      productDetails: [{ unit: '', remarks: '', packing: '', compoundUnit: '' }],
+      productDetails: [{ unit: '', remarks: '', packing: '', compoundUnit: '', lotNumbers: [] }],
     }
   },
 
@@ -80,6 +80,30 @@ export const TransferMixin = {
     clearUnusedInputs() {
       this.inputProducts = this.inputProducts.filter((product) => product.id || product.quantity)
       if (this.inputProducts.length == 0) this.addProductInputRow()
+    },
+
+    calculateTotalQuantity() {
+      let quantity = 0
+
+      this.inputProducts.forEach(product => {
+        if (product.id && product.quantityRaw) {
+          quantity += parseFloat(product.quantityRaw)
+        }
+      })
+
+      return quantity.toFixed(2)
+    },
+
+    calculateTotalCompound() {
+      let compound = 0
+
+      this.inputProducts.forEach(product => {
+        if (product.id && product.compoundQuantityRaw) {
+          compound += parseFloat(product.compoundQuantityRaw)
+        }
+      })
+
+      return compound.toFixed(2)
     },
 
     calculateQuantity(index) {

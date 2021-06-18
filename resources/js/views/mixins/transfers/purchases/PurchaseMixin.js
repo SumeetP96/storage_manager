@@ -169,29 +169,5 @@ export const PurchaseMixin = {
       this.axios.get(`/api/godowns/${this.record.from_godown_id}/details`)
         .then(response => this.accountDetails = response.data)
     },
-
-    calculateTotalQuantity() {
-      let quantity = 0
-
-      this.inputProducts.forEach(product => {
-        if (product.id && product.quantityRaw) {
-          quantity += parseFloat(product.quantityRaw)
-        }
-      })
-
-      return quantity.toFixed(2)
-    },
-
-    calculateTotalCompound() {
-      let compound = 0
-
-      this.inputProducts.forEach(product => {
-        if (product.id && product.compoundQuantityRaw) {
-          compound += parseFloat(product.compoundQuantityRaw)
-        }
-      })
-
-      return compound.toFixed(2)
-    },
   }
 }

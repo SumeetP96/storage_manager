@@ -134,4 +134,12 @@ class ProductController extends Controller
         if ($godownId == 'undefined') $godownId = NULL;
         return $this->productRepository->details($id, $godownId);
     }
+
+    /**
+     * Fetch selected record details
+     */
+    public function stockDetails($id, $godownId, $lotNumber)
+    {
+        return $this->productRepository->stockDetails($id, $godownId, $lotNumber);
+    }
 }

@@ -146,7 +146,7 @@ class PurchaseRepository
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
-                $this->updateGPS($existingGPS, $product['quantity']);
+                $this->updateGPS($existingGPS, $product);
             } else {
                 $this->createGPS($request, $product);
             }
@@ -199,13 +199,15 @@ class PurchaseRepository
         GodownProductsStock::create([
             'product_id'    => $product['id'],
             'godown_id'     => $request->to_godown_id,
+            'lot_number'    => $product['lot_number'],
             'current_stock' => $product['quantity']
         ]);
     }
 
-    public function updateGPS(GodownProductsStock $godownStock, $productQuantity)
+    public function updateGPS(GodownProductsStock $godownStock, $product)
     {
-        $godownStock->current_stock += $productQuantity;
+        $godownStock->current_stock += $product['quantity'];
+        $godownStock->lot_number = $product['lot_number'];
         $godownStock->save();
     }
 }
