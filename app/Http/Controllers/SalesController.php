@@ -127,4 +127,17 @@ class SalesController extends Controller
 
         return $this->responseService->success();
     }
+
+    /**
+     * New sale
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function new()
+    {
+        return $this->responseService
+            ->record(
+                $this->salesRepository->new()
+            );
+    }
 }

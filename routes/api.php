@@ -85,6 +85,7 @@ Route::prefix('purchases')->group(function () {
 
 Route::prefix('sales')->group(function () {
     Route::get('/', 'SalesController@index');
+    Route::get('/new', 'SalesController@new');
     Route::get('/{id}/show', 'SalesController@show');
     Route::post('/store', 'SalesController@store');
     Route::post('/{id}/update', 'SalesController@update');

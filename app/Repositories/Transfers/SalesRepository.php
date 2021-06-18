@@ -143,6 +143,19 @@ class SalesRepository
     }
 
     /**
+     * New sale
+     */
+    public function new()
+    {
+        $saleNo = StockTransfer::max('sale_no');
+        return [
+            'sale_no'       => is_null($saleNo) ? 1 : $saleNo + 1,
+            'dateRaw'       => date('d-m-Y'),
+            'date'          => date('Y-m-d')
+        ];
+    }
+
+    /**
      * Undo given changes
      */
     public function undoPreviousGPSChanges($id)

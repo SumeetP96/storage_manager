@@ -697,10 +697,10 @@
 
         <div class="px-6 pt-4 pb-6">
           <!-- Details -->
-          <v-row>
+          <v-row no-gutters>
             <!-- Purchase no -->
-            <v-col cols="3" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Purchase no</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.purchase_no }}</div>
@@ -709,8 +709,8 @@
             </v-col>
 
             <!-- Date -->
-            <v-col cols="3" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Date</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.date }}</div>
@@ -719,8 +719,8 @@
             </v-col>
 
             <!-- Invoice no -->
-            <v-col cols="3" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Invoice no</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.invoice_no }}</div>
@@ -729,8 +729,8 @@
             </v-col>
 
             <!-- Order no -->
-            <v-col cols="3" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Order no</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.order_no }}</div>
@@ -741,10 +741,10 @@
           </v-row>
 
           <!-- Parties -->
-          <v-row align="top">
+          <v-row align="top" no-gutters class="mt-3">
             <!-- From -->
-            <v-col cols="6" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="6" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">From account</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.fromName }}</div>
@@ -760,8 +760,8 @@
             </v-col>
 
             <!-- To -->
-            <v-col cols="6" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1"
+            <v-col cols="6" class="px-2">
+              <div class="px-3 py-1"
                 :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">To godown</div>
                 <div class="px-4 py-1">
@@ -779,7 +779,7 @@
           </v-row>
 
           <!-- Products -->
-          <table class="invoice-record-table mt-6 elevation-1">
+          <table class="invoice-record-table mt-6 elevation-1 rounded">
             <tr :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
               <th class="text-left left-round-top">#</th>
               <th class="text-left">Product</th>
@@ -794,7 +794,10 @@
 
             <tr v-for="(product, index) in recordProducts" :key="index"
               :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
-              <td class="border text-left">{{ index + 1 }}</td>
+              <td class="border text-left"
+                :class="(index == recordProducts.length - 1) ? 'left-round-bottom' : ''">
+                {{ index + 1 }}
+              </td>
               <td class="border text-left font-weight-bold">{{ product.name }}</td>
               <td class="border text-right font-weight-bold">{{ product.lotNumber ? product.lotNumber : '-' }}</td>
               <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
@@ -809,15 +812,18 @@
               <td class="border text-right font-weight-bold">
                 {{ product.quantity ? formatQuantity(product.quantity, 2) : '-' }}
               </td>
-              <td class="border text-left">{{ product.unit ? product.unit : '-' }}</td>
+              <td class="border text-left"
+              :class="(index == recordProducts.length - 1) ? 'right-round-bottom' : ''">
+                {{ product.unit ? product.unit : '-' }}
+              </td>
             </tr>
           </table>
 
           <!-- Additional -->
-          <v-row align="top" class="mt-3">
+          <v-row align="top" class="mt-6" no-gutters>
             <!-- Transport details -->
-            <v-col cols="4" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="4" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.transport_details }}</div>
@@ -826,8 +832,8 @@
             </v-col>
 
             <!-- Remarks -->
-            <v-col cols="8" class="px-3">
-              <div class="rounded elevation-1 px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
+            <v-col cols="8" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-4' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Remarks</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.remarks }}</div>
