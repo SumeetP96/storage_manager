@@ -319,7 +319,7 @@
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
-                <div v-if="inputProducts[index].lot_number && productDetails[index].stock && productDetails[index].packing"
+                <div v-if="inputProducts[index].lot_number && productDetails[index].stock != undefined && productDetails[index].packing"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="subtitle-2 px-2 rounded text-right success--text font-weight-bold">
                     {{ (productDetails[index].stock / productDetails[index].packing).toFixed(2) }}
@@ -356,7 +356,7 @@
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
-                <div v-if="inputProducts[index].lot_number && productDetails[index].stock"
+                <div v-if="inputProducts[index].lot_number && productDetails[index].stock != undefined"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="subtitle-2 px-2 rounded text-right success--text font-weight-bold">
                     {{ formatQuantity(productDetails[index].stock, 2) }}

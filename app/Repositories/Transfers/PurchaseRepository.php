@@ -107,7 +107,7 @@ class PurchaseRepository
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product)) {
-                $this->updateGPS($existingGPS, $product['quantity']);
+                $this->updateGPS($existingGPS, $product);
             } else {
                 $this->createGPS($request, $product);
             }
@@ -186,6 +186,7 @@ class PurchaseRepository
 
         foreach($products as $product) {
             $oldGodownStock = GodownProductsStock::where('godown_id', $stockTransfer->to_godown_id)
+                ->where('lot_number', $product['lot_number'])
                 ->where('product_id', $product->product_id)
                 ->first();
 
@@ -200,13 +201,13 @@ class PurchaseRepository
             'product_id'    => $product['id'],
             'godown_id'     => $request->to_godown_id,
             'lot_number'    => $product['lot_number'],
-            'current_stock' => $product['quantity']
+            'current_stock' => (int) $product['quantity']
         ]);
     }
 
     public function updateGPS(GodownProductsStock $godownStock, $product)
     {
-        $godownStock->current_stock += $product['quantity'];
+        $godownStock->current_stock += (int) $product['quantity'];
         $godownStock->lot_number = $product['lot_number'];
         $godownStock->save();
     }

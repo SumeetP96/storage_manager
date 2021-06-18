@@ -46,15 +46,20 @@ class SalesRepository
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
                 stp.id,
+                stp.lot_number as lotNumber,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
-                pr.compound_unit as compoundUnit,
                 stp.compound_quantity as compoundQuantity,
                 stp.compound_quantity div 100 as compoundQuantityRaw,
+                stp.rent,
+                stp.rent div 100 as rentRaw,
+                stp.labour,
+                stp.labour div 100 as labourRaw,
+                pr.compound_unit as compoundUnit,
+                pr.packing,
                 pr.id as productId,
                 pr.name as name,
-                pr.unit as unit,
-                pr.lot_number as lotNumber
+                pr.unit as unit
             ')
             ->get();
     }
@@ -65,6 +70,7 @@ class SalesRepository
     public function create(Request $request, $salesService)
     {
         $id = StockTransfer::create([
+            'sale_no'           => $request->sale_no,
             'transfer_type_id'  => StockTransfer::SALES,
             'date'              => $request->date,
             'from_godown_id'    => $request->from_godown_id,
@@ -80,9 +86,11 @@ class SalesRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'lot_number'        => $product['lot_number'],
-                'quantity'          => $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
+                'lot_number'        => $product['lot_number'] ?? NULL,
+                'rent'              => (int) $product['rent'],
+                'labour'            => (int) $product['labour'],
+                'quantity'          => (int) $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
@@ -117,12 +125,15 @@ class SalesRepository
             StockTransferProduct::create([
                 'stock_transfer_id' => $id,
                 'product_id'        => $product['id'],
-                'quantity'          => $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? $product['compound_quantity'] : NULL
+                'lot_number'        => $product['lot_number'] ?? NULL,
+                'rent'              => (int) $product['rent'],
+                'labour'            => (int) $product['labour'],
+                'quantity'          => (int) $product['quantity'],
+                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
             ]);
 
-            if ($existingGPS = $salesService->checkExistingGPS($request, $product['id'])) {
-                $this->updateGPS($existingGPS, $product['quantity']);
+            if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
+                $this->updateGPS($existingGPS, $product);
             } else {
                 $this->createGPS($request, $product);
             }
@@ -162,6 +173,7 @@ class SalesRepository
 
         foreach($products as $product) {
             $oldGodownStock = GodownProductsStock::where('godown_id', $stockTransfer->from_godown_id)
+                ->where('lot_number', $product['lot_number'])
                 ->where('product_id', $product->product_id)
                 ->first();
 

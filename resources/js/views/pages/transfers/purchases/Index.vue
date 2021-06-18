@@ -612,7 +612,7 @@
                   </td>
 
                   <td class="subtitle-1 grey--text font-weight-bold" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                      {{ record.purchase_no }}
+                    {{ record.purchase_no }}
                   </td>
 
                   <td class="subtitle-1">
@@ -821,22 +821,32 @@
 
           <!-- Additional -->
           <v-row align="top" class="mt-6" no-gutters>
+            <!-- Agent -->
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Agent</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ record.agentName ? record.agentName : '-' }}</div>
+                </div>
+              </div>
+            </v-col>
+
             <!-- Transport details -->
-            <v-col cols="4" class="px-2">
+            <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.transport_details }}</div>
+                  <div class="font-weight-bold">{{ record.transport_details ? record.transport_details : '-' }}</div>
                 </div>
               </div>
             </v-col>
 
             <!-- Remarks -->
-            <v-col cols="8" class="px-2">
+            <v-col cols="6" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Remarks</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.remarks }}</div>
+                  <div class="font-weight-bold">{{ record.remarks ? record.remarks : '-' }}</div>
                 </div>
               </div>
             </v-col>

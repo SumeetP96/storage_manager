@@ -42,19 +42,26 @@ export const SalesMixin = {
             .then(response => {
               this.products = response.data.records
 
-              this.axios.get(`/api/purchases/transfer_products/${id}`)
+              this.axios.get(`/api/sales/transfer_products/${id}`)
                 .then(response => {
                   response.data.record.forEach((product, index) => {
-                    this.inputProducts.push({ id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '' })
-                    this.productDetails.push({ unit: '', remarks: '', packing: '', compoundUnit: '' })
+                    this.inputProducts.push({
+                      id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '',
+                      rent: '', rentRaw: '', labour: '', labourRaw: ''
+                    })
+                    this.productDetails.push({ unit: '', remarks: '', packing: '', compoundUnit: '', lotNumbers: [] })
 
                     this.inputProducts[index].id = product.productId
                     this.inputProducts[index].quantity = product.quantity
                     this.inputProducts[index].quantityRaw = product.quantityRaw
                     this.inputProducts[index].compoundQuantity = product.compoundQuantity
                     this.inputProducts[index].compoundQuantityRaw = product.compoundQuantityRaw
+                    this.inputProducts[index].rent = product.rent
+                    this.inputProducts[index].rentRaw = product.rentRaw
+                    this.inputProducts[index].labour = product.labour
+                    this.inputProducts[index].labourRaw = product.labourRaw
 
-                    this.fetchProductDetails(index)
+                    this.fetchProductDetails(index, false, product.lotNumber)
                   })
 
                   this.clearUnusedInputs()
@@ -144,7 +151,7 @@ export const SalesMixin = {
     /**
      * Fetch selected product's details
      */
-     fetchProductDetails(index, clear) {
+     fetchProductDetails(index, clear = false, lotNumber = undefined) {
       this.productDetails[index].remarks = ''
       if (!this.inputProducts[index].id || clear) return
       this.axios.get(`/api/products/${this.inputProducts[index].id}/details/${this.record.from_godown_id}`)
@@ -154,6 +161,11 @@ export const SalesMixin = {
           this.productDetails[index].compoundUnit = response.data.compoundUnit
           this.productDetails[index].packing = response.data.packing
           this.productDetails[index].lotNumbers = response.data.lotNumbers
+
+          if (lotNumber) {
+            this.inputProducts[index].lot_number = lotNumber
+            this.fetchStockDetails(index)
+          }
         })
     },
 
@@ -163,7 +175,9 @@ export const SalesMixin = {
       this.axios.get(`/api/products/${this.inputProducts[index].id}/stock_details/${this.record.from_godown_id}/${this.inputProducts[index].lot_number}`)
         .then(response => {
           this.productDetails[index].stock = response.data.current_stock
+          this.inputProducts[index].rent = response.data.details.rent
           this.inputProducts[index].rentRaw = this.formatQuantity(response.data.details.rent, 2)
+          this.inputProducts[index].labour = response.data.details.labour
           this.inputProducts[index].labourRaw = this.formatQuantity(response.data.details.labour, 2)
         })
     },

@@ -36,6 +36,7 @@ trait SaleTrait
             ->selectRaw('
                 st.id,
                 st.date,
+                st.sale_no,
                 st.invoice_no as invoiceNo,
                 fg.name as fromName,
                 tg.name as toName,
