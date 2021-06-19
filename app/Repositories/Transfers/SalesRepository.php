@@ -33,7 +33,13 @@ class SalesRepository
                 st.*,
                 DATE_FORMAT(st.date, "%d-%m-%Y") as dateRaw,
                 fg.name as fromName,
+                fg.address as fromAddress,
+                fg.contact_1 as fromContact1,
+                fg.contact_2 as fromContact2,
                 tg.name as toName,
+                tg.address as toAddress,
+                tg.contact_1 as toContact1,
+                tg.contact_2 as toContact2,
                 ag.name as agentName
             ')
             ->first();
@@ -90,7 +96,7 @@ class SalesRepository
                 'rent'              => (int) $product['rent'],
                 'labour'            => (int) $product['labour'],
                 'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
+                'compound_quantity' => !empty($product['compoundQuantity']) ? (int) $product['compoundQuantity'] : NULL
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
@@ -129,7 +135,7 @@ class SalesRepository
                 'rent'              => (int) $product['rent'],
                 'labour'            => (int) $product['labour'],
                 'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
+                'compound_quantity' => !empty($product['compoundQuantity']) ? (int) $product['compoundQuantity'] : NULL
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {

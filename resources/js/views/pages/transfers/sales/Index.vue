@@ -834,7 +834,7 @@
             <!-- Transport details -->
             <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details</div>
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details / remarks</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.transport_details ? record.transport_details : '-' }}</div>
                 </div>
@@ -876,6 +876,24 @@
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>
             <iframe id="print-record" style="display: none"></iframe>
+
+            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+            <!-- Delivery slip -->
+            <v-btn color="primary" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
+              :href="`/exports/pdf/sales/delivery_slip/${record.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-receipt</v-icon> Delivery slip
+            </v-btn>
+
+            <!-- Storage invoice -->
+            <v-btn color="primary" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
+              :href="`/exports/pdf/sales/storage_invoice/${record.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-file-document-outline</v-icon> Storage invoice
+            </v-btn>
           </div>
 
           <v-btn color="error" dark text tabindex="-1" :loading="deleteButtonLoading"

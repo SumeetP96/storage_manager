@@ -37,6 +37,8 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/excel/sales', 'Exports\SaleExportController@allExcel');
     Route::get('/print/sales', 'Exports\SaleExportController@allPrint');
     Route::get('/pdf/sales/{id}', 'Exports\SaleExportController@singlePdf');
+    Route::get('/pdf/sales/delivery_slip/{id}', 'Exports\SaleExportController@deliverySlip');
+    Route::get('/pdf/sales/storage_invoice/{id}', 'Exports\SaleExportController@storageInvoice');
     Route::get('/print/sales/{id}', 'Exports\SaleExportController@singlePrint');
 
     // Inter godowns

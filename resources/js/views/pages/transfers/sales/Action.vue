@@ -308,7 +308,7 @@
                   hide-details="auto"
                   outlined
                   @blur="
-                    inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
+                    inputProducts[index].compoundQuantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
                     calculateQuantity(index)
                     "
                   :disabled="!inputProducts[index].id || !productDetails[index].compoundUnit"
@@ -321,8 +321,16 @@
                 </v-text-field>
                 <div v-if="inputProducts[index].lot_number && productDetails[index].stock != undefined && productDetails[index].packing"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
-                  class="subtitle-2 px-2 rounded text-right success--text font-weight-bold">
-                    {{ (productDetails[index].stock / productDetails[index].packing).toFixed(2) }}
+                  class="subtitle-2 px-2 rounded text-right">
+                    <span v-if="productDetails[index].stock < 0" class="error--text font-weight-bold">
+                      {{ (productDetails[index].stock / productDetails[index].packing).toFixed(2) }}
+                    </span>
+                    <span v-if="productDetails[index].stock > 0" class="success--text font-weight-bold">
+                      {{ (productDetails[index].stock / productDetails[index].packing).toFixed(2) }}
+                    </span>
+                    <span v-if="productDetails[index].stock == 0" class="font-weight-bold">
+                      {{ (productDetails[index].stock / productDetails[index].packing).toFixed(2) }}
+                    </span>
                 </div>
               </td>
 
@@ -358,8 +366,16 @@
                 </v-text-field>
                 <div v-if="inputProducts[index].lot_number && productDetails[index].stock != undefined"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
-                  class="subtitle-2 px-2 rounded text-right success--text font-weight-bold">
-                    {{ formatQuantity(productDetails[index].stock, 2) }}
+                  class="subtitle-2 px-2 rounded text-right">
+                    <span v-if="productDetails[index].stock < 0" class="error--text font-weight-bold">
+                      {{ formatQuantity(productDetails[index].stock, 2) }}
+                    </span>
+                    <span v-if="productDetails[index].stock > 0" class="success--text font-weight-bold">
+                      {{ formatQuantity(productDetails[index].stock, 2) }}
+                    </span>
+                    <span v-if="productDetails[index].stock == 0" class="font-weight-bold">
+                      {{ formatQuantity(productDetails[index].stock, 2) }}
+                    </span>
                 </div>
               </td>
 
@@ -442,7 +458,7 @@
 
           <!-- Order No -->
           <v-col cols="2" class="pl-6">
-            <div class="subtitle-1 font-weight-bold">Order number
+            <div class="subtitle-1 font-weight-bold">Outward number
               <span class="red--text text-h6"></span></div>
             <v-text-field
               v-model="record.order_no"
@@ -459,7 +475,7 @@
 
           <!-- Transport Details -->
           <v-col cols="3" class="pl-6">
-            <div class="subtitle-1 font-weight-bold">Transport details
+            <div class="subtitle-1 font-weight-bold">Transport details / remarks
               <span class="red--text text-h6"></span></div>
             <v-text-field
               v-model="record.transport_details"
@@ -515,7 +531,7 @@
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
           <div>
-            <span v-if="record.from_godown_id">Update Account</span>
+            <span v-if="record.to_godown_id">Update Account</span>
             <span v-else>Create Account</span>
           </div>
           <v-btn icon @click="closeDialog('accountDialog')"><v-icon>mdi-close</v-icon></v-btn>
@@ -632,9 +648,9 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn v-if="record.from_godown_id"
+          <v-btn v-if="record.to_godown_id"
             color="indigo" text dark :loading="dialogUpdateButton"
-            @click="updateDialogRecord(record.from_godown_id, {
+            @click="updateDialogRecord(record.to_godown_id, {
               isAccount: true,
               apiRoute: 'godowns',
               dialog: 'accountDialog'

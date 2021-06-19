@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Exports;
 
+use App\Company;
 use PDF;
 use App\Traits\SaleTrait;
 use App\Exports\SaleExport;
@@ -78,6 +79,27 @@ class SaleExportController extends Controller
         return view('exports.sales.print.single', compact('record', 'products'));
     }
 
+    public function deliverySlip($id)
+    {
+        $details = $this->getSingleDetails($id);
+        $record = $details['record'];
+        $products = $details['products'];
+        $company = Company::find(1);
+        $pdf = PDF::loadView('exports.sales.pdf.deliverySlip', compact('record', 'products', 'company'));
+        return $pdf->stream();
+        return $pdf->download('delivery_slip.pdf');
+    }
+
+    public function storageInvoice($id)
+    {
+        $details = $this->getSingleDetails($id);
+        $record = $details['record'];
+        $products = $details['products'];
+        $pdf = PDF::loadView('exports.sales.pdf.storageInvoice', compact('record', 'products'));
+        return $pdf->stream();
+        return $pdf->download('delivery_slip.pdf');
+    }
+
     /**
      * Get record details
      *
@@ -117,7 +139,7 @@ class SaleExportController extends Controller
                 stp.compound_quantity div 100 as compoundQuantityRaw,
                 pr.name as name,
                 pr.unit as unit,
-                pr.lot_number as lotNumber
+                stp.lot_number as lotNumber
             ')
             ->get();
 
