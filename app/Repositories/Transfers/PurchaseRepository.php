@@ -101,9 +101,9 @@ class PurchaseRepository
                 'product_id'        => $product['id'],
                 'lot_number'        => $product['lot_number'] ?? NULL,
                 'rent'              => (int) $product['rent'],
-                'labour'            => (int) $product['labour'],
-                'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
+                'loading'           => (int) $product['loading'],
+                'unloading'         => (int) $product['unloading'],
+                'quantity'          => (int) $product['quantity']
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product)) {
@@ -140,9 +140,9 @@ class PurchaseRepository
                 'product_id'        => $product['id'],
                 'lot_number'        => $product['lot_number'] ?? NULL,
                 'rent'              => (int) $product['rent'],
-                'labour'            => (int) $product['labour'],
-                'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compound_quantity']) ? (int) $product['compound_quantity'] : NULL
+                'loading'           => (int) $product['loading'],
+                'unloading'         => (int) $product['unloading'],
+                'quantity'          => (int) $product['quantity']
             ]);
 
             if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {

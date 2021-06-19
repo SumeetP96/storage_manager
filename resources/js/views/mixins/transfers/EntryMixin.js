@@ -25,10 +25,12 @@ export const EntryMixin = {
 
     addProductInputRow() {
       const last = this.inputProducts.length
-      this.productDetails.push({ unit: '', stock: '', remarks: '' })
+      this.productDetails.push({ unit: '', stock: '', remarks: '', packing: '', lotNumbers: [] })
       this.inputProducts.push({
-        id: '', quantity: '', quantityRaw: '', compoundQuantity: '', compoundQuantityRaw: '',
-        rent: '', rentRaw: '', labour: '', labourRaw: ''
+        id: '',
+        rent: '', rentRaw: '',
+        labour: '', labourRaw: '',
+        quantity: '', quantityRaw: ''
       })
       setTimeout(() => document.getElementById(`productBox${last}`).focus(), 100);
     },
@@ -41,15 +43,15 @@ export const EntryMixin = {
 
     removeProductInputRow(index) {
       this.inputProducts = this.inputProducts.filter((product, ind) => ind != index)
-      this.productDetails[index] = { unit: '', remarks: '', packing: '', compoundUnit: '' }
-      this.clearProductErrors()
+      this.productDetails[index] = {}
+      this.clearProductErrors(index)
       this.clearUnusedInputs()
     },
 
-    clearProductErrors() {
+    clearProductErrors(index) {
       this.errors[`product_${index}_rent`] = ''
-      this.errors[`product_${index}_labour`] = ''
-      this.errors[`product_${index}_compound_quantity`] = ''
+      this.errors[`product_${index}_loading`] = ''
+      this.errors[`product_${index}_unloading`] = ''
       this.errors[`product_${index}_quantity`] = ''
     },
 
@@ -58,11 +60,24 @@ export const EntryMixin = {
       if (this.inputProducts.length == 0) this.addProductInputRow()
     },
 
-    calculateTotalQuantity() {
+    calculateItemQuantity(index) {
+      let amount = 0
+
+      if (this.inputProducts[index].quantityRaw) {
+        let packing = this.formatQuantity(this.productDetails[index].packing, 2)
+        let quantity = parseFloat(this.inputProducts[index].quantityRaw)
+
+        amount = packing * quantity
+      }
+
+      return amount.toFixed(2)
+    },
+
+    calculateTotalQuantityUnits() {
       let quantity = 0
 
       this.inputProducts.forEach(product => {
-        if (product.id && product.quantityRaw) {
+        if (product.quantityRaw) {
           quantity += parseFloat(product.quantityRaw)
         }
       })
@@ -70,32 +85,14 @@ export const EntryMixin = {
       return quantity.toFixed(2)
     },
 
-    calculateTotalCompound() {
-      let compound = 0
+    calculateTotalQuantityKgs() {
+      let quantity = 0
 
-      this.inputProducts.forEach(product => {
-        if (product.id && product.compoundQuantityRaw) {
-          compound += parseFloat(product.compoundQuantityRaw)
-        }
+      this.inputProducts.forEach((product, index) => {
+        quantity += parseFloat(this.calculateItemQuantity(index))
       })
 
-      return compound.toFixed(2)
-    },
-
-    calculateQuantity(index) {
-      let compoundQuantity = parseFloat(this.inputProducts[index].compoundQuantityRaw)
-      let packing = this.formatQuantity(parseFloat(this.productDetails[index].packing), 0)
-
-      if (!compoundQuantity || !packing) return
-      if (parseFloat(compoundQuantity) <= 0) return
-
-      if (compoundQuantity && packing) {
-        this.inputProducts[index].quantityRaw = (compoundQuantity * packing).toFixed(0)
-        this.inputProducts[index].quantity = (compoundQuantity * packing).toFixed(0) * 100
-      } else {
-        this.inputProducts[index].quantityRaw = undefined
-        this.inputProducts[index].quantity = undefined
-      }
+      return quantity.toFixed(2)
     },
   }
 }

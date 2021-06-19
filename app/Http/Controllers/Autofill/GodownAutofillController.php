@@ -24,7 +24,7 @@ class GodownAutofillController extends Controller
      */
     public function allAccounts()
     {
-        return Godown::where('is_account', false)
+        return Godown::where('is_account', true)
             ->selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')
             ->get();
     }

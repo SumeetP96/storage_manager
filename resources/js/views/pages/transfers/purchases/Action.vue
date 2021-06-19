@@ -48,7 +48,7 @@
                   @blur="formatDate('dateRaw');
                     record.date = flipToYMD(record.dateRaw)"
                   :error-messages="errors.date"
-                  :class="$vuetify.theme.dark ? 'grey darken-2' : 'white'"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="smaller-input center-input"
                   dense>
                 </v-text-field>
@@ -199,11 +199,11 @@
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-right pr-5" style="width: 8%">Unloading</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Qty (Nos)</th>
+                class="text-right pr-3" style="width: 10%">Quantity (Units)</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-left" style="width: 1%"></th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Qty (Kgs)</th>
+                class="text-right pr-3" style="width: 10%">Quantity (Kgs)</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-right right-round" style="width: 5%"></th>
             </tr>
@@ -269,7 +269,7 @@
               </td>
 
               <!-- Rent -->
-              <td>
+              <td class="text-right">
                 <v-text-field
                   v-model="inputProducts[index].rentRaw"
                   hide-details="auto"
@@ -286,7 +286,7 @@
               </td>
 
               <!-- Loading -->
-              <td>
+              <td class="text-right">
                 <v-text-field
                   v-model="inputProducts[index].loadingRaw"
                   hide-details="auto"
@@ -303,7 +303,7 @@
               </td>
 
               <!-- Unloading -->
-              <td>
+              <td class="text-right">
                 <v-text-field
                   v-model="inputProducts[index].unloadingRaw"
                   hide-details="auto"
@@ -325,10 +325,7 @@
                   v-model="inputProducts[index].quantityRaw"
                   hide-details="auto"
                   outlined
-                  @blur="
-                    inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)
-                    calculateQuantity(index)
-                    "
+                  @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
@@ -352,7 +349,7 @@
 
               <!-- Quantity -->
               <td class="text-right font-weight-bold" style="font-size: 1.05rem">
-                3000.00
+                {{ calculateItemQuantity(index) }}
               </td>
 
               <!-- Delete -->
@@ -376,9 +373,9 @@
               <th class="footer-th"></th>
               <th class="footer-th"></th>
               <th class="footer-th"></th>
-              <th class="footer-th text-right">{{ calculateTotalCompound() }}</th>
+              <th class="footer-th text-right">{{ calculateTotalQuantityUnits() }}</th>
               <th class="footer-th"></th>
-              <th class="footer-th text-right pr-3">{{ calculateTotalQuantity() }}</th>
+              <th class="footer-th text-right pr-3">{{ calculateTotalQuantityKgs() }}</th>
               <th class="right-round footer-th"></th>
             </tr>
           </table>

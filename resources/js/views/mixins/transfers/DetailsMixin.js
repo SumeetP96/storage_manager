@@ -5,6 +5,7 @@ export const DetailsMixin = {
       accountDetails: {},
       productDetails: [{
         unit: '',
+        stock: '',
         remarks: '',
         packing: '',
         lotNumbers: []

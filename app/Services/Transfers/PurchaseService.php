@@ -33,12 +33,12 @@ class PurchaseService
                 $errors['product_' . $key . '_rent'] = ['Invalid.'];
             }
 
-            if (!empty($product['labour']) && !is_numeric($product['labour'])) {
-                $errors['product_' . $key . '_labour'] = ['Invalid.'];
+            if (!empty($product['loading']) && !is_numeric($product['loading'])) {
+                $errors['product_' . $key . '_loading'] = ['Invalid.'];
             }
 
-            if (!empty($product['compound_quantity']) && !is_numeric($product['compound_quantity'])) {
-                $errors['product_' . $key . '_compound_quantity'] = ['Invalid.'];
+            if (!empty($product['unloading']) && !is_numeric($product['unloading'])) {
+                $errors['product_' . $key . '_unloading'] = ['Invalid.'];
             }
 
             if (empty($product['quantity']) || is_null($product['quantity'])) {
