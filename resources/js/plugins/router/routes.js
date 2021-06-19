@@ -66,28 +66,28 @@ const routes = [
   },
 
   // SALES
-  {
-    name: 'sales.index',
-    path: '/sales',
-    component: require('../../views/pages/transfers/sales/Index').default
-  },
-  {
-    name: 'sales.action',
-    path: '/sales/action/:id?',
-    component: require('../../views/pages/transfers/sales/Action').default
-  },
+  // {
+  //   name: 'sales.index',
+  //   path: '/sales',
+  //   component: require('../../views/pages/transfers/sales/Index').default
+  // },
+  // {
+  //   name: 'sales.action',
+  //   path: '/sales/action/:id?',
+  //   component: require('../../views/pages/transfers/sales/Action').default
+  // },
 
-  // INTER GODOWNS
-  {
-    name: 'inter_godowns.index',
-    path: '/inter_godowns',
-    component: require('../../views/pages/transfers/inter_godowns/Index').default
-  },
-  {
-    name: 'inter_godowns.action',
-    path: '/inter_godowns/action/:id?',
-    component: require('../../views/pages/transfers/inter_godowns/Action').default
-  },
+  // // INTER GODOWNS
+  // {
+  //   name: 'inter_godowns.index',
+  //   path: '/inter_godowns',
+  //   component: require('../../views/pages/transfers/inter_godowns/Index').default
+  // },
+  // {
+  //   name: 'inter_godowns.action',
+  //   path: '/inter_godowns/action/:id?',
+  //   component: require('../../views/pages/transfers/inter_godowns/Action').default
+  // },
 
   // Reports
   {
@@ -106,11 +106,6 @@ const routes = [
     name: 'reports.products_stock',
     path: '/reports/products_stock',
     component: require('../../views/pages/reports/stock/ProductsStock').default
-  },
-  {
-    name: 'reports.lot_stock',
-    path: '/reports/lot_stock',
-    component: require('../../views/pages/reports/stock/LotStock').default
   },
   {
     name: 'reports.products_lot_stock',

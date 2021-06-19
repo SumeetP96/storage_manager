@@ -105,12 +105,6 @@ export default {
           description: 'Godown wise product stock report'
         },
 
-        // {
-        //   routeName: 'reports.lot_stock',
-        //   label: 'Lot Stock',
-        //   description: 'Lot wise stock report'
-        // },
-
         {
           routeName: 'reports.products_lot_stock',
           label: 'Product Lot Stock',

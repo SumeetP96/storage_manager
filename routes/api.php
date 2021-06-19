@@ -13,31 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('autofills')->group(function () {
-    Route::get('/products/distinct_units', 'Autofill\ProductAutofillController@distinctUnits');
-    Route::get('/products/distinct_compound_units', 'Autofill\ProductAutofillController@distinctCompoundUnits');
-    Route::get('/products/used_by_godowns/{godownId}', 'Autofill\ProductAutofillController@usedByGodown');
-
-    Route::get('/agents/with_transactions', 'Autofill\AgentAutofillController@withTransactions');
-
-    Route::get('/godowns/with_stock', 'Autofill\GodownAutofillController@withStock');
-    Route::get('/godowns/with_stock_products', 'Autofill\GodownAutofillController@withStockProducts');
-    Route::get('/godowns/to_with_transactions/{transferType}', 'Autofill\GodownAutofillController@toWithTransactions');
-    Route::get('/godowns/from_with_transactions/{transferType}', 'Autofill\GodownAutofillController@fromWithTransactions');
-    Route::get('/godowns/to_used_by_product/{productId}', 'Autofill\GodownAutofillController@toUsedByProduct');
-    Route::get('/godowns/from_used_by_product/{productId}', 'Autofill\GodownAutofillController@fromUsedByProduct');
-    Route::get('/godowns/used_by_godowns/{godownId}', 'Autofill\GodownAutofillController@usedByGodown');
-    Route::get('/godowns/to_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@toUsedByAgent');
-    Route::get('/godowns/from_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@fromUsedByAgent');
-    Route::get('/godowns/to_all', 'Autofill\GodownAutofillController@toAll');
-    Route::get('/godowns/from_all', 'Autofill\GodownAutofillController@fromAll');
-
-    Route::get('/transfer_types/used_by_product/{productId}', 'Autofill\TransferTypeAutofillController@usedByProduct');
-    Route::get('/transfer_types/used_by_godowns/{godownId}', 'Autofill\TransferTypeAutofillController@usedByGodown');
-    Route::get('/transfer_types/used_by_agent/{agentId}', 'Autofill\TransferTypeAutofillController@usedByAgent');
-    Route::get('/transfer_types/all', 'Autofill\TransferTypeAutofillController@all');
-});
-
 Route::prefix('godowns')->group(function () {
     Route::get('/', 'GodownController@index');
     Route::get('/{id}/show', 'GodownController@show');
@@ -57,11 +32,6 @@ Route::prefix('products')->group(function () {
     Route::post('/store', 'ProductController@store');
     Route::post('/{id}/update', 'ProductController@update');
     Route::post('/{id}/destroy', 'ProductController@destroy');
-
-    Route::get('/{id}/details/{godownId?}', 'ProductController@details');
-    Route::get('/autocomplete', 'ProductController@autocomplete');
-    Route::get('/autocomplete_with_stock/{id?}', 'ProductController@autocompleteWithStock');
-    Route::get('/{id}/stock_details/{godownId}/{lotNumber}', 'ProductController@stockDetails');
 });
 
 Route::prefix('agents')->group(function () {
@@ -78,10 +48,11 @@ Route::prefix('purchases')->group(function () {
     Route::get('/', 'PurchaseController@index');
     Route::get('/new', 'PurchaseController@new');
     Route::get('/{id}/show', 'PurchaseController@show');
-    Route::get('/transfer_products/{purchaseId}', 'PurchaseController@showTransferProducts');
     Route::post('/store', 'PurchaseController@store');
     Route::post('/{id}/update', 'PurchaseController@update');
     Route::post('/{id}/destroy', 'PurchaseController@destroy');
+
+    Route::get('/transfer_products/{purchaseId}', 'PurchaseController@showTransferProducts');
 });
 
 Route::prefix('sales')->group(function () {
@@ -132,4 +103,46 @@ Route::prefix('backup')->group(function () {
 Route::prefix('settings')->group(function () {
     Route::get('/get_lock_date', 'SettingController@getLockDate');
     Route::post('/lock_date/update', 'SettingController@update');
+});
+
+
+Route::prefix('autofills')->group(function () {
+    Route::prefix('products')->group(function () {
+        Route::get('/all', 'Autofill\ProductAutofillController@all');
+        Route::get('/details/{productId}', 'Autofill\ProductAutofillController@details');
+    });
+
+    Route::prefix('godowns')->group(function () {
+        Route::get('/all_godowns', 'Autofill\GodownAutofillController@allGodowns');
+        Route::get('/all_accounts', 'Autofill\GodownAutofillController@allAccounts');
+        Route::get('/details/{godownId}', 'Autofill\GodownAutofillController@details');
+    });
+
+    Route::prefix('agents')->group(function () {
+        Route::get('/all', 'Autofill\AgentAutofillController@all');
+    });
+
+
+    Route::get('/products/distinct_units', 'Autofill\ProductAutofillController@distinctUnits');
+    Route::get('/products/distinct_compound_units', 'Autofill\ProductAutofillController@distinctCompoundUnits');
+    Route::get('/products/used_by_godowns/{godownId}', 'Autofill\ProductAutofillController@usedByGodown');
+
+    Route::get('/agents/with_transactions', 'Autofill\AgentAutofillController@withTransactions');
+
+    Route::get('/godowns/with_stock', 'Autofill\GodownAutofillController@withStock');
+    Route::get('/godowns/with_stock_products', 'Autofill\GodownAutofillController@withStockProducts');
+    Route::get('/godowns/to_with_transactions/{transferType}', 'Autofill\GodownAutofillController@toWithTransactions');
+    Route::get('/godowns/from_with_transactions/{transferType}', 'Autofill\GodownAutofillController@fromWithTransactions');
+    Route::get('/godowns/to_used_by_product/{productId}', 'Autofill\GodownAutofillController@toUsedByProduct');
+    Route::get('/godowns/from_used_by_product/{productId}', 'Autofill\GodownAutofillController@fromUsedByProduct');
+    Route::get('/godowns/used_by_godowns/{godownId}', 'Autofill\GodownAutofillController@usedByGodown');
+    Route::get('/godowns/to_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@toUsedByAgent');
+    Route::get('/godowns/from_used_by_agent/{agentId}', 'Autofill\GodownAutofillController@fromUsedByAgent');
+    Route::get('/godowns/to_all', 'Autofill\GodownAutofillController@toAll');
+    Route::get('/godowns/from_all', 'Autofill\GodownAutofillController@fromAll');
+
+    Route::get('/transfer_types/used_by_product/{productId}', 'Autofill\TransferTypeAutofillController@usedByProduct');
+    Route::get('/transfer_types/used_by_godowns/{godownId}', 'Autofill\TransferTypeAutofillController@usedByGodown');
+    Route::get('/transfer_types/used_by_agent/{agentId}', 'Autofill\TransferTypeAutofillController@usedByAgent');
+    Route::get('/transfer_types/all', 'Autofill\TransferTypeAutofillController@all');
 });

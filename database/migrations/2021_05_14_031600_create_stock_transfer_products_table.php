@@ -19,9 +19,9 @@ class CreateStockTransferProductsTable extends Migration
             $table->foreignId('product_id')->constrained()->restrictOnDelete();
             $table->string('lot_number', 100)->nullable();
             $table->bigInteger('rent')->default(0);
-            $table->bigInteger('labour')->default(0);
+            $table->bigInteger('loading')->default(0);
+            $table->bigInteger('unloading')->default(0);
             $table->bigInteger('quantity');
-            $table->bigInteger('compound_quantity')->nullable();
             $table->timestamps();
         });
     }

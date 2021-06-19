@@ -2,12 +2,43 @@
 
 namespace App\Http\Controllers\Autofill;
 
+use App\Godown;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GodownAutofillController extends Controller
 {
+    /**
+     * All godowns
+     */
+    public function allGodowns()
+    {
+        return Godown::where('is_account', false)
+            ->selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')
+            ->get();
+    }
+
+    /**
+     * All accounts
+     */
+    public function allAccounts()
+    {
+        return Godown::where('is_account', false)
+            ->selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')
+            ->get();
+    }
+
+    /**
+     * Godown details
+     */
+    public function details($godownId)
+    {
+        return Godown::where('id', $godownId)
+            ->select('address', 'contact_1', 'contact_2')
+            ->first();
+    }
+
     /**
      * Fetch to godowns with transactions
      *

@@ -23,7 +23,7 @@ export const CommonMixin = {
 
   data() {
     return {
-      disableExport: false,
+      disableExport: false
     }
   },
 

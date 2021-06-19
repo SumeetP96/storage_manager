@@ -96,7 +96,7 @@
                       :items="accounts"
                       item-text="name"
                       item-value="id"
-                      @input="fetchAccountDetails()"
+                      @change="fetchAccountDetails()"
                       prepend-inner-icon="mdi-briefcase-variant-outline"
                       :error-messages="errors.from_godown_id"
                       :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
@@ -142,7 +142,7 @@
                       clearable
                       placeholder="Select godown"
                       :items="godowns"
-                      @input="fetchGodownDetails()"
+                      @change="fetchGodownDetails()"
                       item-text="name"
                       item-value="id"
                       prepend-inner-icon="mdi-store"
@@ -195,17 +195,17 @@
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-right pr-5" style="width: 8%">Rent</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-5" style="width: 8%">Labour</th>
+                class="text-right pr-5" style="width: 8%">Loading</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Compound</th>
+                class="text-right pr-5" style="width: 8%">Unloading</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-left" style="width: 1%"></th>
-              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right pr-3" style="width: 10%">Quantity</th>
+                class="text-right pr-3" style="width: 10%">Qty (Nos)</th>
               <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
                 class="text-left" style="width: 1%"></th>
-              <td :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
-                class="text-right right-round" style="width: 1%"></td>
+              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
+                class="text-right pr-3" style="width: 10%">Qty (Kgs)</th>
+              <th :class="$vuetify.theme.dark ? 'grey darken-4' : 'blue-grey darken-1 white--text'"
+                class="text-right right-round" style="width: 5%"></th>
             </tr>
 
             <!-- Body -->
@@ -228,7 +228,6 @@
                       auto-select-first
                       :items="products"
                       @change="fetchProductDetails(index)"
-                      @click:clear="fetchProductDetails(index, true)"
                       item-text="name"
                       item-value="id"
                       :error-messages="errors[`product_${index}_id`]"
@@ -286,52 +285,38 @@
                 </v-text-field>
               </td>
 
-              <!-- Labour -->
+              <!-- Loading -->
               <td>
                 <v-text-field
-                  v-model="inputProducts[index].labourRaw"
+                  v-model="inputProducts[index].loadingRaw"
                   hide-details="auto"
                   outlined
-                  @blur="inputProducts[index].labour = setFormatQuantity(inputProducts[index].labourRaw)"
+                  @blur="inputProducts[index].loading = setFormatQuantity(inputProducts[index].loadingRaw)"
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
                   placeholder="0.00"
-                  :error-messages="errors[`product_${index}_labour`]"
+                  :error-messages="errors[`product_${index}_loading`]"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
               </td>
 
-              <!-- Compound -->
-              <td class="pr-1">
+              <!-- Unloading -->
+              <td>
                 <v-text-field
-                  v-model="inputProducts[index].compoundQuantityRaw"
+                  v-model="inputProducts[index].unloadingRaw"
                   hide-details="auto"
                   outlined
-                  @blur="
-                    inputProducts[index].compound_quantity = setFormatQuantity(inputProducts[index].compoundQuantityRaw)
-                    calculateQuantity(index)
-                    "
-                  :disabled="!inputProducts[index].id || !productDetails[index].compoundUnit"
-                  :filled="!inputProducts[index].id || !productDetails[index].compoundUnit"
+                  @blur="inputProducts[index].unloading = setFormatQuantity(inputProducts[index].unloadingRaw)"
+                  :disabled="!inputProducts[index].id"
+                  :filled="!inputProducts[index].id"
                   placeholder="0.00"
-                  :error-messages="errors[`product_${index}_compound_quantity`]"
+                  :error-messages="errors[`product_${index}_unloading`]"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
-              </td>
-
-              <!-- Unit -->
-              <td class="pl-0">
-                <div v-if="inputProducts[index].id && productDetails[index].compoundUnit"
-                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
-                  class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
-                    <span class="pink--text">
-                      {{ productDetails[index].compoundUnit }}<span class="primary--text pl-1">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
-                    </span>
-                </div>
               </td>
 
               <!-- Quantity -->
@@ -340,10 +325,9 @@
                   v-model="inputProducts[index].quantityRaw"
                   hide-details="auto"
                   outlined
-                  @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
-                  @input="
-                    inputProducts[index].compoundQuantity = undefined;
-                    inputProducts[index].compoundQuantityRaw = undefined;
+                  @blur="
+                    inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)
+                    calculateQuantity(index)
                     "
                   :disabled="!inputProducts[index].id"
                   :filled="!inputProducts[index].id"
@@ -360,12 +344,19 @@
                 <div v-if="inputProducts[index].id"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
                   class="subtitle-2 px-1 py-1 rounded text-right font-weight-bold">
-                  <span class="pink--text">{{ productDetails[index].unit }}</span>
+                    <span class="pink--text">
+                      {{ productDetails[index].unit }}<span class="primary--text pl-1">({{ formatQuantity(productDetails[index].packing, 0) }})</span>
+                    </span>
                 </div>
               </td>
 
+              <!-- Quantity -->
+              <td class="text-right font-weight-bold" style="font-size: 1.05rem">
+                3000.00
+              </td>
+
               <!-- Delete -->
-              <td>
+              <td class="text-right">
                 <v-btn icon small class="ml-1 elevation-1" tabindex="-1"
                   :class="$vuetify.theme.dark ? 'grey darken-4 error--text' : 'white error--text'"
                   @click="removeProductInputRow(index)">
@@ -384,10 +375,10 @@
               <th class="footer-th"></th>
               <th class="footer-th"></th>
               <th class="footer-th"></th>
+              <th class="footer-th"></th>
               <th class="footer-th text-right">{{ calculateTotalCompound() }}</th>
               <th class="footer-th"></th>
-              <th class="footer-th text-right">{{ calculateTotalQuantity() }}</th>
-              <th class="footer-th"></th>
+              <th class="footer-th text-right pr-3">{{ calculateTotalQuantity() }}</th>
               <th class="right-round footer-th"></th>
             </tr>
           </table>
@@ -1091,20 +1082,13 @@
 
 <script>
 import { CommonMixin } from '../../../mixins/CommonMixin'
-import { PurchaseMixin } from '../../../mixins/transfers/purchases/PurchaseMixin'
+import { TransferMixin } from '../../../mixins/transfers/TransferMixin'
 
 export default {
-  mixins: [CommonMixin, PurchaseMixin],
+  mixins: [CommonMixin, TransferMixin],
 
   components: {
     AppBar: require('../../../components/AppBar').default
-  },
-
-  data() {
-    return {
-      backRoute: '',
-      payload: {}
-    }
   },
 
   mounted() {
@@ -1117,11 +1101,11 @@ export default {
     if (this.$route.params.id) {
       this.customFetchRecord(this.$route.params.id, true)
     } else {
-      this.axios.get('/api/purchases/new')
-        .then(response => {
-          this.record = response.data.record
-          this.customFetchAll()
-        })
+      this.fetchNewEntryNo()
+      this.fetchFromAutofill()
+      this.fetchToAutofill()
+      this.fetchProductAutofill()
+      this.fetchAgentAutofill()
     }
   },
 }

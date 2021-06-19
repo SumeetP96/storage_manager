@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\ProductService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\ProductRepository;
-use App\Services\ProductService;
 use App\Services\Response\ResponseService;
-use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -104,42 +104,5 @@ class ProductController extends Controller
         $this->productRepository->destroy($id);
 
         return $this->responseService->success();
-    }
-
-    /**
-     * Fetch records for autocomplete
-     */
-    public function autocomplete()
-    {
-        return $this->responseService
-            ->autocomplete($this->productRepository->fetchAutocompletes());
-    }
-
-    /**
-     * Fetch records for autocomplete with stock
-     */
-    public function autocompleteWithStock($id = null)
-    {
-        return $this->responseService
-            ->autocomplete(
-                $this->productRepository->fetchAutocompletesWithStock($id)
-            );
-    }
-
-    /**
-     * Fetch selected record details
-     */
-    public function details($id, $godownId = null)
-    {
-        if ($godownId == 'undefined') $godownId = NULL;
-        return $this->productRepository->details($id, $godownId);
-    }
-
-    /**
-     * Fetch selected record details
-     */
-    public function stockDetails($id, $godownId, $lotNumber)
-    {
-        return $this->productRepository->stockDetails($id, $godownId, $lotNumber);
     }
 }

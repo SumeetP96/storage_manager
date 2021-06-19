@@ -129,7 +129,7 @@
                 </th>
 
                 <!-- Alias -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'alias' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('alias')">Alias</span>
                     <span v-if="sortBy == 'alias'">
@@ -178,7 +178,7 @@
                 </th>
 
                 <!-- Unit -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'unit' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'unit' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('unit')">Unit</span>
                     <span v-if="sortBy == 'unit'">
@@ -247,79 +247,7 @@
                     </v-menu> <!-- / Unit filter end -->
                 </th>
 
-                <!-- Compound unit -->
-                <th v-if="selectedColumns.indexOf('compound_unit') >= 0"
-                  class="subtitle-2 text-center" :class="sortBy == 'compound_unit' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'compound_unit' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compound_unit')">Compound unit</span>
-                    <span v-if="sortBy == 'compound_unit'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-
-                    <!-- Compound Unit filter -->
-                    <v-menu offset-y :close-on-content-click="false" max-width="300px" :value="compound_unit_FILTER">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn :color="activeFilters.indexOf('compound_unit') >= 0 ? 'primary' : 'grey'"
-                          icon v-bind="attrs" v-on="on" @click="compound_unit_FILTER = true">
-                            <v-icon class="subtitle-2">mdi-filter-menu</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-                        <v-list-item>
-                          <v-list-item-title>
-                            <div class="subtitle-2 my-1">Select only</div>
-
-                            <v-combobox v-model="compound_unitSelectOnly"
-                              :items="compound_units"
-                              label="Compound unit to show"
-                              item-value="compound_unit"
-                              item-text="compound_unit"
-                              multiple
-                              clearable
-                              :loading="filterLoading"
-                              :disabled="compound_unitSelectExcept.length > 0 || filterLoading"
-                              solo
-                              dense
-                              class="mt-2"
-                            ></v-combobox>
-
-                            <div class="subtitle-2 my-1">Select except</div>
-
-                            <v-combobox v-model="compound_unitSelectExcept"
-                              :items="compound_units"
-                              :disabled="compound_unitSelectOnly.length > 0 || filterLoading"
-                              :loading="filterLoading"
-                              label="Compound unit to hide"
-                              item-value="compound_unit"
-                              item-text="compound_unit"
-                              multiple
-                              clearable
-                              solo
-                              dense
-                            ></v-combobox>
-
-                            <div class="d-flex justify-space-between align-center mt-3 mb-1">
-                              <v-btn dark small @click="removeFilter('compound_unit', 'onlyExcept')"
-                                tabindex="-1" :loading="filterLoading">
-                                  <v-icon class="subtitle-1 mr-2">mdi-cancel</v-icon>
-                                  clear
-                              </v-btn>
-
-                              <v-btn color="success" dark small @click="addFilter('compound_unit', 'onlyExcept')"
-                                :loading="filterLoading">
-                                  <v-icon class="subtitle-1 mr-2">mdi-filter</v-icon>
-                                  filter
-                              </v-btn>
-                            </div>
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu> <!-- / Compound Unit filter end -->
-                </th>
-
-                <th v-if="selectedColumns.indexOf('packing') >= 0"
-                  class="subtitle-2 text-center" :class="sortBy == 'packing' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'packing' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'packing' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('packing')">Packing</span>
                     <span v-if="sortBy == 'packing'">
@@ -533,20 +461,13 @@
                 @click="viewRecordDialog = true; loadRecord(record.id)">
                   <td class="subtitle-1">{{ record.name }}</td>
 
-                  <td class="subtitle-1 text-center">{{ record.alias ? record.alias : '-' }}</td>
+                  <td class="subtitle-1">{{ record.alias ? record.alias : '-' }}</td>
 
-                  <td class="subtitle-1 text-center font-weight-bold">{{ record.unit }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.unit }}</td>
 
-                  <td v-if="selectedColumns.indexOf('compound_unit') >= 0" class="subtitle-1 text-center">
-                    {{ record.compound_unit ? record.compound_unit : '-' }}
-                  </td>
-
-                  <td v-if="selectedColumns.indexOf('packing') >= 0" class="subtitle-1 text-center">
-                    <span v-if="record.packing">
-                      {{ formatQuantity(record.packing, 0) }}
-                      <span class="subtitle-2 grey--text pl-1">{{ record.unit }}</span>
-                    </span>
-                    <span v-else>-</span>
+                  <td class="subtitle-1 font-weight-bold">
+                    {{ formatQuantity(record.packing, 0) }}
+                    <span class="subtitle-2">KGS</span>
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
@@ -643,20 +564,10 @@
             </tr>
 
             <tr>
-              <td class="subtitle-1 font-weight-bold text-left">Compound unit</td>
-              <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                {{ record.compound_unit ? record.compound_unit : '-' }}
-              </td>
-            </tr>
-
-            <tr>
               <td class="subtitle-1 font-weight-bold text-left">Packing</td>
               <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                <span v-if="record.packing">
-                  {{ formatQuantity(record.packing, 0) }}
-                  <span class="subtitle-2 grey--text pl-1">({{ record.unit }})</span>
-                </span>
-                <span v-else>-</span>
+                {{ formatQuantity(record.packing, 0) }}
+                <span class="subtitle-2">KGS</span>
               </td>
             </tr>
 
@@ -726,13 +637,10 @@ export default {
 
     this.loadRecords()
     this.fetchUnitAutofill()
-    this.fetchCompoundUnitAutofill()
 
     this.setupExtraColumns([
-      { value: 'compound_unit', label: 'Compound unit' },
-      { value: 'packing', label: 'Packing' },
       { value: 'remarks', label: 'Remarks' },
-      { value: 'created_at', label: 'Created at' },
+      { value: 'created_at', label: 'Created at' }
     ])
   },
 
@@ -742,9 +650,6 @@ export default {
 
   data() {
     return {
-      lotNumber: '',
-      lotNumber_FILTER: false,
-
       alias: '',
       alias_FILTER: false,
 
@@ -752,11 +657,6 @@ export default {
       units: [],
       unitSelectOnly: [],
       unitSelectExcept: [],
-
-      compound_unit_FILTER: false,
-      compound_units: [],
-      compound_unitSelectOnly: [],
-      compound_unitSelectExcept: [],
 
       packingLt: '',
       packingGt: '',
@@ -772,31 +672,7 @@ export default {
           this.units = response.data
           this.filterLoading = false
         })
-    },
-
-    fetchCompoundUnitAutofill() {
-      this.filterLoading = true
-      this.axios.get('/api/autofills/products/distinct_compound_units')
-        .then(response => {
-          this.compound_units = response.data
-          this.filterLoading = false
-        })
     }
   }
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>

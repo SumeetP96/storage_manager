@@ -28,7 +28,6 @@ trait ProductTrait
                     ->orWhere('alias', 'like', '%' . $search . '%')
                     ->orWhere('unit', 'like', '%' . $search . '%')
                     ->orWhere('packing', 'like', '%' . $search . '%')
-                    ->orWhere('compound_unit', 'like', '%' . $search . '%')
                     ->orWhere('remarks', 'like', '%' . $search . '%');
             })->orderBy($sortBy, $flow);
     }
@@ -54,12 +53,6 @@ trait ProductTrait
         if (!is_null($unitOnly) > 0) $query->whereIn('unit', explode(',', $unitOnly));
         $unitExcept = $request->get('unitExcept');
         if (!is_null($unitExcept) > 0) $query->whereNotIn('unit', explode(',', $unitExcept));
-
-        // Compound Unit filters only / except
-        $compound_unitOnly = $request->get('compound_unitOnly');
-        if (!is_null($compound_unitOnly) > 0) $query->whereIn('compound_unit', explode(',', $compound_unitOnly));
-        $compound_unitExcept = $request->get('compound_unitExcept');
-        if (!is_null($compound_unitExcept) > 0) $query->whereNotIn('compound_unit', explode(',', $compound_unitExcept));
 
         // Less than greater than
         $packingLt = $request->get('packingLt');

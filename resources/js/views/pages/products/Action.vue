@@ -8,7 +8,8 @@
         type="list-item-three-line, card-heading, list-item-three-line, card-heading, image, actions">
       </v-skeleton-loader>
 
-      <div v-else class="rounded px-4 py-4 mt-5" :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+      <div v-else class="rounded elevation-1 px-4 py-4 mt-5"
+        :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
         <div v-if="record.id" class="text-h5">Update Product</div>
         <div v-else class="text-h5">Create new Product</div>
 
@@ -22,6 +23,7 @@
               hide-details="auto"
               outlined
               autofocus
+              placeholder="Enter product name"
               :error-messages="errors.name"
               :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
@@ -34,6 +36,7 @@
             <v-text-field
               v-model="record.alias"
               hide-details="auto"
+              placeholder="Enter product alias"
               outlined
               :error-messages="errors.alias"
               :class="$vuetify.theme.dark ? '' : 'white'"
@@ -42,61 +45,50 @@
           </v-col>
         </v-row>
 
-        <v-row align="start">
-          <v-col cols="2">
-            <label class="subtitle-1">Compound unit
-              <span class="red--text text-h6"></span></label>
-            <v-text-field
-              v-model="record.compound_unit"
-              hide-details="auto"
-              outlined
-              :error-messages="errors.compound_unit"
-              :class="$vuetify.theme.dark ? '' : 'white'"
-              dense>
-            </v-text-field>
-            <small>( 3 Letters )</small>
-          </v-col>
-
-          <v-col cols="1" class="text-center mt-10 subtitle-1 d-flex px-2">
-            <v-icon>mdi-chevron-right</v-icon>
-            <span class="font-weight-bold">OF</span>
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-col>
-
-          <v-col cols="2">
-            <label class="subtitle-1">Packing
-              <span class="red--text text-h6"></span></label>
-            <div class="d-flex align-start">
-              <v-text-field
-                v-model="record.packingRaw"
-                hide-details="auto"
-                @blur="record.packing = setFormatQuantity(record.packingRaw)"
-                outlined
-                :filled="disablePackingEdit"
-                :disabled="disablePackingEdit"
-                :error-messages="errors.packing"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-
-              <v-btn v-if="disablePackingEdit" dark icon class="indigo white--text ml-1" elevation="1" @click="editPacking()">
-                <v-icon>mdi-circle-edit-outline</v-icon>
-              </v-btn>
-            </div>
-          </v-col>
-
+        <v-row align="start" no-gutters class="mt-6">
           <v-col cols="2">
             <label class="subtitle-1">Unit
-              <span class="red--text text-h6">*</span></label>
+              <span class="red--text text-h6">*</span>
+            </label>
             <v-text-field
               v-model="record.unit"
               hide-details="auto"
               outlined
+              placeholder="Enter unit"
               :error-messages="errors.unit"
               :class="$vuetify.theme.dark ? '' : 'white'"
               dense>
             </v-text-field>
             <small>( 3 Letters )</small>
+          </v-col>
+
+          <v-col cols="1">
+            <div class="font-weight-bold text-center pt-10 pl-7 rounded" style="font-size: 1.1rem">
+              OF <v-icon>mdi-chevron-right</v-icon>
+            </div>
+          </v-col>
+
+          <v-col cols="2" class="ml-7">
+            <div class="subtitle-1 text-right" style="width: 100%">
+              Packing <span class="red--text text-h6">*</span>
+            </div>
+            <v-text-field
+              v-model="record.packingRaw"
+              hide-details="auto"
+              @blur="record.packing = setFormatQuantity(record.packingRaw)"
+              outlined
+              placeholder="0.00"
+              :error-messages="errors.packing"
+              :class="$vuetify.theme.dark ? '' : 'white'"
+              class="right-input"
+              dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="2">
+            <div class="font-weight-bold pt-10 ml-2 rounded" style="font-size: 1.1rem">
+              KGS
+            </div>
           </v-col>
         </v-row>
 

@@ -60,19 +60,6 @@ class ReportController extends Controller
     }
 
     /**
-     * Lot wise total stock
-     *
-     * @param  mixed $request
-     * @return \Illuminate\Http\Response
-     */
-    public function lotStock(Request $request)
-    {
-        return $this->responseService->records(
-            $this->reportRepository->fetchLotStock($request)
-        );
-    }
-
-    /**
      * Lot wise products stock
      *
      * @param  mixed $request

@@ -3,11 +3,29 @@
 namespace App\Http\Controllers\Autofill;
 
 use App\Product;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class ProductAutofillController extends Controller
 {
+    /**
+     * Fetch all records
+     */
+    public function all()
+    {
+        return Product::selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')->get();
+    }
+
+    /**
+     * Product details
+     */
+    public function details($productId)
+    {
+        $product = Product::where('id', $productId)->select('remarks', 'unit', 'packing')->first();
+
+        return $product;
+    }
+
     /**
      * Fetch distinct units
      */

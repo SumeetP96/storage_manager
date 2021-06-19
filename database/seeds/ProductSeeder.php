@@ -16,23 +16,30 @@ class ProductSeeder extends Seeder
             [
                 'name'          => 'Kohinoor Dubar',
                 'alias'         => 'KD',
-                'unit'          => 'KGS',
-                'compound_unit' => 'BAG',
-                'packing'       => 25
+                'unit'          => 'BAG',
+                'packing'       => 25,
+                'remarks'       => 'Dubar basmati rice'
             ],
             [
                 'name'          => 'Kohinoor Tibar',
                 'alias'         => 'KT',
-                'unit'          => 'KGS',
-                'compound_unit' => 'BAG',
-                'packing'       => 25
+                'unit'          => 'BAG',
+                'packing'       => 25,
+                'remarks'       => 'Tibar basmati rice'
             ],
             [
                 'name'          => 'Kohinoor Red Diamond',
                 'alias'         => 'KR',
-                'unit'          => 'KGS',
-                'compound_unit' => 'BAG',
-                'packing'       => 25
+                'unit'          => 'BAG',
+                'packing'       => 25,
+                'remarks'       => 'Wand basmati rice'
+            ],
+            [
+                'name'          => 'Kohinoor Traditional',
+                'alias'         => 'KR',
+                'unit'          => 'BAG',
+                'packing'       => 25,
+                'remarks'       => 'Traditional basmati rice'
             ],
         ];
 
@@ -41,8 +48,8 @@ class ProductSeeder extends Seeder
                 'name'          => $product['name'],
                 'alias'         => $product['alias'],
                 'unit'          => $product['unit'],
-                'compound_unit' => $product['compound_unit'],
                 'packing'       => $product['packing'] * 100,
+                'remarks'       => $product['remarks']
             ]);
         }
     }

@@ -1,8 +1,16 @@
 export const DialogMixin = {
   data() {
     return {
-      updateMode: false,
       currentIndex: '',
+      updateMode: false,
+
+      dialogRecord: {},
+      dialogErrors: {},
+
+      agentDialog: false,
+      godownDialog: false,
+      productDialog: false,
+      accountDialog: false,
     }
   },
 

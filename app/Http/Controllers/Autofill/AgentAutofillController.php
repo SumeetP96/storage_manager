@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\DB;
 class AgentAutofillController extends Controller
 {
     /**
+     * Fetch all records
+     */
+    public function all()
+    {
+        return Agent::selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')->get();
+    }
+
+    /**
      * Fetch all agents with transactions
      *
      * @return void
