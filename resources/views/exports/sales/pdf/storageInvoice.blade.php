@@ -9,97 +9,91 @@
         body { font-size: 0.8rem }
         header { font-size: 0.9rem; font-weight: bold; }
         table { border-collapse: collapse; page-break-inside: auto; width: 100% }
-        th, td { border: 1px solid grey; padding: 8px; vertical-align: top; }
+        th, td { border: 1px solid grey; padding: 6px 8px; vertical-align: top; }
         .text-left { text-align: left; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .grey-text { color: darkslategrey; }
         .bold-text { font-weight: bold; }
+        .invalid { color: red; }
     </style>
 </head>
 <body>
-{{ dd($record) }}
-    <table>
+    <h3 class="text-center" style="margin: 0; padding: 0">Storage Invoice</h3>
+    <table style="margin-top: 10px">
         <tr>
-            <td style="border: none">
-                <h3 style="margin-bottom: 2px; padding: 0">{{ $company->name }}</h3>
-                <p style="margin: 0; padding: 0">{{ $company->address }}</p>
-                <p style="margin: 0; padding: 0">
-                    @if ($company->contact_1 || $company->contact_2)
-                        <span>Contact: </span>
-                        <span class="bold-text">{{ $company->contact_1 }}</span>
-                        <span class="bold-text">{{ ($company->contact_1 && $company->contact_2) ? ', ' : '' }}</span>
-                        <span class="bold-text">{{ $company->contact_2 }}</span>
-                    @endif
-                    <div>{{ $company->email }}</div>
-                </p>
-            </td>
-            <td style="border: none" class="text-right">
-                <header><h3 style="padding-top: 10px; padding: 0">Delivery Slip</h3></header>
-            </td>
-        </tr>
-    </table>
-
-    <table>
-        <tr>
-            <td colspan="2" rowspan="2">
-                <div style="margin-bottom: 2px">Deliver to</div>
-                <div class="bold-text">{{ $record->toName }}</div>
-                <div>{{ $record->toAddress }}</div>
+            <td colspan="2" rowspan="2" style="padding-bottom: 0">
+                <div style="margin-bottom: 2px">Godown</div>
+                <div class="bold-text">{{ $record->fromName }}</div>
+                <div>{{ $record->fromAddress }}</div>
                 <div class="bold-text">
-                    {{ $record->toContact1 }}
-                    {{ ($record->toContact1 && $record->toContact2) ? ', ' : '' }}
-                    {{ $record->toContact2 }}
+                    {{ $record->fromContact1 }}
+                    {{ ($record->fromContact1 && $record->fromContact2) ? ', ' : '' }}
+                    {{ $record->fromContact2 }}
                 </div>
-                <div>{{ $record->toEmail }}</div>
+                <div>{{ $record->fromEmail }}</div>
             </td>
             <td>
-                <div>Date</div>
-                <div class="bold-text">{{ date('d-m-Y', strtotime($record->created_at)) }}</div>
+                <div>Outward date</div>
+                <div class="bold-text">{{ $record->dateRaw }}</div>
             </td>
         </tr>
         <tr>
             <td style="width: 25%">
-                <div>Delivery slip no</div>
+                <div>Sale no</div>
                 <div class="bold-text">{{ $record->sale_no }}</div>
             </td>
         </tr>
     </table>
 
-    <table style="margin-top: 10px">
+    <table>
         <tr>
-            <td class="bold-text" style="width: 1%">#</td>
-            <td class="text-center bold-text">Lot number</td>
-            <td class="bold-text" style="width: 30%">Product</td>
-            <td class="text-right bold-text">C Quantity</td>
-            <td class="text-left bold-text" style="width: 1%">Unit</td>
-            <td class="text-right bold-text">Quantity</td>
-            <td class="text-left bold-text" style="width: 1%">Unit</td>
+            <th class="text-left" style="width: 1%">#</th>
+            <th class="text-center">Lot no</th>
+            <th class="text-left">Product</th>
+            <th class="text-center">Inw date</th>
+            <th class="text-center" style="width: 1%">Mon</th>
+            <th class="text-right">Qty Nos</th>
+            <th class="text-right">Qty Kgs</th>
+            <th class="text-right">Rent</th>
+            <th class="text-right">Amount</th>
         </tr>
+
+        @if ($products->count() > 0)
         @foreach ($products as $index => $product)
         <tr>
-            <td class="bold-text">{{ $index + 1 }}</td>
-            <td class="text-center bold-text">{{ $product->lotNumber ? $product->lotNumber : '-' }}</td>
+            <td>{{ $index + 1 }}</td>
+            <td class="text-center bold-text">{{ $product->lotNumber }}</td>
             <td>{{ $product->name }}</td>
-            <td class="text-right bold-text">{{ $product->compoundQuantityRaw ? $product->compoundQuantityRaw : '-' }}</td>
-            <td class="text-left">{{ $product->compoundUnit ? $product->compoundUnit : '-' }}</td>
-            <td class="text-right bold-text">{{ number_format($product->quantityRaw, 2) }}</td>
-            <td class="text-left">{{ $product->unit }}</td>
+            <td class="text-center {{ $product->months < 0 ? 'invalid bold-text' : '' }}">
+                {{ date('d/m/Y', strtotime($product->inwardDate)) }}
+            </td>
+            <td class="text-center {{ $product->months < 0 ? 'invalid bold-text' : '' }}">
+                {{ number_format($product->months, 1) }}
+            </td>
+            <td class="text-right bold-text">{{ number_format($product->compoundQuantity / 100, 2) }}</td>
+            <td class="text-right">{{ number_format($product->quantity / 100, 2) }}</td>
+            <td class="text-right">{{ number_format($product->rent / 100, 2) }}</td>
+            <td class="text-right bold-text {{ $product->months < 0 ? 'invalid' : '' }}">
+                {{ number_format($product->amount, 2) }}
+            </td>
         </tr>
         @endforeach
+        @endif
     </table>
 
-    <table style="margin-top: 10px">
-        <tr>
-            <td style="width: 60%">
-                <div>Notes / remarks  </div>
-                <div class="bold-text">{{ $record->transport_details ? $record->transport_details : '-' }}</div>
-            </td>
-            <td class="text-right">
-                <div class="bold-text">For, Aadhya Distribution Co</div>
-                <div style="margin-top: 30px">Authorised signatory</div>
-            </td>
-        </tr>
-    </table>
+    <footer>
+        <script type="text/php">
+            if (isset($pdf)) {
+                $text = "page {PAGE_NUM} / {PAGE_COUNT}";
+                $size = 10;
+                $font = $fontMetrics->getFont("Verdana");
+                $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+                $x = ($pdf->get_width() - $width);
+                $y = $pdf->get_height() - 35;
+                $pdf->page_text($x, $y, $text, $font, $size);
+            }
+        </script>
+    </footer>
 </body>
 </html>

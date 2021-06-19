@@ -55,7 +55,7 @@
             </td>
             <td>
                 <div>Date</div>
-                <div class="bold-text">{{ date('d-m-Y', strtotime($record->created_at)) }}</div>
+                <div class="bold-text">{{ $record->dateRaw }}</div>
             </td>
         </tr>
         <tr>
@@ -101,5 +101,19 @@
             </td>
         </tr>
     </table>
+
+    <footer>
+        <script type="text/php">
+            if (isset($pdf)) {
+                $text = "page {PAGE_NUM} / {PAGE_COUNT}";
+                $size = 10;
+                $font = $fontMetrics->getFont("Verdana");
+                $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+                $x = ($pdf->get_width() - $width);
+                $y = $pdf->get_height() - 35;
+                $pdf->page_text($x, $y, $text, $font, $size);
+            }
+        </script>
+    </footer>
 </body>
 </html>

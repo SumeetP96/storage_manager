@@ -9,6 +9,8 @@ use App\Exports\SaleExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\StockTransfer;
+use Carbon\Carbon;
 
 class SaleExportController extends Controller
 {
@@ -79,27 +81,6 @@ class SaleExportController extends Controller
         return view('exports.sales.print.single', compact('record', 'products'));
     }
 
-    public function deliverySlip($id)
-    {
-        $details = $this->getSingleDetails($id);
-        $record = $details['record'];
-        $products = $details['products'];
-        $company = Company::find(1);
-        $pdf = PDF::loadView('exports.sales.pdf.deliverySlip', compact('record', 'products', 'company'));
-        return $pdf->stream();
-        return $pdf->download('delivery_slip.pdf');
-    }
-
-    public function storageInvoice($id)
-    {
-        $details = $this->getSingleDetails($id);
-        $record = $details['record'];
-        $products = $details['products'];
-        $pdf = PDF::loadView('exports.sales.pdf.storageInvoice', compact('record', 'products'));
-        return $pdf->stream();
-        return $pdf->download('delivery_slip.pdf');
-    }
-
     /**
      * Get record details
      *
@@ -133,10 +114,16 @@ class SaleExportController extends Controller
             ->where('stp.stock_transfer_id', $id)
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
+                stp.quantity,
                 stp.quantity div 100 as quantityRaw,
                 pr.compound_unit as compoundUnit,
                 stp.compound_quantity as compoundQuantity,
                 stp.compound_quantity div 100 as compoundQuantityRaw,
+                stp.rent,
+                stp.rent div 100 as rentRaw,
+                stp.labour,
+                stp.labour div 100 as labourRaw,
+                pr.id as productId,
                 pr.name as name,
                 pr.unit as unit,
                 stp.lot_number as lotNumber
@@ -144,5 +131,66 @@ class SaleExportController extends Controller
             ->get();
 
         return ['record' => $record, 'products' => $products];
+    }
+
+    public function deliverySlip($id)
+    {
+        $details = $this->getSingleDetails($id);
+        $record = $details['record'];
+        $products = $details['products'];
+        $company = Company::find(1);
+        $pdf = PDF::loadView('exports.sales.pdf.deliverySlip', compact('record', 'products', 'company'));
+        return $pdf->stream();
+        return $pdf->download('delivery_slip.pdf');
+    }
+
+    public function storageInvoice($id)
+    {
+        $details = $this->getSingleDetails($id);
+        $record = $details['record'];
+        $products = $details['products'];
+
+        foreach ($products as $product) {
+            $product->inwardDate = DB::table('stock_transfers as st')
+                ->where('st.transfer_type_id', StockTransfer::PURCHASE)
+                ->leftJoin('stock_transfer_products as stp', 'st.id', '=', 'stp.stock_transfer_id')
+                ->where('stp.lot_number', $product->lotNumber)
+                ->where('stp.product_id', $product->productId)
+                ->where('st.to_godown_id', $record->from_godown_id)
+                ->first()->date;
+
+            $product->months = $this->calculateMonths($product->inwardDate, $record->date);
+
+            $product->amount = $product->compoundQuantityRaw * $product->rentRaw * $product->months;
+        }
+
+        $pdf = PDF::loadView('exports.sales.pdf.storageInvoice', compact('record', 'products'));
+        return $pdf->stream();
+        return $pdf->download('delivery_slip.pdf');
+    }
+
+    public function calculateMonths($inward, $outward)
+    {
+        $months = 0;
+
+        $inwardDays = (int) date('d', strtotime($inward));
+        $outwardDays = (int) date('d', strtotime($outward));
+        $dateDiff = $outwardDays - $inwardDays;
+
+        $inwardMonth = (int) date('m', strtotime($inward));
+        $outwardMonth = (int) date('m', strtotime($outward));
+        $monthDiff = $outwardMonth - $inwardMonth;
+
+        $inwardYear = (int) date('Y', strtotime($inward));
+        $outwardYear = (int) date('Y', strtotime($outward));
+        $yearDiff = $outwardYear - $inwardYear;
+
+        if ($yearDiff > 0) $months = $yearDiff * 12;
+
+        if (abs($monthDiff) > 0) {
+            // if (abs())
+        }
+
+        return $months;
     }
 }
