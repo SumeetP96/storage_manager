@@ -1,15 +1,4 @@
 export const EntryMixin = {
-  data() {
-    return {
-      inputProducts: [{
-        id: '',
-        rent: '', rentRaw: '',
-        labour: '', labourRaw: '',
-        quantity: '', quantityRaw: '',
-      }],
-    }
-  },
-
   methods: {
     createTransfer(redirectRoute) {
       this.clearUnusedInputs()

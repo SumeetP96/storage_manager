@@ -1095,14 +1095,15 @@ export default {
     else this.backRoute = 'purchases.index'
     if (this.$route.params.payload) this.payload = this.$route.params.payload
 
+    // Load autofills
+    this.fetchNewEntryNo()
+    this.fetchFromAutofill()
+    this.fetchToAutofill()
+    this.fetchProductAutofill()
+    this.fetchAgentAutofill()
+
     if (this.$route.params.id) {
-      this.customFetchRecord(this.$route.params.id, true)
-    } else {
-      this.fetchNewEntryNo()
-      this.fetchFromAutofill()
-      this.fetchToAutofill()
-      this.fetchProductAutofill()
-      this.fetchAgentAutofill()
+      this.customLoadRecord(this.$route.params.id)
     }
   },
 }

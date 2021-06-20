@@ -3,11 +3,12 @@
 namespace App\Repositories\Transfers;
 
 use App\StockTransfer;
+use App\TransferType;
 use Illuminate\Http\Request;
 use App\GodownProductsStock;
+use App\Product;
 use App\StockTransferProduct;
 use App\Traits\PurchaseTrait;
-use App\TransferType;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRepository
@@ -32,7 +33,7 @@ class PurchaseRepository
 
     public function fetchOne($id)
     {
-        return DB::table('stock_transfers as st')->where('st.id', $id)
+        $record = DB::table('stock_transfers as st')->where('st.id', $id)
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
             ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
@@ -50,6 +51,29 @@ class PurchaseRepository
                 ag.name as agentName
             ')
             ->first();
+
+        $record->inputProducts = StockTransferProduct::where('stock_transfer_id', $id)
+            ->selectRaw('
+                product_id as id,
+                lot_number,
+                rent, rent div 100 as rentRaw,
+                loading, loading div 100 as loadingRaw,
+                unloading, unloading div 100 as unloadingRaw,
+                quantity, quantity div 100 as quantityRaw
+            ')
+            ->get();
+
+        foreach ($record->inputProducts as $product) {
+            $product->details = Product::where('id', $product->id)
+                ->selectRaw('
+                    remarks,
+                    unit,
+                    packing, packing div 100 as packingRaw
+                ')
+                ->first();
+        }
+
+        return $record;
     }
 
     public function fetchShowTransferProducts($purchaseId)
@@ -120,6 +144,7 @@ class PurchaseRepository
     public function update(Request $request, $id, $purchaseService)
     {
         $this->undoPreviousGPSChanges($id);
+        $this->removeUnusedProducts($request, $id);
 
         StockTransfer::find($id)->update([
             'date'              => $request->date,
@@ -132,23 +157,37 @@ class PurchaseRepository
             'remarks'           => $request->remarks
         ]);
 
-        StockTransferProduct::where('stock_transfer_id', $id)->delete();
+        if (count($request->products) > 0) {
+            foreach($request->products as $product) {
+                $purchaseItem = StockTransferProduct::where('stock_transfer_id', $id)
+                    ->where('product_id', $product['id'])
+                    ->where('lot_number', $product['lot_number'])
+                    ->first();
 
-        foreach($request->products as $product) {
-            StockTransferProduct::create([
-                'stock_transfer_id' => $id,
-                'product_id'        => $product['id'],
-                'lot_number'        => $product['lot_number'] ?? NULL,
-                'rent'              => (int) $product['rent'],
-                'loading'           => (int) $product['loading'],
-                'unloading'         => (int) $product['unloading'],
-                'quantity'          => (int) $product['quantity']
-            ]);
+                if (!is_null($purchaseItem)) {
+                    $purchaseItem->update([
+                        'rent'              => (int) $product['rent'],
+                        'loading'           => (int) $product['loading'],
+                        'unloading'         => (int) $product['unloading'],
+                        'quantity'          => (int) $product['quantity']
+                    ]);
+                } else {
+                    StockTransferProduct::create([
+                        'stock_transfer_id' => $id,
+                        'product_id'        => $product['id'],
+                        'lot_number'        => $product['lot_number'] ?? NULL,
+                        'rent'              => (int) $product['rent'],
+                        'loading'           => (int) $product['loading'],
+                        'unloading'         => (int) $product['unloading'],
+                        'quantity'          => (int) $product['quantity']
+                    ]);
+                }
 
-            if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
-                $this->updateGPS($existingGPS, $product);
-            } else {
-                $this->createGPS($request, $product);
+                if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
+                    $this->updateGPS($existingGPS, $product);
+                } else {
+                    $this->createGPS($request, $product);
+                }
             }
         }
     }
@@ -193,6 +232,19 @@ class PurchaseRepository
             $oldGodownStock->current_stock -= $product->quantity;
             $oldGodownStock->save();
         }
+    }
+
+    public function removeUnusedProducts(Request $request, $id)
+    {
+        $inputIds = [];
+        foreach ($request->products as $product) {
+            $purchaseItem = StockTransferProduct::where('stock_transfer_id', $id)
+                ->where('product_id', $product['id'])
+                ->where('lot_number', $product['lot_number'])
+                ->first();
+            if (!is_null($purchaseItem)) array_push($inputIds, $purchaseItem->id);
+        }
+        StockTransferProduct::whereNotIn('id', $inputIds)->delete();
     }
 
     public function createGPS(Request $request, $product)

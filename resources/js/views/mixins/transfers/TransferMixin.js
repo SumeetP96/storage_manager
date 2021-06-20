@@ -1,14 +1,14 @@
 import { EntryMixin } from "./EntryMixin"
+import { RecordMixin } from "./RecordMixin"
 import { DialogMixin } from "./DialogMixin"
 import { DetailsMixin } from "./DetailsMixin"
-import { AutofillMixin } from "./AutofillMixin"
 
 export const TransferMixin = {
   mixins: [
     EntryMixin,
+    RecordMixin,
     DialogMixin,
     DetailsMixin,
-    AutofillMixin,
   ],
 
   data() {

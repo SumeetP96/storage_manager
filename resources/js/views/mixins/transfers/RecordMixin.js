@@ -1,4 +1,4 @@
-export const AutofillMixin = {
+export const RecordMixin = {
   data() {
     return {
       agents: [],
@@ -12,10 +12,37 @@ export const AutofillMixin = {
 
       products: [],
       productLoading: false,
+
+      inputProducts: [{
+        id: '',
+        rent: '', rentRaw: '',
+        labour: '', labourRaw: '',
+        quantity: '', quantityRaw: '',
+      }],
     }
   },
 
   methods: {
+    customLoadRecord(id) {
+      this.dft_ShowRecord = true
+
+      this.record = {}
+
+      this.axios
+        .get(`/api/${this.apiRoute}/${id}/show`)
+
+        .then(response => {
+          this.record = response.data.record
+
+          for (let i = 0; i < response.data.record.inputProducts.length; i++) {
+            this.inputProducts[i] = response.data.record.inputProducts[i]
+            this.productDetails[i] = response.data.record.inputProducts[i].details
+          }
+
+          this.dft_ShowRecord = false
+        })
+    },
+
     // Get entry no
     fetchNewEntryNo() {
       this.axios.get(`/api/${this.apiRoute}/new`)
