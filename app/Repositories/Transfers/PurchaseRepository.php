@@ -244,7 +244,7 @@ class PurchaseRepository
                 ->first();
             if (!is_null($purchaseItem)) array_push($inputIds, $purchaseItem->id);
         }
-        StockTransferProduct::whereNotIn('id', $inputIds)->delete();
+        StockTransferProduct::where('stock_transfer_id', $id)->whereNotIn('id', $inputIds)->delete();
     }
 
     public function createGPS(Request $request, $product)

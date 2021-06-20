@@ -55,7 +55,6 @@ export const InFormDialogMixin = {
             .then(response => {
               if (response.data.success) {
                 this[payload.afMethod]({ id: response.data.id, varName: payload.varName })
-                if (payload.hasOwnProperty('detailMethod')) this[payload.detailMethod]()
                 this.closeDialog(payload.dialog)
               }
               if (!response.data.success) {

@@ -1047,7 +1047,7 @@
 
 <script>
 import { CommonMixin } from '../../../mixins/CommonMixin'
-import { TransferMixin } from '../../../mixins/transfers/TransferMixin'
+import { TransferMixin } from '../../../mixins/transfers/purchase/TransferMixin'
 
 export default {
   mixins: [CommonMixin, TransferMixin],

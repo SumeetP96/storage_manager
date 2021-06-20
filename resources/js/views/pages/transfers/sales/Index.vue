@@ -691,19 +691,19 @@
     <v-dialog v-model="viewRecordDialog" max-width="90%">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>Purchase Details</div>
+          <div>Sale Details</div>
           <v-btn icon @click="viewRecordDialog = false"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
         <div class="px-6 pt-4 pb-6">
           <!-- Details -->
           <v-row no-gutters>
-            <!-- Purchase no -->
+            <!-- Sale no -->
             <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Purchase no</div>
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Sale no</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.purchase_no }}</div>
+                  <div class="font-weight-bold">{{ record.sale_no }}</div>
                 </div>
               </div>
             </v-col>
@@ -731,7 +731,7 @@
             <!-- Order no -->
             <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Order no</div>
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Outward no</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.order_no ? record.order_no : '-'}}</div>
                 </div>
@@ -850,8 +850,8 @@
         <v-card-actions class="d-flex justify-space-between">
           <div class="d-flex">
             <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
-              @click="editFromTable({ name: 'purchases.action', params: { id: record.id } })">
-                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit purchase
+              @click="editFromTable({ name: 'sales.action', params: { id: record.id } })">
+                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit sale
             </v-btn>
 
             <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -859,13 +859,13 @@
             <!-- PDF -->
             <v-btn color="error" text tabindex="-1" :disabled="disableExport"
               @click="disableExportButtons(2)"
-              :href="`/exports/pdf/purchases/${record.id}`"
+              :href="`/exports/pdf/sales/${record.id}`"
               :download="`${apiRoute}.pdf`">
                 <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
             </v-btn>
 
             <!-- Print -->
-            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/purchases/${record.id}`)"
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/sales/${record.id}`)"
               text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>

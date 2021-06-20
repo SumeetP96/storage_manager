@@ -423,7 +423,7 @@
 
           <!-- Order No -->
           <v-col cols="2" class="pl-6">
-            <div class="subtitle-1 font-weight-bold">Inward number
+            <div class="subtitle-1 font-weight-bold">Outward number
               <span class="red--text text-h6"></span></div>
             <v-text-field
               v-model="record.order_no"
@@ -478,14 +478,14 @@
             color="indigo" dark :loading="updateButtonLoading"
             v-shortkey="['alt', 's']" @shortkey="updateTransfer($route.params.id, backRoute, payload)"
             @click="updateTransfer($route.params.id, backRoute, payload)">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update purchase
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update sale
           </v-btn>
 
           <v-btn v-else
             color="indigo" dark :loading="createButtonLoading"
             v-shortkey="['alt', 's']" @shortkey="createTransfer('sales.index' )"
             @click="createTransfer('sales.index')">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save purchase
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save sale
           </v-btn>
         </div>
         <!-- / Actions end -->
@@ -1047,7 +1047,7 @@
 
 <script>
 import { CommonMixin } from '../../../mixins/CommonMixin'
-import { TransferMixin } from '../../../mixins/transfers/TransferMixin'
+import { TransferMixin } from '../../../mixins/transfers/sales/TransferMixin'
 
 export default {
   mixins: [CommonMixin, TransferMixin],
@@ -1064,9 +1064,8 @@ export default {
     if (this.$route.params.payload) this.payload = this.$route.params.payload
 
     // Load autofills
-    this.fetchFromAutofill({ reverse: true })
-    this.fetchToAutofill({ reverse: true })
-    // this.fetchProductAutofill()
+    this.fetchFromAutofill()
+    this.fetchToAutofill()
     this.fetchAgentAutofill()
 
     if (this.$route.params.id) this.customLoadRecord(this.$route.params.id)

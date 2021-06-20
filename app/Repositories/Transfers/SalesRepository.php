@@ -5,6 +5,7 @@ namespace App\Repositories\Transfers;
 use App\StockTransfer;
 use Illuminate\Http\Request;
 use App\GodownProductsStock;
+use App\Product;
 use App\StockTransferProduct;
 use App\Traits\SaleTrait;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class SalesRepository
 
     public function fetchOne($id)
     {
-        return DB::table('stock_transfers as st')->where('st.id', $id)
+        $record = DB::table('stock_transfers as st')->where('st.id', $id)
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
             ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
@@ -43,6 +44,50 @@ class SalesRepository
                 ag.name as agentName
             ')
             ->first();
+
+        $productIds = GodownProductsStock::where('godown_id', $record->from_godown_id)->pluck('product_id')->toArray();
+
+        $record->autofillProducts = Product::whereIn('id', array_unique($productIds))
+            ->selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')
+            ->get();
+
+        $record->inputProducts = StockTransferProduct::where('stock_transfer_id', $id)
+            ->selectRaw('
+                product_id as id,
+                lot_number,
+                rent, rent div 100 as rentRaw,
+                loading, loading div 100 as loadingRaw,
+                unloading, unloading div 100 as unloadingRaw,
+                quantity, quantity div 100 as quantityRaw
+            ')
+            ->get();
+
+        foreach ($record->inputProducts as $product) {
+            $product->details = Product::where('id', $product->id)
+                ->selectRaw('
+                    remarks,
+                    unit,
+                    packing, packing div 100 as packingRaw
+                ')
+                ->first();
+
+            $product->details->lotNumbers = GodownProductsStock::where('godown_id', $record->from_godown_id)
+                ->where('product_id', $product['id'])
+                ->select('lot_number')
+                ->get();
+
+            $product->lotDetails = DB::table('stock_transfers as st')
+                ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
+                ->where('st.transfer_type_id', StockTransfer::PURCHASE)
+                ->where('st.to_godown_id', $record->from_godown_id)
+                ->where('stp.product_id', $product['id'])
+                ->where('stp.lot_number', $product['lot_number'])
+                ->orderBy('st.date', 'desc')
+                ->select('rent', 'loading', 'unloading')
+                ->first();
+        }
+
+        return $record;
     }
 
     public function fetchShowTransferProducts($salesId)
@@ -55,17 +100,15 @@ class SalesRepository
                 stp.lot_number as lotNumber,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
-                stp.compound_quantity as compoundQuantity,
-                stp.compound_quantity div 100 as compoundQuantityRaw,
                 stp.rent,
                 stp.rent div 100 as rentRaw,
-                stp.labour,
-                stp.labour div 100 as labourRaw,
-                pr.compound_unit as compoundUnit,
+                stp.loading, stp.loading div 100 as loadingRaw,
+                stp.unloading, stp.unloading div 100 as unloadingRaw,
                 pr.packing,
+                (stp.quantity * pr.packing) / 100 as quantityKgs,
                 pr.id as productId,
                 pr.name as name,
-                pr.unit as unit
+                pr.unit
             ')
             ->get();
     }
@@ -94,9 +137,9 @@ class SalesRepository
                 'product_id'        => $product['id'],
                 'lot_number'        => $product['lot_number'] ?? NULL,
                 'rent'              => (int) $product['rent'],
-                'labour'            => (int) $product['labour'],
-                'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compoundQuantity']) ? (int) $product['compoundQuantity'] : NULL
+                'loading'           => (int) $product['loading'],
+                'unloading'         => (int) $product['unloading'],
+                'quantity'          => (int) $product['quantity']
             ]);
 
             if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
@@ -125,8 +168,6 @@ class SalesRepository
             'agent_id'          => $request->agent_id,
             'remarks'           => $request->remarks
         ]);
-
-        StockTransferProduct::where('stock_transfer_id', $id)->delete();
 
         if (count($request->products) > 0) {
             foreach($request->products as $product) {
@@ -215,7 +256,7 @@ class SalesRepository
                 ->first();
             if (!is_null($purchaseItem)) array_push($inputIds, $purchaseItem->id);
         }
-        StockTransferProduct::whereNotIn('id', $inputIds)->delete();
+        StockTransferProduct::where('stock_transfer_id', $id)->whereNotIn('id', $inputIds)->delete();
     }
 
     public function createGPS(Request $request, $product)
