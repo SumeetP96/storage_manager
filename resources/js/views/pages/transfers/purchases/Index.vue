@@ -619,9 +619,9 @@
                       {{ record.invoiceNo ? record.invoiceNo : '-' }}
                   </td>
 
-                  <td class="subtitle-1">{{ record.fromName }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.fromName }}</td>
 
-                  <td class="subtitle-1">{{ record.toName }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.toName }}</td>
 
                   <td v-if="selectedColumns.indexOf('agent') >= 0" class="subtitle-1">
                     {{ record.agent }}
@@ -713,7 +713,7 @@
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Date</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.date }}</div>
+                  <div class="font-weight-bold">{{ record.date | moment('DD-MM-YYYY') }}</div>
                 </div>
               </div>
             </v-col>
@@ -785,11 +785,12 @@
               <th class="text-left">Product</th>
               <th class="text-right">Lot no</th>
               <th class="text-right">Rent</th>
-              <th class="text-right">Labour</th>
-              <th class="text-right">Compound</th>
-              <th class="text-left">Unit</th>
-              <th class="text-right">Quantity</th>
-              <th class="text-left right-round-top">Unit</th>
+              <th class="text-right">Loading</th>
+              <th class="text-right">Unloading</th>
+              <th class="text-right">Quantity (Nos)</th>
+              <th class="text-left"></th>
+              <th class="text-right">Quantity (Kgs)</th>
+              <th class="text-left right-round-top"></th>
             </tr>
 
             <tr v-for="(product, index) in recordProducts" :key="index"
@@ -801,21 +802,14 @@
               <td class="border text-left font-weight-bold">{{ product.name }}</td>
               <td class="border text-right font-weight-bold">{{ product.lotNumber ? product.lotNumber : '-' }}</td>
               <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
-              <td class="border text-right">{{ product.labour ? formatQuantity(product.labour, 1) : '-' }}</td>
-              <td class="border text-right font-weight-bold">
-                {{ product.compoundQuantity ? formatQuantity(product.compoundQuantity, 2) : '-' }}
+              <td class="border text-right">{{ product.loading ? formatQuantity(product.loading, 1) : '-' }}</td>
+              <td class="border text-right">{{ product.unloading ? formatQuantity(product.unloading, 1) : '-' }}</td>
+              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantity, 2) }}</td>
+              <td class="border">
+                {{ product.unit }}<span class="subtitle-2 pl-1">({{ formatQuantity(product.packing, 0) }})</span>
               </td>
-              <td class="border text-left">
-                {{ product.compoundUnit ? product.compoundUnit : '-' }}
-                <span class="pl-1" v-if="product.packing">({{ formatQuantity(product.packing, 0) }})</span>
-              </td>
-              <td class="border text-right font-weight-bold">
-                {{ product.quantity ? formatQuantity(product.quantity, 2) : '-' }}
-              </td>
-              <td class="border text-left"
-              :class="(index == recordProducts.length - 1) ? 'right-round-bottom' : ''">
-                {{ product.unit ? product.unit : '-' }}
-              </td>
+              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantityKgs, 2) }}</td>
+              <td class="border">KGS</td>
             </tr>
           </table>
 

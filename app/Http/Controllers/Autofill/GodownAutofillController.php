@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Autofill;
 
 use App\Godown;
+use App\GodownProductsStock;
 use App\Http\Controllers\Controller;
+use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -37,6 +39,18 @@ class GodownAutofillController extends Controller
         return Godown::where('id', $godownId)
             ->select('address', 'contact_1', 'contact_2')
             ->first();
+    }
+
+    /**
+     * Godown products
+     */
+    public function products($godownId)
+    {
+        $productIds = GodownProductsStock::where('godown_id', $godownId)->pluck('product_id')->toArray();
+
+        return Product::whereIn('id', array_unique($productIds))
+            ->selectRaw('id, CONCAT_WS(" - ", name, CONCAT("(", alias, ")")) as name')
+            ->get();
     }
 
     /**

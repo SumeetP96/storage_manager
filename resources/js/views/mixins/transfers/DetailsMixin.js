@@ -43,7 +43,7 @@ export const DetailsMixin = {
     },
 
     // Product details
-    fetchProductDetails(index) {
+    fetchProductDetails(index, fetchLotNumbers = false) {
       this.productDetails[index] = { unit: '', remarks: '', packing: '', lotNumbers: [] }
 
       if (!this.inputProducts[index].id) return
@@ -52,8 +52,39 @@ export const DetailsMixin = {
       this.axios.get(`/api/autofills/products/details/${this.inputProducts[index].id}`)
         .then(response => {
           this.productDetails[index] = response.data
+
+          if (fetchLotNumbers) {
+            this.lotNumberLoading = true
+            this.axios.get(`/api/autofills/products/lot_numbers/${this.record.from_godown_id}/${this.inputProducts[index].id}`)
+              .then(response => {
+                this.productDetails[index].lotNumbers = response.data
+                this.lotNumberLoading = false
+              })
+          }
+
           this.productLoading = false
         })
     },
+
+    fetchLotStock(index) {
+      if (!this.record.from_godown_id || !this.inputProducts[index].id || !this.inputProducts[index].lot_number) return
+      this.axios.get(`/api/autofills/products/lot_stock/${this.record.from_godown_id}/${this.inputProducts[index].id}/${this.inputProducts[index].lot_number}`)
+        .then(response => {
+          this.productDetails[index].stock = this.formatQuantity(response.data.current_stock, 2)
+          this.inputProducts[index].rent = response.data.details.rent
+          this.inputProducts[index].rentRaw = this.formatQuantity(response.data.details.rent, 1)
+          this.inputProducts[index].loading = response.data.details.loading
+          this.inputProducts[index].loadingRaw = this.formatQuantity(response.data.details.loading, 1)
+          this.inputProducts[index].unloading = response.data.details.unloading
+          this.inputProducts[index].unloadingRaw = this.formatQuantity(response.data.details.unloading, 1)
+        })
+    },
+
+    fetchGodownProducts() {
+      this.resetProducts()
+      if (!this.record.from_godown_id) return
+      this.axios.get(`/api/autofills/godowns/products/${this.record.from_godown_id}`)
+        .then(response => this.products = response.data)
+    }
   }
 }

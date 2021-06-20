@@ -86,17 +86,15 @@ class PurchaseRepository
                 stp.lot_number as lotNumber,
                 stp.quantity,
                 stp.quantity div 100 as quantityRaw,
-                stp.compound_quantity as compoundQuantity,
-                stp.compound_quantity div 100 as compoundQuantityRaw,
                 stp.rent,
                 stp.rent div 100 as rentRaw,
-                stp.labour,
-                stp.labour div 100 as labourRaw,
-                pr.compound_unit as compoundUnit,
+                stp.loading, stp.loading div 100 as loadingRaw,
+                stp.unloading, stp.unloading div 100 as unloadingRaw,
                 pr.packing,
+                (stp.quantity * pr.packing) / 100 as quantityKgs,
                 pr.id as productId,
                 pr.name as name,
-                pr.unit as unit
+                pr.unit
             ')
             ->get();
     }
@@ -190,6 +188,8 @@ class PurchaseRepository
                 }
             }
         }
+
+        $this->removeUnusedLots();
     }
 
     /**
@@ -262,5 +262,18 @@ class PurchaseRepository
         $godownStock->current_stock += (int) $product['quantity'];
         $godownStock->lot_number = $product['lot_number'];
         $godownStock->save();
+    }
+
+    public function removeUnusedLots()
+    {
+        $unusedLots = GodownProductsStock::where('current_stock', 0)->get();
+        $removeLotIds = [];
+
+        foreach ($unusedLots as $lot) {
+            $inUse = StockTransferProduct::where('lot_number', $lot->lot_number)->count();
+            if ($inUse == 0) array_push($removeLotIds, $lot->id);
+        }
+
+        GodownProductsStock::whereIn('id', $removeLotIds)->delete();
     }
 }

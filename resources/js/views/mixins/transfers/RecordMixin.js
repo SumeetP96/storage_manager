@@ -16,6 +16,7 @@ export const RecordMixin = {
       products: [],
       productDialog: false,
       productLoading: false,
+      lotNumberLoading: false,
 
       inputProducts: [{
         id: '',
@@ -72,8 +73,9 @@ export const RecordMixin = {
       this.fromLoading = true
       this.axios.get('/api/autofills/godowns/all_accounts')
         .then(response => {
-          this.accounts = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
+          if (payload.hasOwnProperty('reverse') && payload.reverse) this.godowns = response.data
+          else this.accounts = response.data
+          if (payload.hasOwnProperty('id') && payload.id) this.inputProducts[payload.varName].id = payload.id
           this.fromLoading = false
         })
     },
@@ -83,7 +85,8 @@ export const RecordMixin = {
       this.toLoading = true
       this.axios.get('/api/autofills/godowns/all_godowns')
         .then(response => {
-          this.godowns = response.data
+          if (payload.hasOwnProperty('reverse') && payload.reverse) this.accounts = response.data
+          else this.godowns = response.data
           if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
           this.toLoading = false
         })

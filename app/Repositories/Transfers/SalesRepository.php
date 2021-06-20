@@ -113,6 +113,7 @@ class SalesRepository
     public function update(Request $request, $id, $salesService)
     {
         $this->undoPreviousGPSChanges($id);
+        $this->removeUnusedProducts($request, $id);
 
         StockTransfer::find($id)->update([
             'date'              => $request->date,
@@ -127,21 +128,37 @@ class SalesRepository
 
         StockTransferProduct::where('stock_transfer_id', $id)->delete();
 
-        foreach($request->products as $product) {
-            StockTransferProduct::create([
-                'stock_transfer_id' => $id,
-                'product_id'        => $product['id'],
-                'lot_number'        => $product['lot_number'] ?? NULL,
-                'rent'              => (int) $product['rent'],
-                'labour'            => (int) $product['labour'],
-                'quantity'          => (int) $product['quantity'],
-                'compound_quantity' => !empty($product['compoundQuantity']) ? (int) $product['compoundQuantity'] : NULL
-            ]);
+        if (count($request->products) > 0) {
+            foreach($request->products as $product) {
+                $purchaseItem = StockTransferProduct::where('stock_transfer_id', $id)
+                    ->where('product_id', $product['id'])
+                    ->where('lot_number', $product['lot_number'])
+                    ->first();
 
-            if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
-                $this->updateGPS($existingGPS, $product);
-            } else {
-                $this->createGPS($request, $product);
+                if (!is_null($purchaseItem)) {
+                    $purchaseItem->update([
+                        'rent'              => (int) $product['rent'],
+                        'loading'           => (int) $product['loading'],
+                        'unloading'         => (int) $product['unloading'],
+                        'quantity'          => (int) $product['quantity']
+                    ]);
+                } else {
+                    StockTransferProduct::create([
+                        'stock_transfer_id' => $id,
+                        'product_id'        => $product['id'],
+                        'lot_number'        => $product['lot_number'] ?? NULL,
+                        'rent'              => (int) $product['rent'],
+                        'loading'           => (int) $product['loading'],
+                        'unloading'         => (int) $product['unloading'],
+                        'quantity'          => (int) $product['quantity']
+                    ]);
+                }
+
+                if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
+                    $this->updateGPS($existingGPS, $product);
+                } else {
+                    $this->createGPS($request, $product);
+                }
             }
         }
     }
@@ -186,6 +203,19 @@ class SalesRepository
             $oldGodownStock->current_stock += $product->quantity;
             $oldGodownStock->save();
         }
+    }
+
+    public function removeUnusedProducts(Request $request, $id)
+    {
+        $inputIds = [];
+        foreach ($request->products as $product) {
+            $purchaseItem = StockTransferProduct::where('stock_transfer_id', $id)
+                ->where('product_id', $product['id'])
+                ->where('lot_number', $product['lot_number'])
+                ->first();
+            if (!is_null($purchaseItem)) array_push($inputIds, $purchaseItem->id);
+        }
+        StockTransferProduct::whereNotIn('id', $inputIds)->delete();
     }
 
     public function createGPS(Request $request, $product)

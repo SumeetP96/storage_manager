@@ -242,11 +242,11 @@
                   </div>
 
                   <v-btn v-if="!inputProducts[index].id" dark small icon class="indigo white--text ml-1" elevation="1"
-                    @click="openDialog('productDialog', '', '', false, index)">
+                    @click="openDialog('productDialog', '', '', index)">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
                   <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
-                    @click="openDialog('productDialog', 'products', inputProducts[index].id, true, index)">
+                    @click="openDialog('productDialog', 'products', inputProducts[index].id, index)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
@@ -494,30 +494,30 @@
 
     </v-col>
 
-    <!-- Account Dialog -->
-    <v-dialog v-model="accountDialog" max-width="800">
-      <v-card>
-        <v-card-title class="headline d-flex justify-space-between align-center">
+    <!-- Product Dialog -->
+    <v-dialog v-model="productDialog" max-width="800">
+      <v-card :color="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+        <v-card-title class="d-flex justify-space-between align-center">
           <div>
-            <span v-if="record.from_godown_id">Update Account</span>
-            <span v-else>Create Account</span>
+            <span v-if="currentIndexId">Update Product</span>
+            <span v-else>Create Product</span>
           </div>
-          <v-btn icon @click="closeDialog('accountDialog')"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon @click="closeDialog('productDialog')"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
-        <v-card-text class="pt-6 pb-10">
+        <v-card-text class="pb-8">
 
-          <v-row>
+          <v-row class="mt-4">
             <v-col cols="12" md="9">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Name
+              <label class="subtitle-1">Name
                 <span class="red--text text-h6">*</span></label>
               <v-text-field
                 ref="nameBox"
                 v-model="dialogRecord.name"
                 hide-details="auto"
                 outlined
-                filled
                 autofocus
+                placeholder="Enter product name"
                 :error-messages="dialogErrors.name"
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
@@ -525,13 +525,148 @@
             </v-col>
 
             <v-col cols="12" md="3">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Alias
+              <label class="subtitle-1">Alias
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.alias"
+                hide-details="auto"
+                placeholder="Enter product alias"
+                outlined
+                :error-messages="dialogErrors.alias"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row align="start" no-gutters class="mt-6">
+            <v-col cols="2">
+              <label class="subtitle-1">Unit
+                <span class="red--text text-h6">*</span>
+              </label>
+              <v-text-field
+                v-model="dialogRecord.unit"
+                hide-details="auto"
+                outlined
+                placeholder="Enter unit"
+                :error-messages="dialogErrors.unit"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+              <small>( 3 Letters )</small>
+            </v-col>
+
+            <v-col cols="2">
+              <div class="font-weight-bold text-center pt-10 pl-2 rounded" style="font-size: 1.1rem">
+                OF <v-icon>mdi-chevron-right</v-icon>
+              </div>
+            </v-col>
+
+            <v-col cols="2">
+              <div class="subtitle-1 text-right" style="width: 100%">
+                Packing <span class="red--text text-h6">*</span>
+              </div>
+              <v-text-field
+                v-model="dialogRecord.packingRaw"
+                hide-details="auto"
+                @blur="dialogRecord.packing = setFormatQuantity(dialogRecord.packingRaw)"
+                outlined
+                placeholder="0.00"
+                :error-messages="dialogErrors.packing"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                class="right-input"
+                dense>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="2">
+              <div class="font-weight-bold pt-10 ml-2 rounded" style="font-size: 1.1rem">
+                KGS
+              </div>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <label class="subtitle-1">Remarks
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.remarks"
+                hide-details="auto"
+                outlined
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+        </v-card-text>
+
+        <v-card-actions class="d-flex justify-space-between">
+          <v-btn v-if="currentIndexId" text dark :loading="dialogUpdateButton"
+            @click="updateDialogRecord(currentIndexId, {
+              apiRoute: 'products', dialog: 'productDialog',
+              varName: currentIndex, afMethod: 'fetchProductAutofill'
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
+          </v-btn>
+
+          <v-btn v-else text dark :loading="dialogCreateButton"
+            @click="createDialogRecord({
+              apiRoute: 'products', dialog: 'productDialog',
+              varName: currentIndex, afMethod: 'fetchProductAutofill'
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
+          </v-btn>
+
+          <v-btn color="error" text @click="closeDialog('productDialog')">
+            <v-icon class="text-h6 mr-2">mdi-close</v-icon> cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog> <!-- / Product Dialog End -->
+
+    <!-- Account Dialog -->
+    <v-dialog v-model="accountDialog" max-width="800">
+      <v-card :color="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+        <v-card-title class="d-flex justify-space-between align-center">
+          <div>
+            <span v-if="record.from_godown_id">Update Account</span>
+            <span v-else>Create Account</span>
+          </div>
+          <v-btn icon @click="closeDialog('accountDialog')"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-title>
+
+        <v-card-text class="pt-2 pb-8">
+          <input type="hidden" v-model="dialogRecord.is_account">
+          <span style="display: none">{{ dialogRecord.is_account = false }}</span>
+          <v-row>
+            <v-col cols="12" md="9">
+              <label class="subtitle-1">Name
+                <span class="red--text text-h6">*</span></label>
+              <v-text-field
+                ref="nameBox"
+                v-model="dialogRecord.name"
+                hide-details="auto"
+                outlined
+                autofocus
+                :error-messages="dialogErrors.name"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="6" md="3">
+              <label class="subtitle-1">Alias
                 <span class="red--text text-h6"></span></label>
               <v-text-field
                 v-model="dialogRecord.alias"
                 hide-details="auto"
                 outlined
-                filled
                 :error-messages="dialogErrors.alias"
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
@@ -547,7 +682,6 @@
                 v-model="dialogRecord.address"
                 hide-details="auto"
                 outlined
-                filled
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
               </v-text-field>
@@ -556,13 +690,12 @@
 
           <v-row>
             <v-col cols="12" md="3">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Contact no 1
+              <label class="subtitle-1">Contact no 1
                 <span class="red--text text-h6"></span></label>
               <v-text-field
                 v-model="dialogRecord.contact_1"
                 hide-details="auto"
                 outlined
-                filled
                 :error-messages="dialogErrors.contact_1"
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
@@ -570,13 +703,12 @@
             </v-col>
 
             <v-col cols="12" md="3">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Contact no 2
+              <label class="subtitle-1">Contact no 2
                 <span class="red--text text-h6"></span></label>
               <v-text-field
                 v-model="dialogRecord.contact_2"
                 hide-details="auto"
                 outlined
-                filled
                 :error-messages="dialogErrors.contact_2"
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
@@ -584,13 +716,12 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Email address
+              <label class="subtitle-1">Email address
                 <span class="red--text text-h6"></span></label>
               <v-text-field
                 v-model="dialogRecord.email"
                 hide-details="auto"
                 outlined
-                filled
                 :error-messages="dialogErrors.email"
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
@@ -600,13 +731,12 @@
 
           <v-row>
             <v-col cols="12">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Remarks
+              <label class="subtitle-1">Remarks
                 <span class="red--text text-h6"></span></label>
               <v-text-field
                 v-model="dialogRecord.remarks"
                 hide-details="auto"
                 outlined
-                filled
                 :class="$vuetify.theme.dark ? '' : 'white'"
                 dense>
               </v-text-field>
@@ -615,25 +745,23 @@
 
         </v-card-text>
 
-        <v-card-actions>
-          <v-btn v-if="record.from_godown_id"
-            color="indigo" text dark :loading="dialogUpdateButton"
+        <v-card-actions class="d-flex justify-space-between">
+          <v-btn v-if="record.from_godown_id" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(record.from_godown_id, {
-              isAccount: true,
-              apiRoute: 'godowns',
-              dialog: 'accountDialog'
-            })">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update account
+              apiRoute: 'godowns', dialog: 'accountDialog',
+              varName: 'from_godown_id', afMethod: 'fetchFromAutofill'
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
           </v-btn>
 
-          <v-btn v-else
-            color="indigo" text dark :loading="dialogCreateButton"
+          <v-btn v-else text dark :loading="dialogCreateButton"
             @click="createDialogRecord({
-              isAccount: true,
-              apiRoute: 'godowns',
-              dialog: 'accountDialog'
-            })">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save account
+              apiRoute: 'godowns', dialog: 'accountDialog',
+              varName: 'from_godown_id', afMethod: 'fetchFromAutofill'
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
           </v-btn>
 
           <v-btn color="error" text @click="closeDialog('accountDialog')">
@@ -641,165 +769,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-
-    <!-- Product Dialog -->
-    <v-dialog v-model="productDialog" max-width="800">
-      <v-card>
-        <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>
-            <span v-if="updateMode">Update Product</span>
-            <span v-else>Create Product</span>
-          </div>
-          <v-btn icon @click="closeDialog('productDialog')"><v-icon>mdi-close</v-icon></v-btn>
-        </v-card-title>
-
-        <v-card-text class="pt-6 pb-10">
-
-          <v-row>
-            <v-col cols="12" md="9">
-              <label class="subtitle-1">Name
-                <span class="red--text text-h6">*</span></label>
-              <v-text-field
-                ref="nameBox"
-                v-model="dialogRecord.name"
-                filled
-                hide-details="auto"
-                outlined
-                autofocus
-                :error-messages="dialogErrors.name"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="3">
-              <label class="subtitle-1">Alias
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.alias"
-                filled
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.alias"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12" md="4">
-              <label class="subtitle-1">Lot number
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.lot_number"
-                filled
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.lot_number"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row align="start">
-            <v-col cols="3">
-              <label class="subtitle-1">Compound unit
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.compound_unit"
-                hide-details="auto"
-                outlined
-                filled
-                :error-messages="errors.compound_unit"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-              <small>( 3 Letters )</small>
-            </v-col>
-
-            <v-col cols="2" class="text-center mt-10 subtitle-1 d-flex pl-7">
-              <v-icon>mdi-chevron-right</v-icon>
-              <span class="font-weight-bold">OF</span>
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-col>
-
-            <v-col cols="3">
-              <label class="subtitle-1">Packing
-                <span class="red--text text-h6"></span></label>
-              <div class="d-flex align-start">
-                <v-text-field
-                  v-model="dialogRecord.packingRaw"
-                  @blur="dialogRecord.packing = setFormatQuantity(dialogRecord.packingRaw)"
-                  hide-details="auto"
-                  outlined
-                  filled
-                  :disabled="disablePackingEdit"
-                  :error-messages="errors.packing"
-                  :class="$vuetify.theme.dark ? '' : 'white'"
-                  dense>
-                </v-text-field>
-
-                <v-btn v-if="disablePackingEdit" dark icon class="indigo white--text ml-1" elevation="1" @click="editPacking()">
-                  <v-icon>mdi-circle-edit-outline</v-icon>
-                </v-btn>
-              </div>
-            </v-col>
-
-            <v-col cols="3">
-              <label class="subtitle-1">Unit
-                <span class="red--text text-h6">*</span></label>
-              <v-text-field
-                v-model="dialogRecord.unit"
-                hide-details="auto"
-                outlined
-                filled
-                :error-messages="errors.unit"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-              <small>( 3 Letters )</small>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <label class="subtitle-1">Remarks
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.remarks"
-                filled
-                hide-details="auto"
-                outlined
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-        </v-card-text>
-
-        <v-card-actions>
-          <v-btn v-if="updateMode"
-            color="indigo" text dark :loading="dialogUpdateButton"
-            @click="updateDialogRecord(record.product_id, { apiRoute: 'products', dialog: 'productDialog' })">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update product
-          </v-btn>
-
-          <v-btn v-else
-            color="indigo" text dark :loading="dialogCreateButton"
-            @click="createDialogRecord({ apiRoute: 'products', dialog: 'productDialog' })">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save product
-          </v-btn>
-
-          <v-btn color="error" text @click="closeDialog('productDialog')">
-            <v-icon class="text-h6 mr-2">mdi-close</v-icon> cancel
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    </v-dialog> <!-- / Account Dialog End -->
 
     <!-- Godown Dialog -->
     <v-dialog v-model="godownDialog" max-width="800">

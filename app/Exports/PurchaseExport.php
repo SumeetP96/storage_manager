@@ -36,12 +36,14 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
     {
         return [
             Date::dateTimeToExcel(Carbon::parse($record->date)),
+            $record->purchase_no,
             $record->invoiceNo,
             $record->fromName,
             $record->toName,
             $record->agent,
             $record->remarks,
-            Date::dateTimeToExcel(Carbon::parse($record->updated_at))
+            Date::dateTimeToExcel(Carbon::parse($record->updated_at)),
+            Date::dateTimeToExcel(Carbon::parse($record->created_at))
         ];
     }
 
@@ -49,12 +51,14 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
     {
         return [
             'Date',
+            'Purchase no',
             'Invoice no',
             'From account',
             'To godown',
             'Agent',
             'Remarks',
-            'Updated at'
+            'Updated at',
+            'Created at'
         ];
     }
 
@@ -63,7 +67,9 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
         return [
             'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             'B' => NumberFormat::FORMAT_TEXT,
-            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY
+            'C' => NumberFormat::FORMAT_TEXT,
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY
         ];
     }
 
@@ -72,6 +78,8 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
         $sheet->getStyle(1)->getFont()->setBold(true);
         $sheet->getStyle('A')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('C')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 }

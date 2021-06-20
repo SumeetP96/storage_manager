@@ -62,24 +62,18 @@ Route::prefix('sales')->group(function () {
     Route::post('/store', 'SalesController@store');
     Route::post('/{id}/update', 'SalesController@update');
     Route::post('/{id}/destroy', 'SalesController@destroy');
+
+    Route::get('/transfer_products/{salesId}', 'SalesController@showTransferProducts');
 });
 
 Route::prefix('inter_godowns')->group(function () {
     Route::get('/', 'InterGodownController@index');
     Route::get('/{id}/show', 'InterGodownController@show');
-    Route::get('/transfer_products/{transferId}', 'InterGodownController@showTransferProducts');
     Route::post('/store', 'InterGodownController@store');
     Route::post('/{id}/update', 'InterGodownController@update');
     Route::post('/{id}/destroy', 'InterGodownController@destroy');
-});
 
-Route::prefix('sales')->group(function () {
-    Route::get('/', 'SalesController@index');
-    Route::get('/{id}/show', 'SalesController@show');
-    Route::get('/transfer_products/{salesId}', 'SalesController@showTransferProducts');
-    Route::post('/store', 'SalesController@store');
-    Route::post('/{id}/update', 'SalesController@update');
-    Route::post('/{id}/destroy', 'SalesController@destroy');
+    Route::get('/transfer_products/{transferId}', 'InterGodownController@showTransferProducts');
 });
 
 Route::prefix('reports')->group(function () {
@@ -110,12 +104,15 @@ Route::prefix('autofills')->group(function () {
     Route::prefix('products')->group(function () {
         Route::get('/all', 'Autofill\ProductAutofillController@all');
         Route::get('/details/{productId}', 'Autofill\ProductAutofillController@details');
+        Route::get('/lot_numbers/{godownId}/{productId}', 'Autofill\ProductAutofillController@lotNumbers');
+        Route::get('/lot_stock/{godownId}/{productId}/{lotNumber}', 'Autofill\ProductAutofillController@lotStock');
     });
 
     Route::prefix('godowns')->group(function () {
         Route::get('/all_godowns', 'Autofill\GodownAutofillController@allGodowns');
         Route::get('/all_accounts', 'Autofill\GodownAutofillController@allAccounts');
         Route::get('/details/{godownId}', 'Autofill\GodownAutofillController@details');
+        Route::get('/products/{godownId}', 'Autofill\GodownAutofillController@products');
     });
 
     Route::prefix('agents')->group(function () {

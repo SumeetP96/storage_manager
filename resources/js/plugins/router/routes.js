@@ -66,16 +66,16 @@ const routes = [
   },
 
   // SALES
-  // {
-  //   name: 'sales.index',
-  //   path: '/sales',
-  //   component: require('../../views/pages/transfers/sales/Index').default
-  // },
-  // {
-  //   name: 'sales.action',
-  //   path: '/sales/action/:id?',
-  //   component: require('../../views/pages/transfers/sales/Action').default
-  // },
+  {
+    name: 'sales.index',
+    path: '/sales',
+    component: require('../../views/pages/transfers/sales/Index').default
+  },
+  {
+    name: 'sales.action',
+    path: '/sales/action/:id?',
+    component: require('../../views/pages/transfers/sales/Action').default
+  },
 
   // // INTER GODOWNS
   // {

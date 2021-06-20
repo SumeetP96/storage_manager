@@ -1,5 +1,22 @@
 export const EntryMixin = {
   methods: {
+    resetProducts() {
+      this.inputProducts = [{
+        id: '',
+        rent: '', rentRaw: '',
+        labour: '', labourRaw: '',
+        quantity: '', quantityRaw: ''
+      }]
+
+      this.productDetails = [{
+        unit: '',
+        stock: '',
+        remarks: '',
+        packing: '',
+        lotNumbers: []
+      }]
+    },
+
     addProductInputRow() {
       const last = this.inputProducts.length
       this.productDetails.push({ unit: '', stock: '', remarks: '', packing: '', lotNumbers: [] })

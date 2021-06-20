@@ -691,19 +691,19 @@
     <v-dialog v-model="viewRecordDialog" max-width="90%">
       <v-card>
         <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>Sale Details</div>
+          <div>Purchase Details</div>
           <v-btn icon @click="viewRecordDialog = false"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
         <div class="px-6 pt-4 pb-6">
           <!-- Details -->
           <v-row no-gutters>
-            <!-- Sale no -->
+            <!-- Purchase no -->
             <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Sale no</div>
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Purchase no</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.sale_no }}</div>
+                  <div class="font-weight-bold">{{ record.purchase_no }}</div>
                 </div>
               </div>
             </v-col>
@@ -713,7 +713,7 @@
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Date</div>
                 <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.date }}</div>
+                  <div class="font-weight-bold">{{ record.date | moment('DD-MM-YYYY') }}</div>
                 </div>
               </div>
             </v-col>
@@ -785,11 +785,12 @@
               <th class="text-left">Product</th>
               <th class="text-right">Lot no</th>
               <th class="text-right">Rent</th>
-              <th class="text-right">Labour</th>
-              <th class="text-right">Compound</th>
-              <th class="text-left">Unit</th>
-              <th class="text-right">Quantity</th>
-              <th class="text-left right-round-top">Unit</th>
+              <th class="text-right">Loading</th>
+              <th class="text-right">Unloading</th>
+              <th class="text-right">Quantity (Nos)</th>
+              <th class="text-left"></th>
+              <th class="text-right">Quantity (Kgs)</th>
+              <th class="text-left right-round-top"></th>
             </tr>
 
             <tr v-for="(product, index) in recordProducts" :key="index"
@@ -801,21 +802,14 @@
               <td class="border text-left font-weight-bold">{{ product.name }}</td>
               <td class="border text-right font-weight-bold">{{ product.lotNumber ? product.lotNumber : '-' }}</td>
               <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
-              <td class="border text-right">{{ product.labour ? formatQuantity(product.labour, 1) : '-' }}</td>
-              <td class="border text-right font-weight-bold">
-                {{ product.compoundQuantity ? formatQuantity(product.compoundQuantity, 2) : '-' }}
+              <td class="border text-right">{{ product.loading ? formatQuantity(product.loading, 1) : '-' }}</td>
+              <td class="border text-right">{{ product.unloading ? formatQuantity(product.unloading, 1) : '-' }}</td>
+              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantity, 2) }}</td>
+              <td class="border">
+                {{ product.unit }}<span class="subtitle-2 pl-1">({{ formatQuantity(product.packing, 0) }})</span>
               </td>
-              <td class="border text-left">
-                {{ product.compoundUnit ? product.compoundUnit : '-' }}
-                <span class="pl-1" v-if="product.packing">({{ formatQuantity(product.packing, 0) }})</span>
-              </td>
-              <td class="border text-right font-weight-bold">
-                {{ product.quantity ? formatQuantity(product.quantity, 2) : '-' }}
-              </td>
-              <td class="border text-left"
-              :class="(index == recordProducts.length - 1) ? 'right-round-bottom' : ''">
-                {{ product.unit ? product.unit : '-' }}
-              </td>
+              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantityKgs, 2) }}</td>
+              <td class="border">KGS</td>
             </tr>
           </table>
 
@@ -834,7 +828,7 @@
             <!-- Transport details -->
             <v-col cols="3" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details / remarks</div>
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details</div>
                 <div class="px-4 py-1">
                   <div class="font-weight-bold">{{ record.transport_details ? record.transport_details : '-' }}</div>
                 </div>
@@ -856,8 +850,8 @@
         <v-card-actions class="d-flex justify-space-between">
           <div class="d-flex">
             <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
-              @click="editFromTable({ name: 'sales.action', params: { id: record.id } })">
-                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit sale
+              @click="editFromTable({ name: 'purchases.action', params: { id: record.id } })">
+                <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit purchase
             </v-btn>
 
             <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
@@ -865,35 +859,17 @@
             <!-- PDF -->
             <v-btn color="error" text tabindex="-1" :disabled="disableExport"
               @click="disableExportButtons(2)"
-              :href="`/exports/pdf/sales/${record.id}`"
+              :href="`/exports/pdf/purchases/${record.id}`"
               :download="`${apiRoute}.pdf`">
                 <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
             </v-btn>
 
             <!-- Print -->
-            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/sales/${record.id}`)"
+            <v-btn @click="disableExportButtons(2); printPage('print-record', `/exports/print/purchases/${record.id}`)"
               text tabindex="-1" :disabled="disableExport" :color="$vuetify.theme.dark ? 'purple lighten-2' : 'purple'">
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>
             <iframe id="print-record" style="display: none"></iframe>
-
-            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
-
-            <!-- Delivery slip -->
-            <v-btn color="primary" text tabindex="-1" :disabled="disableExport"
-              @click="disableExportButtons(2)"
-              :href="`/exports/pdf/sales/delivery_slip/${record.id}`"
-              :download="`${apiRoute}.pdf`">
-                <v-icon class="text-h6 mr-2">mdi-receipt</v-icon> Delivery slip
-            </v-btn>
-
-            <!-- Storage invoice -->
-            <v-btn color="primary" text tabindex="-1" :disabled="disableExport"
-              @click="disableExportButtons(2)"
-              :href="`/exports/pdf/sales/storage_invoice/${record.id}`"
-              :download="`${apiRoute}.pdf`">
-                <v-icon class="text-h6 mr-2">mdi-file-document-outline</v-icon> Storage invoice
-            </v-btn>
           </div>
 
           <v-btn color="error" dark text tabindex="-1" :loading="deleteButtonLoading"
@@ -985,18 +961,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>

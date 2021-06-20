@@ -111,12 +111,13 @@ class PurchaseExportController extends Controller
             ->where('stp.stock_transfer_id', $id)
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
+                stp.quantity,
                 stp.quantity div 100 as quantityRaw,
-                pr.compound_unit as compoundUnit,
-                stp.compound_quantity as compoundQuantity,
-                stp.compound_quantity div 100 as compoundQuantityRaw,
                 stp.rent,
-                stp.labour,
+                stp.loading,
+                stp.unloading,
+                pr.packing,
+                (stp.quantity * pr.packing) / 10000 as quantityKgs,
                 pr.name as name,
                 pr.unit as unit,
                 stp.lot_number as lotNumber

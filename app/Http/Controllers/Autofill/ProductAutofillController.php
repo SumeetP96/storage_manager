@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Autofill;
 
+use App\GodownProductsStock;
 use App\Product;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\StockTransfer;
+use App\StockTransferProduct;
 
 class ProductAutofillController extends Controller
 {
@@ -22,6 +25,41 @@ class ProductAutofillController extends Controller
     public function details($productId)
     {
         $product = Product::where('id', $productId)->select('remarks', 'unit', 'packing')->first();
+
+        return $product;
+    }
+
+    /**
+     * Fetch lot numbers
+     */
+    public function lotNumbers($godownId, $productId)
+    {
+        return GodownProductsStock::where('godown_id', $godownId)
+            ->where('product_id', $productId)
+            ->select('lot_number')
+            ->get();
+    }
+
+    /**
+     * Fetch lot stock
+     */
+    public function lotStock($godownId, $productId, $lotNumber)
+    {
+        $product = GodownProductsStock::where('godown_id', $godownId)
+            ->where('product_id', $productId)
+            ->where('lot_number', $lotNumber)
+            ->select('current_stock')
+            ->first();
+
+        $product->details = DB::table('stock_transfers as st')
+            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
+            ->where('st.transfer_type_id', StockTransfer::PURCHASE)
+            ->where('st.to_godown_id', $godownId)
+            ->where('stp.product_id', $productId)
+            ->where('stp.lot_number', $lotNumber)
+            ->orderBy('st.date', 'desc')
+            ->select('rent', 'loading', 'unloading')
+            ->first();
 
         return $product;
     }

@@ -63,22 +63,24 @@
         <td class="font-bold" style="width: 30%">Products</td>
         <td class="text-center font-bold">Lot number</td>
         <td class="text-center font-bold">Rent</td>
-        <td class="text-center font-bold">Labour</td>
-        <td class="text-right font-bold">C Quantity</td>
+        <td class="text-center font-bold">Loading</td>
+        <td class="text-center font-bold">Unloading</td>
+        <td class="text-right font-bold">Quantity (Nos)</td>
         <td class="text-left font-bold" style="width: 1%">Unit</td>
-        <td class="text-right font-bold">Quantity</td>
+        <td class="text-right font-bold">Quantity (Kgs)</td>
         <td class="text-left font-bold" style="width: 1%">Unit</td>
     </tr>
     @foreach ($products as $index => $product)
     <tr>
         <td class="font-bold">{{ $index + 1 }}</td>
         <td class="font-bold">{{ $product->name }}</td>
-        <td class="text-center">{{ $product->lotNumber ? $product->lotNumber : '-' }}</td>
+        <td class="text-center font-bold">{{ $product->lotNumber }}</td>
         <td class="text-right">{{ $product->rent ? number_format($product->rent / 100, 1) : '-' }}</td>
-        <td class="text-right">{{ $product->labour ? number_format($product->labour / 100, 1) : '-' }}</td>
-        <td class="text-right font-bold">{{ $product->compoundQuantityRaw ? $product->compoundQuantityRaw : '-' }}</td>
-        <td class="text-left">{{ $product->compoundUnit ? $product->compoundUnit : '-' }}</td>
+        <td class="text-right">{{ $product->loading ? number_format($product->loading / 100, 1) : '-' }}</td>
+        <td class="text-right">{{ $product->unloading ? number_format($product->unloading / 100, 1) : '-' }}</td>
         <td class="text-right font-bold">{{ number_format($product->quantityRaw, 2) }}</td>
+        <td class="text-left">{{ $product->unit }}<span style="padding-left: 1px">({{ number_format($product->packing / 100, 0) }})</span></td>
+        <td class="text-right font-bold">{{ number_format($product->quantityKgs, 2) }}</td>
         <td class="text-left">{{ $product->unit }}</td>
     </tr>
     @endforeach

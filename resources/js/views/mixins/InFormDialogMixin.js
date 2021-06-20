@@ -3,10 +3,13 @@ export const InFormDialogMixin = {
     return {
       dialogRecord: {},
       dialogErrors: {},
-      updateMode: false,
 
       dialogUpdateButton: false,
       dialogCreateButton: false,
+
+      // For invoice products
+      currentIndex: '',
+      currentIndexId: '',
     }
   },
 
@@ -15,11 +18,16 @@ export const InFormDialogMixin = {
       this[dialog] = false
       this.dialogRecord = {}
       this.dialogErrors = {}
+      this.currentIndex = ''
+      this.currentIndexId = ''
     },
 
-    openDialog(dialog, apiRoute, id) {
+    openDialog(dialog, apiRoute, id, index = '') {
       this[dialog] = true
       this.dialogRecord = {}
+
+      this.currentIndex = index
+      this.currentIndexId = id
 
       if (apiRoute && id) {
         this.axios
@@ -47,6 +55,7 @@ export const InFormDialogMixin = {
             .then(response => {
               if (response.data.success) {
                 this[payload.afMethod]({ id: response.data.id, varName: payload.varName })
+                if (payload.hasOwnProperty('detailMethod')) this[payload.detailMethod]()
                 this.closeDialog(payload.dialog)
               }
               if (!response.data.success) {
