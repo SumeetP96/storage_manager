@@ -1,17 +1,5 @@
 export const EntryMixin = {
   methods: {
-    createTransfer(redirectRoute) {
-      this.clearUnusedInputs()
-      this.record.products = this.inputProducts
-      this.createFromForm({ redirect: redirectRoute })
-    },
-
-    updateTransfer(id, redirectRoute, payload) {
-      this.clearUnusedInputs()
-      this.record.products = this.inputProducts
-      this.updateFromForm(id, { redirect: redirectRoute, payload: payload })
-    },
-
     addProductInputRow() {
       const last = this.inputProducts.length
       this.productDetails.push({ unit: '', stock: '', remarks: '', packing: '', lotNumbers: [] })

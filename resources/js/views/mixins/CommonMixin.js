@@ -7,6 +7,7 @@ import { LoaderMixin } from './LoaderMixin'
 import { SearchMixin } from './SearchMixin'
 import { FilterMixin } from './filter/FilterMixin'
 import { CrudHelperMixin } from './CrudHelperMixin'
+import { InFormDialogMixin } from './InFormDialogMixin'
 
 export const CommonMixin = {
   mixins: [
@@ -19,6 +20,7 @@ export const CommonMixin = {
     LoaderMixin,
     FilterMixin,
     CrudHelperMixin,
+    InFormDialogMixin,
   ],
 
   data() {

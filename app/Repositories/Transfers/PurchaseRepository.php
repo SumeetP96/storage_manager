@@ -183,7 +183,7 @@ class PurchaseRepository
                     ]);
                 }
 
-                if ($existingGPS = $purchaseService->checkExistingGPS($request, $product['id'])) {
+                if ($existingGPS = $purchaseService->checkExistingGPS($request, $product)) {
                     $this->updateGPS($existingGPS, $product);
                 } else {
                     $this->createGPS($request, $product);
