@@ -71,6 +71,11 @@ class SalesRepository
                 ')
                 ->first();
 
+            $product->stock = GodownProductsStock::where('godown_id', $record->from_godown_id)
+                ->where('product_id', $product['id'])
+                ->where('lot_number', $product['lot_number'])
+                ->first()->current_stock;
+
             $product->details->lotNumbers = GodownProductsStock::where('godown_id', $record->from_godown_id)
                 ->where('product_id', $product['id'])
                 ->select('lot_number')

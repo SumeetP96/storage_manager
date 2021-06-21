@@ -45,6 +45,7 @@ export const RecordMixin = {
           for (let i = 0; i < response.data.record.inputProducts.length; i++) {
             this.inputProducts[i] = response.data.record.inputProducts[i]
             this.productDetails[i] = response.data.record.inputProducts[i].details
+            this.productDetails[i].stock = this.formatQuantity(response.data.record.inputProducts[i].stock, 2)
             this.inputProducts[i].rent = response.data.record.inputProducts[i].lotDetails.rent
             this.inputProducts[i].rentRaw = this.formatQuantity(response.data.record.inputProducts[i].lotDetails.rent, 1)
             this.inputProducts[i].loading = response.data.record.inputProducts[i].lotDetails.loading

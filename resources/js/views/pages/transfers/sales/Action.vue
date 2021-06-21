@@ -334,6 +334,12 @@
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
+                <div v-if="inputProducts[index].id"
+                  :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'" class="subtitle-2 text-right px-2 rounded font-weight-bold">
+                    <span v-if="productDetails[index].stock > 0" class="success--text">{{ productDetails[index].stock }}</span>
+                    <span v-else-if="productDetails[index].stock < 0" class="error--text">{{ productDetails[index].stock }}</span>
+                    <span v-else>0.00</span>
+                </div>
               </td>
 
               <!-- Unit -->

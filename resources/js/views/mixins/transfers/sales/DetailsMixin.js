@@ -65,7 +65,10 @@ export const DetailsMixin = {
     },
 
     fetchLotStock(index) {
+      this.productDetails[index].stock = 0
+
       if (!this.record.from_godown_id || !this.inputProducts[index].id || !this.inputProducts[index].lot_number) return
+
       this.axios.get(`/api/autofills/products/lot_stock/${this.record.from_godown_id}/${this.inputProducts[index].id}/${this.inputProducts[index].lot_number}`)
         .then(response => {
           this.productDetails[index].stock = this.formatQuantity(response.data.current_stock, 2)
