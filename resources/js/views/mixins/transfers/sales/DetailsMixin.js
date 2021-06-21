@@ -5,11 +5,12 @@ export const DetailsMixin = {
       accountDetails: {},
       productDetails: [{
         unit: '',
-        stock: '',
+        stock: 0,
         remarks: '',
         packing: '',
         lotNumbers: []
       }],
+      stock: []
     }
   },
 
@@ -65,8 +66,6 @@ export const DetailsMixin = {
     },
 
     fetchLotStock(index) {
-      this.productDetails[index].stock = 0
-
       if (!this.record.from_godown_id || !this.inputProducts[index].id || !this.inputProducts[index].lot_number) return
 
       this.axios.get(`/api/autofills/products/lot_stock/${this.record.from_godown_id}/${this.inputProducts[index].id}/${this.inputProducts[index].lot_number}`)
@@ -81,11 +80,18 @@ export const DetailsMixin = {
         })
     },
 
-    fetchGodownProducts() {
-      this.resetProducts()
+    fetchGodownProducts(payload = {}) {
+      if (!payload.hasOwnProperty('id')) this.resetProducts()
       if (!this.record.from_godown_id) return
       this.axios.get(`/api/autofills/godowns/products/${this.record.from_godown_id}`)
-        .then(response => this.products = response.data)
+        .then(response => {
+          this.products = response.data
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.inputProducts[payload.varName].id = payload.id
+            this.fetchProductDetails(payload.varName)
+            this.fetchLotStock(payload.varName)
+          }
+        })
     }
   }
 }

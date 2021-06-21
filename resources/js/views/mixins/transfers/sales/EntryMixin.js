@@ -3,14 +3,14 @@ export const EntryMixin = {
     resetProducts() {
       this.inputProducts = [{
         id: '',
-        rent: '', rentRaw: '',
-        labour: '', labourRaw: '',
-        quantity: '', quantityRaw: ''
+        rent: 0, rentRaw: 0,
+        labour: 0, labourRaw: 0,
+        quantity: 0, quantityRaw: 0
       }]
 
       this.productDetails = [{
         unit: '',
-        stock: '',
+        stock: 0,
         remarks: '',
         packing: '',
         lotNumbers: []
@@ -19,12 +19,12 @@ export const EntryMixin = {
 
     addProductInputRow() {
       const last = this.inputProducts.length
-      this.productDetails.push({ unit: '', stock: '', remarks: '', packing: '', lotNumbers: [] })
+      this.productDetails.push({ unit: '', stock: 0, remarks: '', packing: '', lotNumbers: [] })
       this.inputProducts.push({
         id: '',
-        rent: '', rentRaw: '',
-        labour: '', labourRaw: '',
-        quantity: '', quantityRaw: ''
+        rent: 0, rentRaw: 0,
+        labour: 0, labourRaw: 0,
+        quantity: 0, quantityRaw: 0
       })
       setTimeout(() => document.getElementById(`productBox${last}`).focus(), 100);
     },
@@ -37,7 +37,7 @@ export const EntryMixin = {
 
     removeProductInputRow(index) {
       this.inputProducts = this.inputProducts.filter((product, ind) => ind != index)
-      this.productDetails[index] = {}
+      this.productDetails = this.productDetails.filter((product, ind) => ind != index)
       this.clearProductErrors(index)
       this.clearUnusedInputs()
     },

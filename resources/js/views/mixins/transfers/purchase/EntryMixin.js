@@ -20,7 +20,7 @@ export const EntryMixin = {
 
     removeProductInputRow(index) {
       this.inputProducts = this.inputProducts.filter((product, ind) => ind != index)
-      this.productDetails[index] = {}
+      this.productDetails = this.productDetails.filter((product, ind) => ind != index)
       this.clearProductErrors(index)
       this.clearUnusedInputs()
     },

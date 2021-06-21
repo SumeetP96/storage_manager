@@ -20,9 +20,9 @@ export const RecordMixin = {
 
       inputProducts: [{
         id: '',
-        rent: '', rentRaw: '',
-        labour: '', labourRaw: '',
-        quantity: '', quantityRaw: '',
+        rent: 0, rentRaw: 0,
+        labour: 0, labourRaw: 0,
+        quantity: 0, quantityRaw: 0,
       }],
     }
   },
@@ -38,8 +38,8 @@ export const RecordMixin = {
 
         .then(response => {
           this.record = response.data.record
-          this.godownDetails = { address: this.record.fromAddress, contact_1: this.record.fromContact1, contact_2: this.record.fromContact2 }
-          this.accountDetails = { address: this.record.toAddress, contact_1: this.record.toContact1, contact_2: this.record.toContact2 }
+          this.accountDetails = { address: this.record.fromAddress, contact_1: this.record.fromContact1, contact_2: this.record.fromContact2 }
+          this.godownDetails = { address: this.record.toAddress, contact_1: this.record.toContact1, contact_2: this.record.toContact2 }
           this.products = response.data.record.autofillProducts
 
           for (let i = 0; i < response.data.record.inputProducts.length; i++) {
@@ -82,7 +82,10 @@ export const RecordMixin = {
       this.axios.get('/api/autofills/godowns/all_godowns')
         .then(response => {
           this.accounts = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.inputProducts[payload.varName].id = payload.id
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.record[payload.varName] = payload.id
+            this.fetchAccountDetails()
+          }
           this.fromLoading = false
         })
     },
@@ -93,7 +96,10 @@ export const RecordMixin = {
       this.axios.get('/api/autofills/godowns/all_accounts')
         .then(response => {
           this.godowns = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.record[payload.varName] = payload.id
+            this.fetchGodownDetails()
+          }
           this.toLoading = false
         })
     },

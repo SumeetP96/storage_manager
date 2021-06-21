@@ -96,7 +96,10 @@ export const RecordMixin = {
       this.axios.get('/api/autofills/products/all')
         .then(response => {
           this.products = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.inputProducts[payload.varName].id = payload.id 
+            this.fetchProductDetails(payload.varName)
+          }
           this.productLoading = false
         })
     },

@@ -116,7 +116,7 @@
                   </div>
 
                   <v-btn v-if="record.from_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
-                    @click="openDialog('godownDialog', 'godowns', record.from_godown_id)">
+                    @click="openDialog('accountDialog', 'godowns', record.from_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
@@ -160,11 +160,11 @@
                   </div>
 
                   <v-btn v-if="!record.to_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
-                    @click="openDialog('accountDialog')">
+                    @click="openDialog('godownDialog')">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
                   <v-btn v-else dark icon small class="indigo white--text ml-1" elevation="1"
-                    @click="openDialog('accountDialog', 'godowns', record.to_godown_id)">
+                    @click="openDialog('godownDialog', 'godowns', record.to_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </div>
@@ -334,7 +334,7 @@
                   class="right-input smaller-input"
                   dense>
                 </v-text-field>
-                <div v-if="inputProducts[index].id"
+                <div v-if="inputProducts[index].id && inputProducts[index].lot_number"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'" class="subtitle-2 text-right px-2 rounded font-weight-bold">
                     <span v-if="productDetails[index].stock > 0" class="success--text">{{ productDetails[index].stock }}</span>
                     <span v-else-if="productDetails[index].stock < 0" class="error--text">{{ productDetails[index].stock }}</span>
@@ -612,7 +612,7 @@
           <v-btn v-if="currentIndexId" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(currentIndexId, {
               apiRoute: 'products', dialog: 'productDialog',
-              varName: currentIndex, afMethod: 'fetchProductAutofill'
+              varName: currentIndex, afMethod: 'fetchGodownProducts'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
@@ -621,7 +621,7 @@
           <v-btn v-else text dark :loading="dialogCreateButton"
             @click="createDialogRecord({
               apiRoute: 'products', dialog: 'productDialog',
-              varName: currentIndex, afMethod: 'fetchProductAutofill'
+              varName: currentIndex, afMethod: 'fetchGodownProducts'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
@@ -639,160 +639,15 @@
       <v-card :color="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
         <v-card-title class="d-flex justify-space-between align-center">
           <div>
-            <span v-if="record.to_godown_id">Update Account</span>
-            <span v-else>Create Account</span>
+            <span v-if="record.from_godown_id">Update Godown</span>
+            <span v-else>Create Godown</span>
           </div>
           <v-btn icon @click="closeDialog('accountDialog')"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
         <v-card-text class="pt-2 pb-8">
-          <input type="hidden" v-model="dialogRecord.is_account">
-          <span style="display: none">{{ dialogRecord.is_account = true }}</span>
-          <v-row>
-            <v-col cols="12" md="9">
-              <label class="subtitle-1">Name
-                <span class="red--text text-h6">*</span></label>
-              <v-text-field
-                ref="nameBox"
-                v-model="dialogRecord.name"
-                hide-details="auto"
-                outlined
-                autofocus
-                :error-messages="dialogErrors.name"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="6" md="3">
-              <label class="subtitle-1">Alias
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.alias"
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.alias"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
           <v-row>
             <v-col cols="12">
-              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Address
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.address"
-                hide-details="auto"
-                outlined
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12" md="3">
-              <label class="subtitle-1">Contact no 1
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.contact_1"
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.contact_1"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="3">
-              <label class="subtitle-1">Contact no 2
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.contact_2"
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.contact_2"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="6">
-              <label class="subtitle-1">Email address
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.email"
-                hide-details="auto"
-                outlined
-                :error-messages="dialogErrors.email"
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <label class="subtitle-1">Remarks
-                <span class="red--text text-h6"></span></label>
-              <v-text-field
-                v-model="dialogRecord.remarks"
-                hide-details="auto"
-                outlined
-                :class="$vuetify.theme.dark ? '' : 'white'"
-                dense>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-        </v-card-text>
-
-        <v-card-actions class="d-flex justify-space-between">
-          <v-btn v-if="record.to_godown_id" text dark :loading="dialogUpdateButton"
-            @click="updateDialogRecord(record.to_godown_id, {
-              apiRoute: 'godowns', dialog: 'accountDialog', detailMethod: 'fetchGodownDetails',
-              varName: 'to_godown_id', afMethod: 'fetchFromAutofill'
-            })"
-            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
-          </v-btn>
-
-          <v-btn v-else text dark :loading="dialogCreateButton"
-            @click="createDialogRecord({
-              apiRoute: 'godowns', dialog: 'accountDialog', detailMethod: 'fetchGodownDetails',
-              varName: 'to_godown_id', afMethod: 'fetchFromAutofill'
-            })"
-            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
-              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
-          </v-btn>
-
-          <v-btn color="error" text @click="closeDialog('accountDialog')">
-            <v-icon class="text-h6 mr-2">mdi-close</v-icon> cancel
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog> <!-- / Account Dialog End -->
-
-    <!-- Godown Dialog -->
-    <v-dialog v-model="godownDialog" max-width="800">
-      <v-card :color="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
-        <v-card-title class="d-flex justify-space-between align-center">
-          <div>
-            <span v-if="record.from_godown_id">Update Godown</span>
-            <span v-else>Create Godown</span>
-          </div>
-          <v-btn icon @click="closeDialog('godownDialog')"><v-icon>mdi-close</v-icon></v-btn>
-        </v-card-title>
-
-        <v-card-text class="pt-2 pb-8">
-          <input type="hidden" v-model="dialogRecord.is_account">
-          <span style="display: none">{{ dialogRecord.is_account = false }}</span>
-          <v-row>
-            <v-col cols="12" md="9">
               <label class="subtitle-1">Name
                 <span class="red--text text-h6">*</span></label>
               <v-text-field
@@ -897,8 +752,145 @@
         <v-card-actions class="d-flex justify-space-between">
           <v-btn v-if="record.from_godown_id" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(record.from_godown_id, {
+              apiRoute: 'godowns', dialog: 'accountDialog',
+              varName: 'from_godown_id', afMethod: 'fetchFromAutofill'
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
+          </v-btn>
+
+          <v-btn color="error" text @click="closeDialog('accountDialog')">
+            <v-icon class="text-h6 mr-2">mdi-close</v-icon> cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog> <!-- / Account Dialog End -->
+
+    <!-- Godown Dialog -->
+    <v-dialog v-model="godownDialog" max-width="800">
+      <v-card :color="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+        <v-card-title class="d-flex justify-space-between align-center">
+          <div>
+            <span v-if="record.to_godown_id">Update Godown</span>
+            <span v-else>Create Godown</span>
+          </div>
+          <v-btn icon @click="closeDialog('godownDialog')"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-title>
+
+        <v-card-text class="pt-2 pb-8">
+          <div v-if="!record.to_godown_id">
+            <input type="hidden" v-model="dialogRecord.is_account">
+            <span style="display: none">{{ dialogRecord.is_account = true }}</span>
+          </div>
+
+          <v-row>
+            <v-col cols="12">
+              <label class="subtitle-1">Name
+                <span class="red--text text-h6">*</span></label>
+              <v-text-field
+                ref="nameBox"
+                v-model="dialogRecord.name"
+                hide-details="auto"
+                outlined
+                autofocus
+                :error-messages="dialogErrors.name"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="6" md="3">
+              <label class="subtitle-1">Alias
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.alias"
+                hide-details="auto"
+                outlined
+                :error-messages="dialogErrors.alias"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <label class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">Address
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.address"
+                hide-details="auto"
+                outlined
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12" md="3">
+              <label class="subtitle-1">Contact no 1
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.contact_1"
+                hide-details="auto"
+                outlined
+                :error-messages="dialogErrors.contact_1"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="3">
+              <label class="subtitle-1">Contact no 2
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.contact_2"
+                hide-details="auto"
+                outlined
+                :error-messages="dialogErrors.contact_2"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <label class="subtitle-1">Email address
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.email"
+                hide-details="auto"
+                outlined
+                :error-messages="dialogErrors.email"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <label class="subtitle-1">Remarks
+                <span class="red--text text-h6"></span></label>
+              <v-text-field
+                v-model="dialogRecord.remarks"
+                hide-details="auto"
+                outlined
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+        </v-card-text>
+
+        <v-card-actions class="d-flex justify-space-between">
+          <v-btn v-if="record.to_godown_id" text dark :loading="dialogUpdateButton"
+            @click="updateDialogRecord(record.to_godown_id, {
               apiRoute: 'godowns', dialog: 'godownDialog',
-              varName: 'from_godown_id', afMethod: 'fetchToAutofill'
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
@@ -907,7 +899,7 @@
           <v-btn v-else text dark :loading="dialogCreateButton"
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'godownDialog',
-              varName: 'from_godown_id', afMethod: 'fetchToAutofill'
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
