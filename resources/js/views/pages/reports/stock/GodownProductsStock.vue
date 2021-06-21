@@ -149,7 +149,7 @@
                     </v-menu> <!-- / Godown filter end -->
                 </th>
 
-                <th class="subtitle-2 text-center" :class="sortBy == 'productLotNumber' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'productLotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'productLotNumber' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('productLotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'productLotNumber'">
@@ -268,7 +268,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Quantity (Units)</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -277,7 +277,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'currentStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'currentStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Current Stock</span>
+                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Quantity (Kgs)</span>
                     <span v-if="sortBy == 'currentStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -290,28 +290,25 @@
               <tr v-for="record in records" :key="record.name">
                   <td class="subtitle-1">{{ record.godownName }}</td>
 
-                  <td class="subtitle-1 text-center font-weight-bold">
-                      {{ record.productLotNumber ? record.productLotNumber : '-' }}
+                  <td class="subtitle-1 font-weight-bold">
+                    {{ record.productLotNumber }}
                   </td>
 
                   <td class="subtitle-1">{{ record.productName }}</td>
 
                   <td class="subtitle-1 text-right font-weight-bold">
-                    <div v-if="record.compoundUnit">
-                      <span v-if="record.compoundStock < 0" class="error--text">{{ formatQuantity(record.compoundStock) }}</span>
-                      <span v-else>{{ record.compoundStock }}</span>
-                      <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                        {{ record.compoundUnit }} ({{ formatQuantity(record.packing, 0) }})
-                      </span>
-                    </div>
-                    <div v-else>-</div>
-                  </td>
-
-                  <td class="subtitle-1 text-right font-weight-bold">
                     <span v-if="record.currentStock < 0" class="error--text">{{ formatQuantity(record.currentStock) }}</span>
                     <span v-else>{{ formatQuantity(record.currentStock) }}</span>
                     <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                        {{ record.productUnit }}
+                        {{ record.productUnit }}<span class="subtitle-2 grey--text pl-1">({{ record.packing }})</span>
+                    </span>
+                  </td>
+
+                  <td class="subtitle-1 text-right font-weight-bold">
+                    <span v-if="record.currentStock < 0" class="error--text">{{ formatQuantity(record.currentStock * record.packing) }}</span>
+                    <span v-else>{{ formatQuantity(record.currentStock * record.packing) }}</span>
+                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      KGS
                     </span>
                   </td>
               </tr>

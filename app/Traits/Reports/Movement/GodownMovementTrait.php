@@ -40,18 +40,16 @@ trait GodownMovementTrait
             ->selectRaw('
                 st.id as id,
                 stp.quantity,
-                stp.compound_quantity as compoundQuantity,
-                pr.compound_unit as compoundUnit,
-                pr.packing,
+                round(pr.packing / 100, 0) as packing,
                 st.date as date,
                 st.from_godown_id as fromId,
                 st.to_godown_id as toId,
                 st.transfer_type_id as ttid,
-                IF(st.from_godown_id = ?, tg.name, fg.name) as name,    
+                IF(st.from_godown_id = ?, tg.name, fg.name) as name,
                 pr.id as productId,
-                pr.unit as unit,
+                pr.unit,
                 pr.name as productName,
-                pr.lot_number as lotNumber,
+                stp.lot_number as lotNumber,
                 tt.name as transferType
             ', [$godownId])
             ->orderBy($sortBy, $flow);

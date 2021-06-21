@@ -80,7 +80,6 @@ Route::prefix('inter_godowns')->group(function () {
 Route::prefix('reports')->group(function () {
     Route::get('/products_stock', 'ReportController@productsStock');
     Route::get('/godown_products_stock', 'ReportController@godownProductsStock');
-    Route::get('/lot_stock', 'ReportController@lotStock');
     Route::get('/products_lot_stock', 'ReportController@productsLotStock');
 
     Route::get('/product_movements', 'ReportController@productMovement');

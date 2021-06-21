@@ -41,13 +41,12 @@ class ReportRepository
                     ->orWhere('unit', 'like', '%' . $search . '%');
             })
             ->selectRaw('
-                pr.unit as unit,
+                pr.unit,
                 pr.name as name,
-                sum(gps.current_stock div pr.packing) as compoundStock,
-                pr.compound_unit as compoundUnit,
+                ROUND(pr.packing / 100, 0) as packing,
                 sum(gps.current_stock) as stock
             ')
-            ->groupBy('name', 'unit', 'compound_unit');
+            ->groupBy('name', 'unit', 'packing');
 
         $total = count($results->get());
         $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
@@ -69,40 +68,6 @@ class ReportRepository
             'records' => $this->allGodownProductStock($request)
                 ->skip($request->skip)->limit($request->limit)->get(),
         ];
-    }
-
-    /**
-     * Fetch lot wise total stock
-     *
-     * @param  mixed $request
-     * @return array $records, $total
-     */
-    public function fetchLotStock(Request $request)
-    {
-        $skip = $request->get('skip');
-        $flow = $request->get('flow');
-        $limit = $request->get('limit');
-        $search = $request->get('query');
-        $sortBy = $request->get('sortBy');
-
-        $results = DB::table('godown_products_stocks as gps')
-            ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
-            ->where(function ($query) use ($search) {
-                $query->where('pr.lot_number', 'like', '%' . $search . '%');
-            })
-            ->selectRaw('
-                pr.unit as unit,
-                pr.lot_number as lotNumber,
-                pr.compound_unit as compoundUnit,
-                sum(gps.current_stock div pr.packing) as compoundStock,
-                sum(gps.current_stock) as stock
-            ')
-            ->groupBy('lot_number', 'unit', 'compound_unit');
-
-        $total = count($results->get());
-        $records = $results->skip($skip)->limit($limit)->orderBy($sortBy, $flow)->get();
-
-        return ['records' => $records, 'total' => $total];
     }
 
     /**

@@ -28,21 +28,17 @@ trait GodownProductStockTrait
             ->where(function ($query) use ($search) {
                 $query->where('pr.name', 'like', '%' . $search . '%')
                     ->orWhere('gd.name', 'like', '%' . $search . '%')
-                    ->orWhere('pr.lot_number', 'like', '%' . $search . '%');
+                    ->orWhere('gps.lot_number', 'like', '%' . $search . '%');
             })
             ->selectRaw('
-                gps.updated_at,
-                gps.created_at,
                 gps.current_stock as currentStock,
+                gps.lot_number as productLotNumber,
                 gd.id,
                 gd.name as godownName,
                 pr.id,
                 pr.name as productName,
                 pr.unit as productUnit,
-                gps.current_stock div pr.packing as compoundStock,
-                pr.packing,
-                pr.compound_unit as compoundUnit,
-                pr.lot_number as productLotNumber
+                ROUND(pr.packing / 100, 0) as packing
             ')
             ->orderBy($sortBy, $flow);
     }

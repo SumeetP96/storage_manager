@@ -78,15 +78,6 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
-                  :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
-                    <span v-if="sortBy == 'lotNumber'">
-                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
-                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
-                    </span>
-                </th>
-
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('name', sortBy)">Product</span>
@@ -156,9 +147,18 @@
                     </v-menu> <!-- / Product filter end -->
                 </th>
 
+                <th class="subtitle-2" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
+                  :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
+                    <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
+                    <span v-if="sortBy == 'lotNumber'">
+                      <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
+                      <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
+                    </span>
+                </th>
+
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Compound stock</span>
+                    <span class="sort-link" @click="sortRecords('compoundStock', sortBy)">Quantity (Units)</span>
                     <span v-if="sortBy == 'compoundStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -167,7 +167,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'currentStock' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'currentStock' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Current Stock</span>
+                    <span class="sort-link" @click="sortRecords('currentStock', sortBy)">Quantity (Kgs)</span>
                     <span v-if="sortBy == 'currentStock'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -178,30 +178,27 @@
             </thead>
             <tbody v-if="records.length > 0">
               <tr v-for="(record, index) in records" :key="index">
-                  <td class="subtitle-1 text-center font-weight-bold">
-                    {{ record.lotNumber ? record.lotNumber : 'Unassigned' }}
-                  </td>
+                <td class="subtitle-1">{{ record.name }}</td>
 
-                  <td class="subtitle-1">{{ record.name }}</td>
+                <td class="subtitle-1 font-weight-bold">
+                  {{ record.lotNumber }}
+                </td>
 
-                  <td class="subtitle-1 text-right font-weight-bold">
-                    <div v-if="record.compoundUnit">
-                      <span v-if="record.compoundStock < 0" class="error--text">{{ formatQuantity(record.compoundStock) }}</span>
-                      <span v-else>{{ record.compoundStock }}</span>
-                      <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                          {{ record.compoundUnit }} ({{ formatQuantity(record.packing, 0) }})
-                      </span>
-                    </div>
-                    <div v-else>-</div>
-                  </td>
+                <td class="subtitle-1 text-right font-weight-bold">
+                  <span v-if="record.currentStock < 0" class="error--text">{{ formatQuantity(record.currentStock) }}</span>
+                  <span v-else>{{ formatQuantity(record.currentStock) }}</span>
+                  <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      {{ record.productUnit }}<span class="subtitle-2 grey--text pl-1">({{ record.packing }})</span>
+                  </span>
+                </td>
 
-                  <td class="subtitle-1 text-right font-weight-bold">
-                    <span v-if="record.currentStock < 0" class="error--text">{{ formatQuantity(record.currentStock) }}</span>
-                    <span v-else>{{ formatQuantity(record.currentStock) }}</span>
-                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                        {{ record.productUnit }}
-                    </span>
-                  </td>
+                <td class="subtitle-1 text-right font-weight-bold">
+                  <span v-if="record.currentStock < 0" class="error--text">{{ formatQuantity(record.currentStock * record.packing) }}</span>
+                  <span v-else>{{ formatQuantity(record.currentStock * record.packing) }}</span>
+                  <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                    KGS
+                  </span>
+                </td>
               </tr>
             </tbody>
             <tbody v-else>

@@ -35,13 +35,11 @@ trait ProductMovementTrait
             })
             ->selectRaw('
                 stp.quantity,
-                stp.compound_quantity as compoundQuantity,
-                pr.compound_unit as compoundUnit,
-                pr.packing,
+                pr.unit,
+                round(pr.packing / 100, 0) as packing,
                 st.id as id,
                 st.date as date,
                 st.transfer_type_id as ttid,
-                pr.unit as unit,
                 tg.name as toName,
                 fg.name as fromName,
                 tt.name as transferType

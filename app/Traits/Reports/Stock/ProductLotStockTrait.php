@@ -21,11 +21,7 @@ trait ProductLotStockTrait
 
         $query = DB::table('godown_products_stocks as gps')
             ->leftJoin('products as pr', 'gps.product_id', '=', 'pr.id')
-            ->where('gps.current_stock', '>', 0)
-            ->where(function ($query) {
-                $query->where('pr.lot_number', '!=', '')
-                    ->orWhereNotNull('pr.lot_number');
-            });
+            ->where('gps.current_stock', '>', 0);
 
         return $this->getFilteredProductLotQuery($query, $request)
             ->where(function ($query) use ($search) {
@@ -33,15 +29,13 @@ trait ProductLotStockTrait
                     ->orWhere('lot_number', 'like', '%' . $search . '%');
             })
             ->selectRaw('
+                pr.name,
                 pr.unit as productUnit,
-                pr.lot_number as lotNumber,
-                pr.name as name,
-                sum(gps.current_stock div pr.packing) as compoundStock,
+                gps.lot_number as lotNumber,
                 sum(gps.current_stock) as currentStock,
-                pr.packing,
-                pr.compound_unit as compoundUnit
+                round(pr.packing / 100, 0) as packing
             ')
-            ->groupBy('lot_number', 'name', 'compound_unit', 'unit', 'packing')
+            ->groupBy('lot_number', 'name', 'unit', 'packing')
             ->orderBy($sortBy, $flow);
     }
 

@@ -17,7 +17,7 @@ class CreateStockTransferProductsTable extends Migration
             $table->id();
             $table->foreignId('stock_transfer_id')->constrained('stock_transfers')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->restrictOnDelete();
-            $table->string('lot_number', 100)->nullable();
+            $table->string('lot_number', 10)->default(0);
             $table->bigInteger('rent')->default(0);
             $table->bigInteger('loading')->default(0);
             $table->bigInteger('unloading')->default(0);

@@ -308,7 +308,7 @@
                     </v-menu> <!-- / Godown filter end -->
                 </th>
 
-                <th class="subtitle-2 text-center" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'lotNumber' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'lotNumber' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('lotNumber', sortBy)">Lot number</span>
                     <span v-if="sortBy == 'lotNumber'">
@@ -470,28 +470,10 @@
 
                   <td class="subtitle-1">{{ record.name }}</td>
 
-                  <td class="subtitle-1 text-center">{{ record.lotNumber ? record.lotNumber : '-' }}</td>
+                  <td class="subtitle-1">{{ record.lotNumber ? record.lotNumber : '-' }}</td>
                   <td class="subtitle-1">{{ record.productName }}</td>
 
-                  <td v-if="record.compoundQuantity" class="subtitle-1 text-right font-weight-bold">
-                    <!-- Inter & Purchase -->
-                    <span v-if="record.ttid == 1 || record.ttid == 2">
-                      <span v-if="record.toId == accountId" class="success--text">+ {{ formatQuantity(record.compoundQuantity) }}</span>
-                      <span v-else class="error--text">- {{ formatQuantity(record.compoundQuantity) }}</span>
-                    </span>
-
-                    <!-- Sales -->
-                    <span v-if="record.ttid == 3" class="error--text">
-                      - {{ formatQuantity(record.compoundQuantity) }}
-                    </span>
-
-                    <span class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.compoundUnit }} ({{ formatQuantity(record.packing, 0) }})
-                    </span>
-                  </td>
-                  <td v-else class="text-right pr-5">-</td>
-
-                  <td class="subtitle-1 text-right font-weight-bold">
+                  <td v-if="record.quantity" class="subtitle-1 text-right font-weight-bold">
                     <!-- Inter & Purchase -->
                     <span v-if="record.ttid == 1 || record.ttid == 2">
                       <span v-if="record.toId == accountId" class="success--text">+ {{ formatQuantity(record.quantity) }}</span>
@@ -504,7 +486,25 @@
                     </span>
 
                     <span class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.unit }}
+                      {{ record.unit }}<span class="subtitle-2 grey--text">({{ record.packing }})</span>
+                    </span>
+                  </td>
+                  <td v-else class="text-right pr-5">0.00</td>
+
+                  <td class="subtitle-1 text-right font-weight-bold">
+                    <!-- Inter & Purchase -->
+                    <span v-if="record.ttid == 1 || record.ttid == 2">
+                      <span v-if="record.toId == accountId" class="success--text">+ {{ formatQuantity(record.quantity * record.packing) }}</span>
+                      <span v-else class="error--text">- {{ formatQuantity(record.quantity * record.packing) }}</span>
+                    </span>
+
+                    <!-- Sales -->
+                    <span v-if="record.ttid == 3" class="error--text">
+                      - {{ formatQuantity(record.quantity * record.packing) }}
+                    </span>
+
+                    <span class="subtitle-2 grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      KGS
                     </span>
                   </td>
 

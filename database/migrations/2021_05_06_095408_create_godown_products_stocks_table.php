@@ -17,7 +17,7 @@ class CreateGodownProductsStocksTable extends Migration
             $table->id();
             $table->foreignId('godown_id')->constrained()->restrictOnDelete();
             $table->foreignId('product_id')->constrained()->restrictOnDelete();
-            $table->string('lot_number', 100)->nullable();
+            $table->string('lot_number', 10)->default(0);
             $table->bigInteger('current_stock')->default(0);
             $table->timestamps();
         });

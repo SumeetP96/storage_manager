@@ -379,7 +379,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'compoundQuantity' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'compoundQuantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('compoundQuantity', sortBy)">Compound</span>
+                    <span class="sort-link" @click="sortRecords('compoundQuantity', sortBy)">Quantity (Units)</span>
                     <span v-if="sortBy == 'compoundQuantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -388,7 +388,7 @@
 
                 <th class="subtitle-2 text-right" :class="sortBy == 'quantity' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'quantity' ? 'font-size: 1rem !important' : ''">
-                    <span class="sort-link" @click="sortRecords('quantity', sortBy)">Quantity</span>
+                    <span class="sort-link" @click="sortRecords('quantity', sortBy)">Quantity (Kgs)</span>
                     <span v-if="sortBy == 'quantity'">
                       <span v-if="flow =='asc'"><v-icon class="subtitle-1 pink--text">mdi-arrow-down</v-icon></span>
                       <span v-else><v-icon class="subtitle-1 pink--text">mdi-arrow-up</v-icon></span>
@@ -424,20 +424,7 @@
 
                   <td class="subtitle-1">{{ record.toName }}</td>
 
-                  <td v-if="record.compoundQuantity" class="subtitle-1 text-right font-weight-bold">
-                    <span v-if="record.ttid == 1">{{ formatQuantity(record.compoundQuantity) }}</span>
-                    <span v-if="record.ttid == 2" class="success--text">
-                      + {{ formatQuantity(record.compoundQuantity) }}
-                    </span>
-                    <span v-if="record.ttid == 3" class="error--text">- {{ formatQuantity(record.compoundQuantity) }}</span>
-
-                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.compoundUnit }} ({{ formatQuantity(record.packing, 0) }})
-                    </span>
-                  </td>
-                  <td v-else class="text-right pr-5">-</td>
-
-                  <td class="subtitle-1 text-right font-weight-bold">
+                  <td v-if="record.quantity" class="subtitle-1 text-right font-weight-bold">
                     <span v-if="record.ttid == 1">{{ formatQuantity(record.quantity) }}</span>
                     <span v-if="record.ttid == 2" class="success--text">
                       + {{ formatQuantity(record.quantity) }}
@@ -445,7 +432,20 @@
                     <span v-if="record.ttid == 3" class="error--text">- {{ formatQuantity(record.quantity) }}</span>
 
                     <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
-                      {{ record.unit }}
+                      {{ record.unit }}<span class="subtitle-2 grey--text pl-1">({{ record.packing }})</span>
+                    </span>
+                  </td>
+                  <td v-else class="text-right pr-5">0.00</td>
+
+                  <td class="subtitle-1 text-right font-weight-bold">
+                    <span v-if="record.ttid == 1">{{ formatQuantity(record.quantity * record.packing) }}</span>
+                    <span v-if="record.ttid == 2" class="success--text">
+                      + {{ formatQuantity(record.quantity * record.packing) }}
+                    </span>
+                    <span v-if="record.ttid == 3" class="error--text">- {{ formatQuantity(record.quantity * record.packing) }}</span>
+
+                    <span class="subtitle-2 grey--text pl-1" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                      KGS
                     </span>
                   </td>
 
@@ -707,8 +707,8 @@ export default {
   },
 
   mounted() {
-    this.axios.get('/api/products/autocomplete_with_stock')
-      .then(response => this.products = response.data.records)
+    this.axios.get('/api/autofills/products/all')
+      .then(response => this.products = response.data)
 
     if (this.$route.params.payload) this.productId = this.$route.params.payload.productId
     this.apiRoute = 'reports/product_movements'
