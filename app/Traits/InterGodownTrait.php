@@ -31,12 +31,14 @@ trait InterGodownTrait
                 $query->where('fg.name', 'like', '%' . $search . '%')
                     ->orWhere('ag.name', 'like', '%' . $search . '%')
                     ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
+                    ->orWhere('st.inter_godown_no', 'like', '%' . $search . '%')
                     ->orWhere('tg.name', 'like', '%' . $search . '%');
             })
             ->selectRaw('
                 st.id,
                 st.date,
                 st.invoice_no as invoiceNo,
+                st.inter_godown_no,
                 fg.name as fromName,
                 tg.name as toName,
                 ag.name as agent,

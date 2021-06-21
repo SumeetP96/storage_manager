@@ -43,14 +43,16 @@ export const DetailsMixin = {
 
     // Product details
     fetchProductDetails(index) {
-      this.productDetails[index] = { unit: '', remarks: '', packing: '' }
+      // this.productDetails[index] = { unit: '', remarks: '', packing: '' }
 
       if (!this.inputProducts[index].id) return
 
       this.productLoading = true
       this.axios.get(`/api/autofills/products/details/${this.inputProducts[index].id}`)
         .then(response => {
-          this.productDetails[index].unit = response.data
+          this.productDetails[index].unit = response.data.unit
+          this.productDetails[index].remarks = response.data.remarks
+          this.productDetails[index].packing = response.data.packing
           this.productLoading = false
         })
     }

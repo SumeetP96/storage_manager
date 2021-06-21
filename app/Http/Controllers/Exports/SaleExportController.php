@@ -115,14 +115,14 @@ class SaleExportController extends Controller
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
                 stp.quantity,
-                stp.quantity div 100 as quantityRaw,
+                ROUND(stp.quantity / 100, 2) as quantityRaw,
                 pr.compound_unit as compoundUnit,
                 stp.compound_quantity as compoundQuantity,
-                stp.compound_quantity div 100 as compoundQuantityRaw,
+                ROUND(stp.compound_quantity / 100, 2) as compoundQuantityRaw,
                 stp.rent,
-                stp.rent div 100 as rentRaw,
+                ROUND(stp.rent / 100, 2) as rentRaw,
                 stp.labour,
-                stp.labour div 100 as labourRaw,
+                ROUND(stp.labour / 100, 2) as labourRaw,
                 pr.id as productId,
                 pr.name as name,
                 pr.unit as unit,

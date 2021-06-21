@@ -34,7 +34,7 @@ class ProductRepository
     public function fetchOne($id)
     {
         $record = DB::table('products')->where('id', $id)
-            ->selectRaw('*, packing div 100 as packingRaw')
+            ->selectRaw('*, ROUND(packing / 100, 0) as packingRaw')
             ->first();
 
         $record->recordTransactions = StockTransferProduct::where('product_id', $id)->count();

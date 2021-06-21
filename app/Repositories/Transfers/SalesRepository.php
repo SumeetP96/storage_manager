@@ -55,10 +55,10 @@ class SalesRepository
             ->selectRaw('
                 product_id as id,
                 lot_number,
-                rent, rent div 100 as rentRaw,
-                loading, loading div 100 as loadingRaw,
-                unloading, unloading div 100 as unloadingRaw,
-                quantity, quantity div 100 as quantityRaw
+                rent, ROUND(rent / 100, 1) as rentRaw,
+                loading, ROUND(loading / 100, 1) as loadingRaw,
+                unloading, ROUND(unloading / 100, 1) as unloadingRaw,
+                quantity, ROUND(quantity / 100, 2) as quantityRaw
             ')
             ->get();
 
@@ -67,7 +67,7 @@ class SalesRepository
                 ->selectRaw('
                     remarks,
                     unit,
-                    packing, packing div 100 as packingRaw
+                    packing, ROUND(packing / 100, 0) as packingRaw
                 ')
                 ->first();
 
@@ -104,11 +104,11 @@ class SalesRepository
                 stp.id,
                 stp.lot_number as lotNumber,
                 stp.quantity,
-                stp.quantity div 100 as quantityRaw,
+                ROUND(stp.quantity / 100, 2) as quantityRaw,
                 stp.rent,
-                stp.rent div 100 as rentRaw,
-                stp.loading, stp.loading div 100 as loadingRaw,
-                stp.unloading, stp.unloading div 100 as unloadingRaw,
+                ROUND(stp.rent / 100, 1) as rentRaw,
+                stp.loading, ROUND(stp.loading / 100, 1) as loadingRaw,
+                stp.unloading, ROUND(stp.unloading / 100, 1) as unloadingRaw,
                 pr.packing,
                 (stp.quantity * pr.packing) / 100 as quantityKgs,
                 pr.id as productId,
@@ -136,21 +136,23 @@ class SalesRepository
             'remarks'           => $request->remarks
         ])->id;
 
-        foreach($request->products as $product) {
-            StockTransferProduct::create([
-                'stock_transfer_id' => $id,
-                'product_id'        => $product['id'],
-                'lot_number'        => $product['lot_number'] ?? NULL,
-                'rent'              => (int) $product['rent'],
-                'loading'           => (int) $product['loading'],
-                'unloading'         => (int) $product['unloading'],
-                'quantity'          => (int) $product['quantity']
-            ]);
+        if (count($request->products) > 0) {
+            foreach($request->products as $product) {
+                StockTransferProduct::create([
+                    'stock_transfer_id' => $id,
+                    'product_id'        => $product['id'],
+                    'lot_number'        => $product['lot_number'] ?? NULL,
+                    'rent'              => (int) $product['rent'],
+                    'loading'           => (int) $product['loading'],
+                    'unloading'         => (int) $product['unloading'],
+                    'quantity'          => (int) $product['quantity']
+                ]);
 
-            if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
-                $this->updateGPS($existingGPS, $product);
-            } else {
-                $this->createGPS($request, $product);
+                if ($existingGPS = $salesService->checkExistingGPS($request, $product)) {
+                    $this->updateGPS($existingGPS, $product);
+                } else {
+                    $this->createGPS($request, $product);
+                }
             }
         }
     }

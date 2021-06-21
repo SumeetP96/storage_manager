@@ -112,7 +112,7 @@ class PurchaseExportController extends Controller
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
                 stp.quantity,
-                stp.quantity div 100 as quantityRaw,
+                ROUND(stp.quantity / 100, 2) as quantityRaw,
                 stp.rent,
                 stp.loading,
                 stp.unloading,

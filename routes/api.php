@@ -68,6 +68,7 @@ Route::prefix('sales')->group(function () {
 
 Route::prefix('inter_godowns')->group(function () {
     Route::get('/', 'InterGodownController@index');
+    Route::get('/new', 'InterGodownController@new');
     Route::get('/{id}/show', 'InterGodownController@show');
     Route::post('/store', 'InterGodownController@store');
     Route::post('/{id}/update', 'InterGodownController@update');

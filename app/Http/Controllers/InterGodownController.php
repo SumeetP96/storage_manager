@@ -93,7 +93,7 @@ class InterGodownController extends Controller
         return $this->responseService
             ->record(
                 $this->interGodownRepository->fetchShowTransferProducts($purchaseId)
-            ); 
+            );
     }
 
     /**
@@ -126,5 +126,18 @@ class InterGodownController extends Controller
         $this->interGodownRepository->destroy($id);
 
         return $this->responseService->success();
+    }
+
+    /**
+     * New transfer
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function new()
+    {
+        return $this->responseService
+            ->record(
+                $this->interGodownRepository->new()
+            );
     }
 }

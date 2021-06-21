@@ -619,9 +619,9 @@
                       {{ record.invoiceNo ? record.invoiceNo : '-' }}
                   </td>
 
-                  <td class="subtitle-1">{{ record.fromName }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.fromName }}</td>
 
-                  <td class="subtitle-1">{{ record.toName }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.toName }}</td>
 
                   <td v-if="selectedColumns.indexOf('agent') >= 0" class="subtitle-1">
                     {{ record.agent }}

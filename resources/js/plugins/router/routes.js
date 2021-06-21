@@ -77,17 +77,17 @@ const routes = [
     component: require('../../views/pages/transfers/sales/Action').default
   },
 
-  // // INTER GODOWNS
-  // {
-  //   name: 'inter_godowns.index',
-  //   path: '/inter_godowns',
-  //   component: require('../../views/pages/transfers/inter_godowns/Index').default
-  // },
-  // {
-  //   name: 'inter_godowns.action',
-  //   path: '/inter_godowns/action/:id?',
-  //   component: require('../../views/pages/transfers/inter_godowns/Action').default
-  // },
+  // INTER GODOWNS
+  {
+    name: 'inter_godowns.index',
+    path: '/inter_godowns',
+    component: require('../../views/pages/transfers/inter_godowns/Index').default
+  },
+  {
+    name: 'inter_godowns.action',
+    path: '/inter_godowns/action/:id?',
+    component: require('../../views/pages/transfers/inter_godowns/Action').default
+  },
 
   // Reports
   {

@@ -31,6 +31,7 @@ trait SaleTrait
                 $query->where('fg.name', 'like', '%' . $search . '%')
                     ->orWhere('ag.name', 'like', '%' . $search . '%')
                     ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
+                    ->orWhere('st.sale_no', 'like', '%' . $search . '%')
                     ->orWhere('tg.name', 'like', '%' . $search . '%');
             })
             ->selectRaw('

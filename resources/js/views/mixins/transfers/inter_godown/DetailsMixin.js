@@ -5,11 +5,12 @@ export const DetailsMixin = {
       accountDetails: {},
       productDetails: [{
         unit: '',
-        stock: '',
+        stock: 0,
         remarks: '',
         packing: '',
         lotNumbers: []
       }],
+      stock: []
     }
   },
 
@@ -43,7 +44,7 @@ export const DetailsMixin = {
     },
 
     // Product details
-    fetchProductDetails(index, fetchLotNumbers = false) {
+    fetchProductDetails(index) {
       this.productDetails[index] = { unit: '', remarks: '', packing: '', lotNumbers: [] }
 
       if (!this.inputProducts[index].id) return
@@ -53,14 +54,12 @@ export const DetailsMixin = {
         .then(response => {
           this.productDetails[index] = response.data
 
-          if (fetchLotNumbers) {
-            this.lotNumberLoading = true
-            this.axios.get(`/api/autofills/products/lot_numbers/${this.record.from_godown_id}/${this.inputProducts[index].id}`)
-              .then(response => {
-                this.productDetails[index].lotNumbers = response.data
-                this.lotNumberLoading = false
-              })
-          }
+          this.lotNumberLoading = true
+          this.axios.get(`/api/autofills/products/lot_numbers/${this.record.from_godown_id}/${this.inputProducts[index].id}`)
+            .then(response => {
+              this.productDetails[index].lotNumbers = response.data
+              this.lotNumberLoading = false
+            })
 
           this.productLoading = false
         })
@@ -68,6 +67,7 @@ export const DetailsMixin = {
 
     fetchLotStock(index) {
       if (!this.record.from_godown_id || !this.inputProducts[index].id || !this.inputProducts[index].lot_number) return
+
       this.axios.get(`/api/autofills/products/lot_stock/${this.record.from_godown_id}/${this.inputProducts[index].id}/${this.inputProducts[index].lot_number}`)
         .then(response => {
           this.productDetails[index].stock = this.formatQuantity(response.data.current_stock, 2)
@@ -80,11 +80,18 @@ export const DetailsMixin = {
         })
     },
 
-    fetchGodownProducts() {
-      this.resetProducts()
+    fetchGodownProducts(payload = {}) {
+      if (!payload.hasOwnProperty('id')) this.resetProducts()
       if (!this.record.from_godown_id) return
       this.axios.get(`/api/autofills/godowns/products/${this.record.from_godown_id}`)
-        .then(response => this.products = response.data)
+        .then(response => {
+          this.products = response.data
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.inputProducts[payload.varName].id = payload.id
+            this.fetchProductDetails(payload.varName)
+            this.fetchLotStock(payload.varName)
+          }
+        })
     }
   }
 }

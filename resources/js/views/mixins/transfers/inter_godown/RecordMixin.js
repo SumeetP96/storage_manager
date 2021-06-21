@@ -20,9 +20,9 @@ export const RecordMixin = {
 
       inputProducts: [{
         id: '',
-        rent: '', rentRaw: '',
-        labour: '', labourRaw: '',
-        quantity: '', quantityRaw: '',
+        rent: 0, rentRaw: 0,
+        labour: 0, labourRaw: 0,
+        quantity: 0, quantityRaw: 0,
       }],
     }
   },
@@ -40,10 +40,18 @@ export const RecordMixin = {
           this.record = response.data.record
           this.accountDetails = { address: this.record.fromAddress, contact_1: this.record.fromContact1, contact_2: this.record.fromContact2 }
           this.godownDetails = { address: this.record.toAddress, contact_1: this.record.toContact1, contact_2: this.record.toContact2 }
+          this.products = response.data.record.autofillProducts
 
           for (let i = 0; i < response.data.record.inputProducts.length; i++) {
             this.inputProducts[i] = response.data.record.inputProducts[i]
             this.productDetails[i] = response.data.record.inputProducts[i].details
+            this.productDetails[i].stock = this.formatQuantity(response.data.record.inputProducts[i].stock, 2)
+            this.inputProducts[i].rent = response.data.record.inputProducts[i].lotDetails.rent
+            this.inputProducts[i].rentRaw = this.formatQuantity(response.data.record.inputProducts[i].lotDetails.rent, 1)
+            this.inputProducts[i].loading = response.data.record.inputProducts[i].lotDetails.loading
+            this.inputProducts[i].loadingRaw = this.formatQuantity(response.data.record.inputProducts[i].lotDetails.loading, 1)
+            this.inputProducts[i].unloading = response.data.record.inputProducts[i].lotDetails.unloading
+            this.inputProducts[i].unloadingRaw = this.formatQuantity(response.data.record.inputProducts[i].lotDetails.unloading, 1)
           }
 
           this.dft_ShowRecord = false
@@ -71,11 +79,13 @@ export const RecordMixin = {
     // Accounts
     fetchFromAutofill(payload = {}) {
       this.fromLoading = true
-      this.axios.get('/api/autofills/godowns/all_accounts')
+      this.axios.get('/api/autofills/godowns/all_godowns')
         .then(response => {
-          if (payload.hasOwnProperty('reverse') && payload.reverse) this.godowns = response.data
-          else this.accounts = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.inputProducts[payload.varName].id = payload.id
+          this.accounts = response.data
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.record[payload.varName] = payload.id
+            this.fetchAccountDetails()
+          }
           this.fromLoading = false
         })
     },
@@ -85,32 +95,12 @@ export const RecordMixin = {
       this.toLoading = true
       this.axios.get('/api/autofills/godowns/all_godowns')
         .then(response => {
-          if (payload.hasOwnProperty('reverse') && payload.reverse) this.accounts = response.data
-          else this.godowns = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
+          this.godowns = response.data
+          if (payload.hasOwnProperty('id') && payload.id) {
+            this.record[payload.varName] = payload.id
+            this.fetchGodownDetails()
+          }
           this.toLoading = false
-        })
-    },
-
-    // Products
-    fetchProductAutofill(payload = {}) {
-      this.productLoading = true
-      this.axios.get('/api/autofills/products/all')
-        .then(response => {
-          this.products = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
-          this.productLoading = false
-        })
-    },
-
-    // Agents
-    fetchAgentAutofill(payload = {}) {
-      this.agentLoading = true
-      this.axios.get('/api/autofills/agents/all')
-        .then(response => {
-          this.agents = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.record[payload.varName] = payload.id
-          this.agentLoading = false
         })
     },
   }
