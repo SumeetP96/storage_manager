@@ -870,6 +870,16 @@
                 <v-icon class="mr-2">mdi-printer</v-icon> Print
             </v-btn>
             <iframe id="print-record" style="display: none"></iframe>
+
+            <div class="grey--text text--lighten-1 mx-2 font-weight-thin" style="font-size: 1.5rem">|</div>
+
+            <!-- PDF -->
+            <v-btn color="orange darken-1" text tabindex="-1" :disabled="disableExport"
+              @click="disableExportButtons(2)"
+              :href="`/exports/pdf/sales/delivery_slip/${record.id}`"
+              :download="`${apiRoute}.pdf`">
+                <v-icon class="text-h6 mr-2">mdi-receipt</v-icon> generate Delivery Slip
+            </v-btn>
           </div>
 
           <v-btn color="error" dark text tabindex="-1" :loading="deleteButtonLoading"

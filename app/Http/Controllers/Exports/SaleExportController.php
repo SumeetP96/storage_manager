@@ -116,16 +116,16 @@ class SaleExportController extends Controller
             ->selectRaw('
                 stp.quantity,
                 ROUND(stp.quantity / 100, 2) as quantityRaw,
-                pr.compound_unit as compoundUnit,
-                stp.compound_quantity as compoundQuantity,
-                ROUND(stp.compound_quantity / 100, 2) as compoundQuantityRaw,
+                ROUND(pr.packing / 100, 0) as packing,
                 stp.rent,
                 ROUND(stp.rent / 100, 2) as rentRaw,
-                stp.labour,
-                ROUND(stp.labour / 100, 2) as labourRaw,
+                stp.loading,
+                ROUND(stp.loading / 100, 2) as loadingRaw,
+                stp.unloading,
+                ROUND(stp.unloading / 100, 2) as unloadingRaw,
                 pr.id as productId,
                 pr.name as name,
-                pr.unit as unit,
+                pr.unit,
                 stp.lot_number as lotNumber
             ')
             ->get();
@@ -142,55 +142,5 @@ class SaleExportController extends Controller
         $pdf = PDF::loadView('exports.sales.pdf.deliverySlip', compact('record', 'products', 'company'));
         return $pdf->stream();
         return $pdf->download('delivery_slip.pdf');
-    }
-
-    public function storageInvoice($id)
-    {
-        $details = $this->getSingleDetails($id);
-        $record = $details['record'];
-        $products = $details['products'];
-
-        foreach ($products as $product) {
-            $product->inwardDate = DB::table('stock_transfers as st')
-                ->where('st.transfer_type_id', StockTransfer::PURCHASE)
-                ->leftJoin('stock_transfer_products as stp', 'st.id', '=', 'stp.stock_transfer_id')
-                ->where('stp.lot_number', $product->lotNumber)
-                ->where('stp.product_id', $product->productId)
-                ->where('st.to_godown_id', $record->from_godown_id)
-                ->first()->date;
-
-            $product->months = $this->calculateMonths($product->inwardDate, $record->date);
-
-            $product->amount = $product->compoundQuantityRaw * $product->rentRaw * $product->months;
-        }
-
-        $pdf = PDF::loadView('exports.sales.pdf.storageInvoice', compact('record', 'products'));
-        return $pdf->stream();
-        return $pdf->download('delivery_slip.pdf');
-    }
-
-    public function calculateMonths($inward, $outward)
-    {
-        $months = 0;
-
-        $inwardDays = (int) date('d', strtotime($inward));
-        $outwardDays = (int) date('d', strtotime($outward));
-        $dateDiff = $outwardDays - $inwardDays;
-
-        $inwardMonth = (int) date('m', strtotime($inward));
-        $outwardMonth = (int) date('m', strtotime($outward));
-        $monthDiff = $outwardMonth - $inwardMonth;
-
-        $inwardYear = (int) date('Y', strtotime($inward));
-        $outwardYear = (int) date('Y', strtotime($outward));
-        $yearDiff = $outwardYear - $inwardYear;
-
-        if ($yearDiff > 0) $months = $yearDiff * 12;
-
-        if (abs($monthDiff) > 0) {
-            // if (abs())
-        }
-
-        return $months;
     }
 }

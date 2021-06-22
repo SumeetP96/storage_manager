@@ -164,15 +164,15 @@ export default {
           label: 'Reports',
           description: 'Godowns, accounts, products and stock reports.',
           icon: 'mdi-finance',
-          color: 'amber accent-4',
+          color: 'indigo',
           shortcut: ['alt', 'r']
         },
         {
           routeName: 'invoices.index',
           label: 'Storage Invoices',
           description: 'Storage generated invoices.',
-          icon: 'mdi-file-document-outline',
-          color: 'deep-purple accent-4',
+          icon: 'mdi-file-document-multiple-outline',
+          color: 'deep-orange',
           shortcut: []
         },
       ]

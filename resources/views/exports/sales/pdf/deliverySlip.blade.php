@@ -71,9 +71,9 @@
             <td class="bold-text" style="width: 1%">#</td>
             <td class="text-center bold-text">Lot number</td>
             <td class="bold-text" style="width: 30%">Product</td>
-            <td class="text-right bold-text">C Quantity</td>
+            <td class="text-right bold-text">Quantity (Nos)</td>
             <td class="text-left bold-text" style="width: 1%">Unit</td>
-            <td class="text-right bold-text">Quantity</td>
+            <td class="text-right bold-text">Quantity (Kgs)</td>
             <td class="text-left bold-text" style="width: 1%">Unit</td>
         </tr>
         @foreach ($products as $index => $product)
@@ -81,10 +81,10 @@
             <td class="bold-text">{{ $index + 1 }}</td>
             <td class="text-center bold-text">{{ $product->lotNumber ? $product->lotNumber : '-' }}</td>
             <td>{{ $product->name }}</td>
-            <td class="text-right bold-text">{{ $product->compoundQuantityRaw ? $product->compoundQuantityRaw : '-' }}</td>
-            <td class="text-left">{{ $product->compoundUnit ? $product->compoundUnit : '-' }}</td>
-            <td class="text-right bold-text">{{ number_format($product->quantityRaw, 2) }}</td>
+            <td class="text-right bold-text">{{ $product->quantityRaw ? $product->quantityRaw : '-' }}</td>
             <td class="text-left">{{ $product->unit }}</td>
+            <td class="text-right bold-text">{{ number_format($product->quantityRaw * $product->packing, 2) }}</td>
+            <td class="text-left">KGS</td>
         </tr>
         @endforeach
     </table>

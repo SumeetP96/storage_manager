@@ -38,7 +38,6 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/print/sales', 'Exports\SaleExportController@allPrint');
     Route::get('/pdf/sales/{id}', 'Exports\SaleExportController@singlePdf');
     Route::get('/pdf/sales/delivery_slip/{id}', 'Exports\SaleExportController@deliverySlip');
-    Route::get('/pdf/sales/storage_invoice/{id}', 'Exports\SaleExportController@storageInvoice');
     Route::get('/print/sales/{id}', 'Exports\SaleExportController@singlePrint');
 
     // Inter godowns
@@ -91,4 +90,6 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/excel/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allExcel');
     Route::get('/print/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allPrint');
 
+    // Invoices
+    Route::get('/pdf/invoices/{month}', 'Exports\Invoices\InvoiceExportController@invoice');
 });

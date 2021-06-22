@@ -151,27 +151,4 @@ class ReportRepository
                 ->skip($request->skip)->limit($request->limit)->get(),
         ];
     }
-
-    /**
-     * Invoices
-     *
-     * @param  mixed $request
-     * @return array $records, $total
-     */
-    public function fetchInvoices(Request $request)
-    {
-        $purchaseProducts = DB::table('stock_transfers as st')
-            ->where('transfer_type_id', '=', StockTransfer::PURCHASE)
-            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
-            ->get();
-
-        $products = [];
-
-        foreach ($purchaseProducts as $product) {
-            $currentStock = GodownProductsStock::where('product_id', $product->product_id)
-                ->where('lot_number', $product->lot_number)
-                ->first()->current_stock;
-
-        }
-    }
 }
