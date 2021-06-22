@@ -141,6 +141,13 @@ const routes = [
     path: '/reports/all_transfers',
     component: require('../../views/pages/reports/transfers/AllTransfers').default
   },
+
+  // Invoices
+  {
+    name: 'invoices.index',
+    path: '/reports/invoices',
+    component: require('../../views/pages/invoices/Index').default
+  },
 ]
 
 export default routes

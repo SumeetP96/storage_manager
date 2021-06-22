@@ -123,4 +123,17 @@ class ReportController extends Controller
             $this->reportRepository->fetchAllTransfers($request)
         );
     }
+
+    /**
+     * Invoices
+     *
+     * @param  mixed $request
+     * @return \Illuminate\Http\Response
+     */
+    public function invoices(Request $request)
+    {
+        return $this->responseService->records(
+            $this->reportRepository->fetchInvoices($request)
+        );
+    }
 }

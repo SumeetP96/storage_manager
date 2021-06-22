@@ -2,14 +2,16 @@
 
 namespace App\Repositories;
 
-use App\Traits\Reports\Movement\GodownMovementTrait;
-use App\Traits\Reports\Movement\ProductMovementTrait;
-use App\Traits\Reports\Stock\GodownProductStockTrait;
-use App\Traits\Reports\Stock\ProductLotStockTrait;
-use App\Traits\Reports\Transfers\AgentTransfersTrait;
-use App\Traits\Reports\Transfers\AllTransfersTrait;
+use App\GodownProductsStock;
+use App\StockTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\Reports\Stock\ProductLotStockTrait;
+use App\Traits\Reports\Transfers\AllTransfersTrait;
+use App\Traits\Reports\Movement\GodownMovementTrait;
+use App\Traits\Reports\Transfers\AgentTransfersTrait;
+use App\Traits\Reports\Movement\ProductMovementTrait;
+use App\Traits\Reports\Stock\GodownProductStockTrait;
 
 class ReportRepository
 {
@@ -148,5 +150,28 @@ class ReportRepository
             'records' => $this->allTransfers($request)
                 ->skip($request->skip)->limit($request->limit)->get(),
         ];
+    }
+
+    /**
+     * Invoices
+     *
+     * @param  mixed $request
+     * @return array $records, $total
+     */
+    public function fetchInvoices(Request $request)
+    {
+        $purchaseProducts = DB::table('stock_transfers as st')
+            ->where('transfer_type_id', '=', StockTransfer::PURCHASE)
+            ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
+            ->get();
+
+        $products = [];
+
+        foreach ($purchaseProducts as $product) {
+            $currentStock = GodownProductsStock::where('product_id', $product->product_id)
+                ->where('lot_number', $product->lot_number)
+                ->first()->current_stock;
+
+        }
     }
 }

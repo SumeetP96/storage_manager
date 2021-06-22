@@ -167,6 +167,14 @@ export default {
           color: 'amber accent-4',
           shortcut: ['alt', 'r']
         },
+        {
+          routeName: 'invoices.index',
+          label: 'Storage Invoices',
+          description: 'Storage generated invoices.',
+          icon: 'mdi-file-document-outline',
+          color: 'deep-purple accent-4',
+          shortcut: []
+        },
       ]
     }
   },

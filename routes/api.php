@@ -87,6 +87,8 @@ Route::prefix('reports')->group(function () {
 
     Route::get('/agent_transfers', 'ReportController@agentTrasnfers');
     Route::get('/all_transfers', 'ReportController@allTransfers');
+
+    Route::get('/invoices', 'ReportController@invoices');
 });
 
 Route::prefix('backup')->group(function () {

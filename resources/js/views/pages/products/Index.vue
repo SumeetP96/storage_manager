@@ -118,6 +118,7 @@
           <template v-slot:default>
             <thead>
               <tr>
+
                 <!-- Name -->
                 <th class="subtitle-2" :class="sortBy == 'name' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'name' ? 'font-size: 1rem !important' : ''">
@@ -247,6 +248,7 @@
                     </v-menu> <!-- / Unit filter end -->
                 </th>
 
+                <!-- Packing -->
                 <th class="subtitle-2" :class="sortBy == 'packing' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'packing' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('packing')">Packing</span>
@@ -466,8 +468,7 @@
                   <td class="subtitle-1 font-weight-bold">{{ record.unit }}</td>
 
                   <td class="subtitle-1 font-weight-bold">
-                    {{ formatQuantity(record.packing, 0) }}
-                    <span class="subtitle-2">KGS</span>
+                    {{ formatQuantity(record.packing, 0) }} <span class="subtitle-2">KGS</span>
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
