@@ -10,7 +10,7 @@ use App\TransferType;
 
 class InvoiceExportController extends Controller
 {
-    public function invoice($month)
+    public function invoice($month, $godownId)
     {
         $transferType = [
             'inter_godown' => 1,
@@ -18,17 +18,16 @@ class InvoiceExportController extends Controller
             'sales' => 3
         ];
 
-        $data = $this->getLotData($month);
+        $data = $this->getLotData($month, $godownId);
         $transfers = $data['transfers'];
         $totals = $data['totals'];
 
-        dd($transfers, $totals);
         $pdf = PDF::loadView('exports.invoices.invoice', compact('transferType', 'transfers', 'totals', 'month'));
         return $pdf->stream();
         // return $pdf->download('storage_invoice.pdf');
     }
 
-    public function getLotData($month)
+    public function getLotData($month, $godownId)
     {
         $lastDay = $month == 2 ? '28' : '30';
         $month = strlen($month) == 1 ? '0' . $month : $month;
@@ -41,6 +40,10 @@ class InvoiceExportController extends Controller
                 ->leftJoin('stock_transfers as st', 'stp.stock_transfer_id', '=', 'st.id')
                 ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
                 ->where('stp.lot_number', $lot->lot_number)
+                ->where(function ($query) use ($godownId) {
+                    $query->where('from_godown_id', $godownId)
+                        ->orWhere('to_godown_id', $godownId);
+                })
                 ->whereDate('st.date', '<=', $date)
                 ->selectRaw('
                     st.date as date, st.transfer_type_id as transferType,
@@ -58,14 +61,13 @@ class InvoiceExportController extends Controller
 
 
         $index = 1;
-        $month = 1.0;
-        $total = 0;
-        $quantity = 0;
-        $loading = 0;
-        $unloading = 0;
-
         $transfers = [];
-        $totals = [];
+        $totals = [
+            'quantity'  => 0,
+            'loading'   => 0,
+            'unloading' => 0,
+            'total'     => 0
+        ];
 
         foreach ($lotNumbers as $lot) {
             $transfers[$lot->lot_number] = [];
@@ -77,45 +79,52 @@ class InvoiceExportController extends Controller
 
             foreach ($lot->transfers as $i => $trf) {
 
-                $closingStock -= $trf->quantity;
-                $totals['quantity'] += $trf->quantity;
-                $totals['loading'] += ($trf->quantity * $trf->packing / 100) * $trf->loading;
-                $totals['unloading'] += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
-                $totals['total'] += $month * $trf->quantity * $trf->rent;
-
                 if ($trf->transferType != 2) {
-                    array_push($transfers[$lot->lot_number], [
-                        'index'         => $index++,
-                        'name'          => $trf->name,
-                        'quantity'      => $trf->quantity,
-                        'inward_date'   => $this->getInwardDate($lot),
-                        'outward_date'  => date('d-m-Y', strtotime($trf->date)),
-                        'outward_no'    => $trf->order_no,
-                        'month'         => $month,
-                        'packing'       => $trf->packing,
-                        'rent'          => $trf->rent,
-                        'amount'        => number_format($month * $trf->quantity * $trf->rent, 2)
-                    ]);
+                    $closingStock -= $trf->quantity;
+
+                    $start = strtotime(date('Y') . '/' . (strlen($month) == 1 ? '0' . $month : $month) . '/' . '01');
+
+                    if (strtotime($trf->date) >= $start && strtotime($trf->date) <= strtotime($date)) {
+
+                        $totals['quantity'] += $trf->quantity;
+                        $totals['loading'] += ($trf->quantity * $trf->packing / 100) * $trf->loading;
+                        $totals['unloading'] += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
+                        $totals['total'] += $month * $trf->quantity * $trf->rent;
+
+                        array_push($transfers[$lot->lot_number], [
+                            'index'         => $index++,
+                            'name'          => $trf->name,
+                            'quantity'      => $trf->quantity,
+                            'inward_date'   => $this->getInwardDate($lot),
+                            'outward_date'  => date('d/m/Y', strtotime($trf->date)),
+                            'outward_no'    => $trf->order_no ? $trf->order_no : '-',
+                            'month'         => $this->countMonths($lot),
+                            'packing'       => $trf->packing,
+                            'rent'          => $trf->rent,
+                            'amount'        => number_format($month * $trf->quantity * $trf->rent, 2)
+                        ]);
+
+                        if ($i == count($lot->transfers) - 1 && $closingStock != 0) {
+                            array_push($transfers[$lot->lot_number], [
+                                'index'         => $index++,
+                                'name'          => $trf->name,
+                                'quantity'      => number_format($closingStock, 2),
+                                'inward_date'   => $this->getInwardDate($lot),
+                                'outward_date'  => date('d/m/Y', strtotime($trf->date)),
+                                'outward_no'    => 'BAL',
+                                'month'         => $this->countMonths($lot),
+                                'packing'       => $trf->packing,
+                                'rent'          => $trf->rent,
+                                'amount'        => number_format($month * $closingStock * $trf->rent, 2)
+                            ]);
+
+                            $totals['quantity'] += $closingStock;
+                            $totals['unloading'] += ($closingStock * $trf->packing / 100) * $trf->unloading;
+                            $totals['total'] += $month * $closingStock * $trf->rent;
+                        }
+                    }
                 }
 
-                if ($i == count($transfer->transfers) - 1 && $closingStock > 0) {
-                    array_push($transfers[$lot->lot_number], [
-                        'index'         => $index++,
-                        'name'          => $trf->name,
-                        'quantity'      => number_format($closingStock, 2),
-                        'inward_date'   => $this->getInwardDate($lot),
-                        'outward_date'  => date('d-m-Y', strtotime($trf->date)),
-                        'outward_no'    => 'BALANCE',
-                        'month'         => '1.0',
-                        'packing'       => $trf->packing,
-                        'rent'          => $trf->rent,
-                        'amount'        => number_format($month * $closingStock * $trf->rent, 2)
-                    ]);
-
-                    $totals['quantity'] += $closingStock;
-                    $totals['unloading'] += ($closingStock * $trf->packing / 100) * $trf->unloading;
-                    $totals['total'] += $month * $closingStock * $trf->rent;
-                }
             }
         }
 
@@ -126,8 +135,19 @@ class InvoiceExportController extends Controller
     {
         foreach ($lot->transfers as $transfer) {
             if ($transfer->transferType == 2) {
-                return date('d-m-Y', strtotime($transfer->date));
+                return date('d/m/Y', strtotime($transfer->date));
             }
         }
+    }
+
+    public function countMonths($lot)
+    {
+        $inwardDate = $this->getInwardDate($lot);
+
+        $start_date = \Carbon\Carbon::createFromFormat('d/m/Y', $inwardDate);
+        $end_date = \Carbon\Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
+        $days = $start_date->diffInDays($end_date);
+
+        if ($days < 30) return 1;
     }
 }

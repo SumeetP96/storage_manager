@@ -21,17 +21,6 @@
     </style>
 </head>
 <body>
-    @php
-        function getClosingStock($transfers) {
-            $stock = 0;
-            foreach ($transfers as $transfer) {
-                if ($transfer->transferType == 2) {
-                    $stock += $transfer->quantity;
-                }
-            }
-            return $stock;
-        }
-    @endphp
 
     <table>
         <thead>
@@ -51,69 +40,22 @@
         </thead>
 
         <tbody>
-            @php
-                $index = 1;
-                $month = 1.0;
+            @foreach ($transfers as $key => $transfer)
 
-                $total = 0;
-                $quantity = 0;
-                $loading = 0;
-                $unloading = 0;
-            @endphp
-
-            @foreach ($transfers as $transfer)
-
-                @php
-                    $closingStock = getClosingStock($transfer->transfers);
-                @endphp
-
-                @foreach ($transfer->transfers as $i => $trf)
-
-                    @if ($trf->transferType != $transferType['purchase'])
-                        @php
-                            $closingStock -= $trf->quantity;
-                            $quantity += $trf->quantity;
-                            $loading += ($trf->quantity * $trf->packing / 100) * $trf->loading;
-                            $unloading += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
-                            $total += $month * $trf->quantity * $trf->rent;
-                        @endphp
-
-                        <tr>
-                            <td class="text-right">{{ $index++ }}</td>
-                            <td class="text-center bold-text">{{ $trf->lot_number }}</td>
-                            <td class="text-left">{{ $trf->name }}</td>
-                            <td class="text-right">{{ $trf->quantity }}</td>
-                            <td class="text-center">{{ date('d/m/Y', strtotime($transfer->transfers[0]->date)) }}</td>
-                            <td class="text-center">{{ date('d/m/Y', strtotime($trf->date)) }}</td>
-                            <td class="text-right">{{ $trf->order_no ? $trf->order_no : '-' }}</td>
-                            <td class="text-right">{{ $month }}</td>
-                            <td class="text-right">{{ $trf->packing }}</td>
-                            <td class="text-right">{{ $trf->rent }}</td>
-                            <td class="text-right">{{ number_format($month * $trf->quantity * $trf->rent, 2) }}</td>
-                        </tr>
-                    @endif
-
-                    @if ($i == count($transfer->transfers) - 1 && $closingStock > 0)
-                    <tr>
-                        <td class="text-right">{{ $index++ }}</td>
-                        <td class="text-center bold-text">{{ $trf->lot_number }}</td>
-                        <td class="text-left">{{ $trf->name }}</td>
-                        <td class="text-right">{{ number_format($closingStock, 2) }}</td>
-                        <td class="text-center">{{ date('d/m/Y', strtotime($transfer->transfers[0]->date)) }}</td>
-                        <td class="text-center">{{ date('d/m/Y') }}</td>
-                        <td class="text-right bold-text">BALANCE</td>
-                        <td class="text-right">{{ $month }}</td>
-                        <td class="text-right">{{ $trf->packing }}</td>
-                        <td class="text-right">{{ $trf->rent }}</td>
-                        <td class="text-right">{{ number_format($month * $closingStock * $trf->rent, 2) }}</td>
-                    </tr>
-
-                    @php
-                        $quantity += $closingStock;
-                        $unloading += ($closingStock * $trf->packing / 100) * $trf->unloading;
-                        $total += $month * $closingStock * $trf->rent;
-                    @endphp
-                    @endif
+                @foreach ($transfer as $trf)
+                <tr>
+                    <td class="text-right">{{ $trf['index'] }}</td>
+                    <td class="text-center bold-text">{{ $key }}</td>
+                    <td class="text-left">{{ $trf['name'] }}</td>
+                    <td class="text-right">{{ $trf['quantity'] }}</td>
+                    <td class="text-center">{{ $trf['inward_date'] }}</td>
+                    <td class="text-center">{{ $trf['outward_date'] }}</td>
+                    <td class="text-right {{ $trf['outward_no'] == 'BAL' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
+                    <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
+                    <td class="text-right">{{ $trf['packing'] }}</td>
+                    <td class="text-right">{{ $trf['rent'] }}</td>
+                    <td class="text-right">{{ $trf['amount'] }}</td>
+                </tr>
                 @endforeach
 
                 <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -122,7 +64,7 @@
             <tr>
                 <td></td><td></td>
                 <td class="bold-text" style="padding-bottom: 4px">Total</td>
-                <td class="text-right bold-text" style="padding-bottom: 4px">{{ number_format($quantity, 2) }}</td>
+                <td class="text-right bold-text" style="padding-bottom: 4px">{{ number_format($totals['quantity'], 2) }}</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             </tr>
         </tbody>
@@ -134,22 +76,22 @@
                     <table>
                         <tr>
                             <td style="border: none">Total</td>
-                            <td class="text-right" style="border: none">{{ number_format($total, 2) }}</td>
+                            <td class="text-right" style="border: none">{{ number_format($totals['total'], 2) }}</td>
                         </tr>
                         <tr>
                             <td style="border: none">Loading</td>
-                            <td class="text-right" style="border: none">{{ number_format($loading, 2) }}</td>
+                            <td class="text-right" style="border: none">{{ number_format($totals['loading'], 2) }}</td>
                         </tr>
                         <tr>
-                            <td style="border: none; padding-bottom: 5px">Unloading</td>
-                            <td class="text-right" style="border: none; padding-bottom: 5px">{{ number_format($unloading, 2) }}</td>
+                            <td style="border: none; padding-bottom: 6px">Unloading</td>
+                            <td class="text-right" style="border: none; padding-bottom: 6px">{{ number_format($totals['unloading'], 2) }}</td>
                         </tr>
                         <tr>
                             <td class="bold-text" style="border:none; border-top: 1px solid grey; font-size: 0.8rem">
                                 Bill Amount
                             </td>
                             <td class="bold-text text-right" style="border:none; border-top: 1px solid grey; font-size: 0.8rem">
-                                {{ number_format($total + $loading + $unloading, 2) }}
+                                {{ number_format($totals['total'] + $totals['loading'] + $totals['unloading'], 2) }}
                             </td>
                         </tr>
                     </table>

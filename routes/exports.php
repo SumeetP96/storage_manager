@@ -91,5 +91,5 @@ Route::group(['prefix' => 'exports', 'middleware' => ['auth']], function() {
     Route::get('/print/reports/all_transfers', 'Exports\Reports\Transfers\AllTransfersExportController@allPrint');
 
     // Invoices
-    Route::get('/pdf/invoices/{month}', 'Exports\Invoices\InvoiceExportController@invoice');
+    Route::get('/pdf/invoices/{month}/{godownId}', 'Exports\Invoices\InvoiceExportController@invoice');
 });
