@@ -27,7 +27,7 @@
         <!-- PDF -->
         <v-btn dark :disabled="disableExport" class="mt-2"
           @click="disableExportButtons()" color="indigo"
-          :href="`/exports/pdf/invoices/${month}`"
+          :href="`/exports/pdf/invoices/${month.id}`"
           download="storage_invoice.pdf">
             <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> Generate Invoice
         </v-btn>
