@@ -21,6 +21,18 @@
     </style>
 </head>
 <body>
+    @php
+        function getClosingStock($transfers) {
+            $stock = 0;
+            foreach ($transfers as $transfer) {
+                if ($transfer->transferType == 2) {
+                    $stock += $transfer->quantity;
+                }
+            }
+            return $stock;
+        }
+    @endphp
+
     <table>
         <thead>
             <tr>
@@ -43,52 +55,78 @@
                 $index = 1;
                 $month = 1.0;
 
+                $total = 0;
                 $quantity = 0;
                 $loading = 0;
                 $unloading = 0;
-                $total = 0;
             @endphp
 
             @foreach ($transfers as $transfer)
-                @foreach ($transfer->transfers as $trf)
+
+                @php
+                    $closingStock = getClosingStock($transfer->transfers);
+                @endphp
+
+                @foreach ($transfer->transfers as $i => $trf)
+
                     @if ($trf->transferType != $transferType['purchase'])
+                        @php
+                            $closingStock -= $trf->quantity;
+                            $quantity += $trf->quantity;
+                            $loading += ($trf->quantity * $trf->packing / 100) * $trf->loading;
+                            $unloading += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
+                            $total += $month * $trf->quantity * $trf->rent;
+                        @endphp
+
+                        <tr>
+                            <td class="text-right">{{ $index++ }}</td>
+                            <td class="text-center bold-text">{{ $trf->lot_number }}</td>
+                            <td class="text-left">{{ $trf->name }}</td>
+                            <td class="text-right">{{ $trf->quantity }}</td>
+                            <td class="text-center">{{ date('d/m/Y', strtotime($transfer->transfers[0]->date)) }}</td>
+                            <td class="text-center">{{ date('d/m/Y', strtotime($trf->date)) }}</td>
+                            <td class="text-right">{{ $trf->order_no ? $trf->order_no : '-' }}</td>
+                            <td class="text-right">{{ $month }}</td>
+                            <td class="text-right">{{ $trf->packing }}</td>
+                            <td class="text-right">{{ $trf->rent }}</td>
+                            <td class="text-right">{{ number_format($month * $trf->quantity * $trf->rent, 2) }}</td>
+                        </tr>
+                    @endif
+
+                    @if ($i == count($transfer->transfers) - 1 && $closingStock > 0)
                     <tr>
                         <td class="text-right">{{ $index++ }}</td>
                         <td class="text-center bold-text">{{ $trf->lot_number }}</td>
                         <td class="text-left">{{ $trf->name }}</td>
-                        <td class="text-right">{{ $trf->quantity }}</td>
+                        <td class="text-right">{{ number_format($closingStock, 2) }}</td>
                         <td class="text-center">{{ date('d/m/Y', strtotime($transfer->transfers[0]->date)) }}</td>
-                        <td class="text-center">{{ date('d/m/Y', strtotime($trf->date)) }}</td>
-                        <td class="text-right">{{ $trf->order_no ? $trf->order_no : '-' }}</td>
+                        <td class="text-center">{{ date('d/m/Y') }}</td>
+                        <td class="text-right bold-text">BALANCE</td>
                         <td class="text-right">{{ $month }}</td>
                         <td class="text-right">{{ $trf->packing }}</td>
                         <td class="text-right">{{ $trf->rent }}</td>
-                        <td class="text-right">{{ number_format($month * $trf->quantity * $trf->rent, 2) }}</td>
+                        <td class="text-right">{{ number_format($month * $closingStock * $trf->rent, 2) }}</td>
                     </tr>
+
                     @php
-                        $quantity += $trf->quantity;
-                        $loading += ($trf->quantity * $trf->packing / 100) * $trf->loading;
-                        $unloading += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
-                        $total += $month * $trf->quantity * $trf->rent;
+                        $quantity += $closingStock;
+                        $unloading += ($closingStock * $trf->packing / 100) * $trf->unloading;
+                        $total += $month * $closingStock * $trf->rent;
                     @endphp
                     @endif
+                @endforeach
+
+                <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             @endforeach
-            <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        @endforeach
+
             <tr>
-                <td></td>
-                <td></td>
+                <td></td><td></td>
                 <td class="bold-text" style="padding-bottom: 4px">Total</td>
                 <td class="text-right bold-text" style="padding-bottom: 4px">{{ number_format($quantity, 2) }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             </tr>
         </tbody>
+
         <tfoot>
             <tr>
                 <td colspan="8"></td>
@@ -123,8 +161,8 @@
     <footer>
         <script type="text/php">
             if (isset($pdf)) {
-                $text = "page {PAGE_NUM} / {PAGE_COUNT}";
-                $size = 10;
+                $text = "{PAGE_NUM} of {PAGE_COUNT}";
+                $size = 9;
                 $font = $fontMetrics->getFont("Verdana");
                 $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
                 $x = ($pdf->get_width() - $width);
