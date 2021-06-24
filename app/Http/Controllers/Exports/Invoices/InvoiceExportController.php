@@ -145,20 +145,24 @@ class InvoiceExportController extends Controller
     {
         $inwardDate = $this->getInwardDate($lot);
         $invoiceDates = [];
+        $monthNos = 0;
+
+        $inwardStart = Carbon::createFromFormat('d/m/Y', $inwardDate);
+        $inwardEnd = Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
+        $daysFromInward = $inwardStart->diffInDays($inwardEnd);
+
+
+        if ($daysFromInward <= 30) return 1;
 
         for ($i = 1; $i <= 12; $i++) {
             $month = Carbon::createFromFormat('m', $i);
             $invoiceDates[$i] = $month->endOfMonth()->toDateString();
         }
 
-        // foreach ($invoiceDates as $month => $date) {
+        foreach ($invoiceDates as $month => $date) {
 
-        // }
+        }
 
-        $start_date = Carbon::createFromFormat('d/m/Y', $inwardDate);
-        $end_date = Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
-        $days = $start_date->diffInDays($end_date);
-
-        if ($days <= 30) return 1;
+        return $monthNos;
     }
 }
