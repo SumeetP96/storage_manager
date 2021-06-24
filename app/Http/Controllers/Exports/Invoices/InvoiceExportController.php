@@ -7,6 +7,7 @@ use App\StockTransferProduct;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\TransferType;
+use Carbon\Carbon;
 
 class InvoiceExportController extends Controller
 {
@@ -143,11 +144,21 @@ class InvoiceExportController extends Controller
     public function countMonths($lot)
     {
         $inwardDate = $this->getInwardDate($lot);
+        $invoiceDates = [];
 
-        $start_date = \Carbon\Carbon::createFromFormat('d/m/Y', $inwardDate);
-        $end_date = \Carbon\Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
+        for ($i = 1; $i <= 12; $i++) {
+            $month = Carbon::createFromFormat('m', $i);
+            $invoiceDates[$i] = $month->endOfMonth()->toDateString();
+        }
+
+        // foreach ($invoiceDates as $month => $date) {
+
+        // }
+
+        $start_date = Carbon::createFromFormat('d/m/Y', $inwardDate);
+        $end_date = Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
         $days = $start_date->diffInDays($end_date);
 
-        if ($days < 30) return 1;
+        if ($days <= 30) return 1;
     }
 }
