@@ -228,6 +228,7 @@
                       auto-select-first
                       :items="products"
                       @change="fetchProductDetails(index)"
+                      @click:clear="resetProductDetails(index)"
                       item-text="name"
                       item-value="id"
                       :error-messages="errors[`product_${index}_id`]"
@@ -747,7 +748,8 @@
           <v-btn v-if="record.from_godown_id" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(record.from_godown_id, {
               apiRoute: 'godowns', dialog: 'accountDialog',
-              varName: 'from_godown_id', afMethod: 'fetchFromAutofill'
+              varName: 'from_godown_id', afMethod: 'fetchFromAutofill',
+              detailsMethod: 'fetchAccountDetails'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
@@ -757,6 +759,7 @@
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'accountDialog',
               varName: 'from_godown_id', afMethod: 'fetchFromAutofill',
+              detailsMethod: 'fetchGodownDetails',
               isAccount: true
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
@@ -889,7 +892,8 @@
           <v-btn v-if="record.to_godown_id" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(record.to_godown_id, {
               apiRoute: 'godowns', dialog: 'godownDialog',
-              varName: 'to_godown_id', afMethod: 'fetchToAutofill'
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill',
+              detailsMethod: 'fetchGodownDetails'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
@@ -899,7 +903,8 @@
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'godownDialog',
               varName: 'to_godown_id', afMethod: 'fetchToAutofill',
-              isAccount: false
+              detailsMethod: 'fetchGodownDetails',
+              isAccount: false,
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record

@@ -40,8 +40,7 @@ export const InFormDialogMixin = {
       this.dialogCreateButton = true
       this.dialogErrors = {}
 
-      if (payload.hasOwnProperty('isAccount') && payload.isAccount) this.dialogRecord.is_account = payload.isAccount
-      console.log(this.dialogRecord);
+      if (payload.hasOwnProperty('isAccount')) this.dialogRecord.is_account = payload.isAccount
 
       this.$swal({
         title: 'Are you sure you want to save?',
@@ -99,7 +98,11 @@ export const InFormDialogMixin = {
           .post(`/api/${payload.apiRoute}/${id}/update`, this.dialogRecord)
           .then(response => {
             if (response.data.success) {
-              this[payload.afMethod]({ id: id, varName: payload.varName })
+              this[payload.afMethod]({
+                id: id,
+                varName: payload.varName,
+                detailsMethod: payload.hasOwnProperty('detailsMethod') ? payload.detailsMethod : undefined
+              })
               this.closeDialog(payload.dialog)
             }
             if (!response.data.success) {

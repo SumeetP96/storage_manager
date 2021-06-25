@@ -43,8 +43,6 @@ export const DetailsMixin = {
 
     // Product details
     fetchProductDetails(index) {
-      // this.productDetails[index] = { unit: '', remarks: '', packing: '' }
-
       if (!this.inputProducts[index].id) return
 
       this.productLoading = true
@@ -55,6 +53,10 @@ export const DetailsMixin = {
           this.productDetails[index].packing = response.data.packing
           this.productLoading = false
         })
+    },
+
+    resetProductDetails(index) {
+      this.productDetails[index] = { unit: '', stock: '', remarks: '', packing: '' }
     }
   }
 }
