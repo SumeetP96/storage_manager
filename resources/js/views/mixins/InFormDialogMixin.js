@@ -40,6 +40,9 @@ export const InFormDialogMixin = {
       this.dialogCreateButton = true
       this.dialogErrors = {}
 
+      if (payload.hasOwnProperty('isAccount') && payload.isAccount) this.dialogRecord.is_account = payload.isAccount
+      console.log(this.dialogRecord);
+
       this.$swal({
         title: 'Are you sure you want to save?',
         text: "Save record!",

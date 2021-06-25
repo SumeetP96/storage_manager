@@ -269,19 +269,17 @@ export const CrudMixin = {
         if (result.isConfirmed) {
           this.axios
           .post(`/api/${this.apiRoute}/${id}/destroy`)
-
           .then(response => {
             if (response.data.success) {
               this.$swal('Deleted!', 'Record has been deleted.', 'success')
 
               if (payload.redirect) this.$router.push({ name: payload.redirect })
-              if (payload.refreshTable) this.refreshTable()
+              if (payload.refreshTable) this.refreshTable('', this.customQuery)
               if (dialog) this[dialog] = false
             }
           })
-
-          .catch(({response}) => {
-            if (response.status == 500) {
+          .catch(error => {
+            if (error.response.status === 500) {
               this.$swal({
                 icon: 'error',
                 title: 'Error!',

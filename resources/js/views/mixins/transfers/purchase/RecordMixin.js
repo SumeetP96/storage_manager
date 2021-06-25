@@ -74,7 +74,7 @@ export const RecordMixin = {
       this.axios.get('/api/autofills/godowns/all_accounts')
         .then(response => {
           this.accounts = response.data
-          if (payload.hasOwnProperty('id') && payload.id) this.inputProducts[payload.varName].id = payload.id
+          if (payload.hasOwnProperty('id') && payload.id) this.inputProducts[payload.varName] = payload.id
           this.fromLoading = false
         })
     },
@@ -97,7 +97,7 @@ export const RecordMixin = {
         .then(response => {
           this.products = response.data
           if (payload.hasOwnProperty('id') && payload.id) {
-            this.inputProducts[payload.varName].id = payload.id 
+            this.inputProducts[payload.varName].id = payload.id
             this.fetchProductDetails(payload.varName)
           }
           this.productLoading = false

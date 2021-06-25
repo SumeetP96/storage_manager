@@ -184,6 +184,7 @@ export const FilterMixin = {
     },
 
     resetCustomQuery() {
+      console.log(this.customQuery);
       if (this.apiRoute == 'godowns') {
         const isAccountIndex = this.customQuery.indexOf('is_account')
         if (isAccountIndex >= 0) this.customQuery = 'is_account=' + this.customQuery[isAccountIndex + 11]

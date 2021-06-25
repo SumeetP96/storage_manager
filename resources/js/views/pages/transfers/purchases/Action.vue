@@ -640,8 +640,6 @@
         </v-card-title>
 
         <v-card-text class="pt-2 pb-8">
-          <input type="hidden" v-model="dialogRecord.is_account">
-          <span style="display: none">{{ dialogRecord.is_account = false }}</span>
           <v-row>
             <v-col cols="12" md="9">
               <label class="subtitle-1">Name
@@ -758,7 +756,8 @@
           <v-btn v-else text dark :loading="dialogCreateButton"
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'accountDialog',
-              varName: 'from_godown_id', afMethod: 'fetchFromAutofill'
+              varName: 'from_godown_id', afMethod: 'fetchFromAutofill',
+              isAccount: true
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
@@ -783,8 +782,6 @@
         </v-card-title>
 
         <v-card-text class="pt-2 pb-8">
-          <input type="hidden" v-model="dialogRecord.is_account">
-          <span style="display: none">{{ dialogRecord.is_account = false }}</span>
           <v-row>
             <v-col cols="12" md="9">
               <label class="subtitle-1">Name
@@ -901,7 +898,8 @@
           <v-btn v-else text dark :loading="dialogCreateButton"
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'godownDialog',
-              varName: 'to_godown_id', afMethod: 'fetchToAutofill'
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill',
+              isAccount: false
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
