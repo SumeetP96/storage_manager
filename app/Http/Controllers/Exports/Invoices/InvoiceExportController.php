@@ -87,10 +87,12 @@ class InvoiceExportController extends Controller
 
                     if (strtotime($trf->date) >= $start && strtotime($trf->date) <= strtotime($date)) {
 
+                        $monthCount = $this->countMonths($month, $lastDay, $trf->date, $this->getInwardDate($lot));
+
                         $totals['quantity'] += $trf->quantity;
                         $totals['loading'] += ($trf->quantity * $trf->packing / 100) * $trf->loading;
                         $totals['unloading'] += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
-                        $totals['total'] += $month * $trf->quantity * $trf->rent;
+                        $totals['total'] += $monthCount * $trf->quantity * $trf->rent;
 
                         array_push($transfers[$lot->lot_number], [
                             'index'         => $index++,
@@ -99,13 +101,15 @@ class InvoiceExportController extends Controller
                             'inward_date'   => $this->getInwardDate($lot),
                             'outward_date'  => date('d/m/Y', strtotime($trf->date)),
                             'outward_no'    => $trf->order_no ? $trf->order_no : '-',
-                            'month'         => $this->countMonths($lot),
+                            'month'         => $monthCount,
                             'packing'       => $trf->packing,
                             'rent'          => $trf->rent,
-                            'amount'        => number_format($month * $trf->quantity * $trf->rent, 2)
+                            'amount'        => number_format($monthCount * $trf->quantity * $trf->rent, 2)
                         ]);
 
                         if ($i == count($lot->transfers) - 1 && $closingStock != 0) {
+                            $monthCount = 1;
+
                             array_push($transfers[$lot->lot_number], [
                                 'index'         => $index++,
                                 'name'          => $trf->name,
@@ -113,15 +117,15 @@ class InvoiceExportController extends Controller
                                 'inward_date'   => $this->getInwardDate($lot),
                                 'outward_date'  => date('d/m/Y', strtotime($trf->date)),
                                 'outward_no'    => 'BAL',
-                                'month'         => $this->countMonths($lot),
+                                'month'         => $monthCount,
                                 'packing'       => $trf->packing,
                                 'rent'          => $trf->rent,
-                                'amount'        => number_format($month * $closingStock * $trf->rent, 2)
+                                'amount'        => number_format($monthCount * $closingStock * $trf->rent, 2)
                             ]);
 
                             $totals['quantity'] += $closingStock;
                             $totals['unloading'] += ($closingStock * $trf->packing / 100) * $trf->unloading;
-                            $totals['total'] += $month * $closingStock * $trf->rent;
+                            $totals['total'] += $monthCount * $closingStock * $trf->rent;
                         }
                     }
                 }
@@ -141,28 +145,19 @@ class InvoiceExportController extends Controller
         }
     }
 
-    public function countMonths($lot)
+    public function countMonths($month, $lastDay, $transferDate, $inwardDate)
     {
-        $inwardDate = $this->getInwardDate($lot);
-        $invoiceDates = [];
-        $monthNos = 0;
+        $previousDate = date('Y') . '/' . $month . '/' . $lastDay;
 
-        $inwardStart = Carbon::createFromFormat('d/m/Y', $inwardDate);
-        $inwardEnd = Carbon::createFromFormat('d/m/Y', date('d/m/Y'));
-        $daysFromInward = $inwardStart->diffInDays($inwardEnd);
+        $inward = Carbon::createFromFormat('d/m/Y', $inwardDate);
+        $start = Carbon::createFromFormat('Y/m/d', $previousDate);
+        $end = Carbon::createFromFormat('Y/m/d', date('Y/m/d', strtotime($transferDate)));
+        $diff = $start->diffInDays($end);
+        $diffInward = $inward->diffInDays($end);
 
+        if ($diffInward <= 30) return 1;
 
-        if ($daysFromInward <= 30) return 1;
-
-        for ($i = 1; $i <= 12; $i++) {
-            $month = Carbon::createFromFormat('m', $i);
-            $invoiceDates[$i] = $month->endOfMonth()->toDateString();
-        }
-
-        foreach ($invoiceDates as $month => $date) {
-
-        }
-
-        return $monthNos;
+        if ($diff < 15) return 0.5;
+        else return 1;
     }
 }
