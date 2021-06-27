@@ -50,7 +50,7 @@
                     <td class="text-right">{{ $trf['quantity'] }}</td>
                     <td class="text-center">{{ $trf['inward_date'] }}</td>
                     <td class="text-center">{{ $trf['outward_date'] }}</td>
-                    <td class="text-right {{ $trf['outward_no'] == 'BAL' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
+                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
                     <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
                     <td class="text-right">{{ $trf['packing'] }}</td>
                     <td class="text-right">{{ $trf['rent'] }}</td>
