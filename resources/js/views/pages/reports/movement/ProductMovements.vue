@@ -498,148 +498,174 @@
           <v-btn icon @click="viewRecordDialog = false"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
 
-        <v-card-text class="pt-6 pb-10">
-          <v-row>
-            <v-col cols="12" md="7" class="pr-10">
-              <div class="overline pl-2 grey--text mb-2" style="font-size: 0.9rem !important">Transfer details</div>
-              <table class="view-record-table">
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left" style="width: 25%">{{ recordType }} date</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.date | moment('DD/MM/YYYY dddd') }}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">From account</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.fromName }}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">To godown</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.toName }}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Products</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-
-                    <div class="rounded px-2" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                      <table style="width: 100%">
-                        <tr>
-                          <th class="text-left"><small>Name</small></th>
-                          <th class="text-center"><small>Lot no</small></th>
-                          <th class="text-right"><small>C Quantity</small></th>
-                          <th class="text-right"><small>Quantity</small></th>
-                        </tr>
-
-                        <tr v-for="(product, index) in recordProducts" :key="index">
-                          <td style="border: none; padding: 1px 0"
-                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
-                            <span>{{ product.name }}</span>
-                          </td>
-                          <td style="border: none; padding: 1px 0;" class="px-2 text-center"
-                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
-                            <span v-if="product.lotNumber" class="subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                              ({{ product.lotNumber }})
-                            </span>
-                            <span v-else>-</span>
-                          </td>
-                          <td style="border: none; padding: 1px 0" class="text-right pl-5"
-                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
-                            <span v-if="product.compoundUnit && product.compoundQuantity">
-                              <span class="font-weight-bold">{{ formatQuantity(product.compoundQuantity, 0) }}</span>
-                              <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                                {{ product.compoundUnit }}
-                              </span>
-                            </span>
-                            <span v-else>-</span>
-                          </td>
-                          <td style="border: none; padding: 1px 0" class="text-right pl-5"
-                            :class="product.productId == productId ? $vuetify.theme.dark ? 'amber--text' : 'amber--text text--darken-4' : ''">
-                            <span class="font-weight-bold">{{ formatQuantity(product.quantity) }}</span>
-                            <span class="ml-1 subtitle-2" :class="$vuetify.theme.dark ? '' : 'text--darken-2'">
-                              {{ product.unit }}
-                            </span>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Modified on</td>
-                  <td class="subtitle-1">{{ dbRecord.updated_at | moment('dddd, DD/MM/YYYY - LTS') }}</td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Created on</td>
-                  <td class="subtitle-1">{{ dbRecord.created_at | moment('dddd, DD/MM/YYYY - LTS') }}</td>
-                </tr>
-              </table>
+        <div class="px-6 pt-4 pb-6">
+          <!-- Details -->
+          <v-row no-gutters>
+            <!-- Sale no -->
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                  <span v-if="recordApiRoute == 'purchases'">Purchase no</span>
+                  <span v-if="recordApiRoute == 'sales'">Sale no</span>
+                  <span v-if="recordApiRoute == 'inter_godowns'">Transfer no</span>
+                </div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">
+                    <span v-if="recordApiRoute == 'purchases'">{{ dbRecord.purchase_no }}</span>
+                    <span v-if="recordApiRoute == 'sales'">{{ dbRecord.sale_no }}</span>
+                    <span v-if="recordApiRoute == 'inter_godowns'">{{ dbRecord.inter_godown_no }}</span>
+                  </div>
+                </div>
+              </div>
             </v-col>
 
-            <v-col cols="12" md="5">
-              <div class="overline pl-2 grey--text mb-2" style="font-size: 0.9rem !important">Additional details</div>
-              <table class="view-record-table">
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left" style="width: 35%">Agent</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.agentName ? dbRecord.agentName : '-' }}
-                  </td>
-                </tr>
+            <!-- Date -->
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Date</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.date | moment('DD-MM-YYYY') }}</div>
+                </div>
+              </div>
+            </v-col>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Order no</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.order_no ? dbRecord.order_no : '-' }}
-                  </td>
-                </tr>
+            <!-- Invoice no -->
+            <v-col cols="3" class="px-2" v-if="recordApiRoute != 'inter_godowns'">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Invoice no</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.invoice_no ? dbRecord.invoice_no : '-' }}</div>
+                </div>
+              </div>
+            </v-col>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Invoice no</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.invoice_no ? dbRecord.invoice_no : '-' }}
-                  </td>
-                </tr>
+            <!-- Order no -->
+            <v-col :cols="recordApiRoute == 'inter_godowns' ? 6 : 3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                  <span v-if="recordApiRoute == 'purchases'">Order no</span>
+                  <span v-else>Outward no</span>
+                </div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.order_no ? dbRecord.order_no : '-'}}</div>
+                </div>
+              </div>
+            </v-col>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Eway bill no</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.eway_bill_no ? dbRecord.eway_bill_no : '-' }}
-                  </td>
-                </tr>
+          </v-row>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Delivery slip no</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.delivery_slip_no ? dbRecord.delivery_slip_no : '-' }}
-                  </td>
-                </tr>
+          <!-- Parties -->
+          <v-row align="top" no-gutters class="mt-3">
+            <!-- From -->
+            <v-col cols="6" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                  From
+                </div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.fromName }}</div>
+                  <div>
+                    {{ dbRecord.fromAddress }}
+                    <span v-if="dbRecord.fromContact1 || dbRecord.fromContact2"> - </span>
+                    <span>{{ dbRecord.fromContact1 }}</span>
+                    <span v-if="dbRecord.fromContact1 && dbRecord.fromContact2"> , </span>
+                    <span>{{ dbRecord.fromContact2 }}</span>
+                  </div>
+                </div>
+              </div>
+            </v-col>
 
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Transport details</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.transport_details ? dbRecord.transport_details : '-' }}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="subtitle-1 font-weight-bold text-left">Additional remarks</td>
-                  <td class="subtitle-1" :class="$vuetify.theme.dark ? 'white--text' : 'grey--text text--darken-2'">
-                    {{ dbRecord.remarks ? dbRecord.remarks : '-' }}
-                  </td>
-                </tr>
-              </table>
+            <!-- To -->
+            <v-col cols="6" class="px-2">
+              <div class="px-3 py-1"
+                :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">
+                  To
+                </div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.toName }}</div>
+                  <div>
+                    {{ dbRecord.toAddress }}
+                    <span v-if="dbRecord.toContact1 || dbRecord.toContact2"> - </span>
+                    <span>{{ dbRecord.toContact1 }}</span>
+                    <span v-if="dbRecord.toContact1 && dbRecord.toContact2"> , </span>
+                    <span>{{ dbRecord.toContact2 }}</span>
+                  </div>
+                </div>
+              </div>
             </v-col>
           </v-row>
-        </v-card-text>
+
+          <!-- Products -->
+          <table class="invoice-record-table mt-6 elevation-1 rounded">
+            <tr :class="$vuetify.theme.dark ? 'blue-grey darken-4' : 'blue-grey lighten-4'">
+              <th class="text-left left-round-top">#</th>
+              <th class="text-left">Product</th>
+              <th class="text-right">Lot no</th>
+              <th class="text-right">Rent</th>
+              <th class="text-right">Loading</th>
+              <th class="text-right">Unloading</th>
+              <th class="text-right">Quantity (Nos)</th>
+              <th class="text-left"></th>
+              <th class="text-right">Quantity (Kgs)</th>
+              <th class="text-left right-round-top"></th>
+            </tr>
+
+            <tr v-for="(product, index) in dbRecord.inputProducts" :key="index"
+              :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+              <td class="border text-left"
+                :class="(index == dbRecord.inputProducts.length - 1) ? 'left-round-bottom' : ''">
+                {{ index + 1 }}
+              </td>
+              <td class="border text-left font-weight-bold">{{ product.details.name }}</td>
+              <td class="border text-right font-weight-bold">{{ product.lot_number ? product.lot_number : '-' }}</td>
+              <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
+              <td class="border text-right">{{ product.loading ? formatQuantity(product.loading, 1) : '-' }}</td>
+              <td class="border text-right">{{ product.unloading ? formatQuantity(product.unloading, 1) : '-' }}</td>
+              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantity, 2) }}</td>
+              <td class="border">
+                {{ product.details.unit }}<span class="subtitle-2 pl-1">({{ product.details.packingRaw }})</span>
+              </td>
+              <td class="border text-right font-weight-bold">
+                {{ (parseFloat(product.quantityRaw) * parseFloat(product.details.packingRaw)).toFixed(2) }}
+              </td>
+              <td class="border">KGS</td>
+            </tr>
+          </table>
+
+          <!-- Additional -->
+          <v-row align="top" class="mt-6" no-gutters>
+            <!-- Agent -->
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Agent</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.agentName ? dbRecord.agentName : '-' }}</div>
+                </div>
+              </div>
+            </v-col>
+
+            <!-- Transport details -->
+            <v-col cols="3" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Transport details</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.transport_details ? dbRecord.transport_details : '-' }}</div>
+                </div>
+              </div>
+            </v-col>
+
+            <!-- Remarks -->
+            <v-col cols="6" class="px-2">
+              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
+                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Remarks</div>
+                <div class="px-4 py-1">
+                  <div class="font-weight-bold">{{ dbRecord.remarks ? dbRecord.remarks : '-' }}</div>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
 
         <v-card-actions class="d-flex justify-space-between">
           <div class="d-flex">
@@ -761,8 +787,8 @@ export default {
         .get(`/api/${apiRoute}/${recordId}/show`)
         .then(response => {
           this.dbRecord = response.data.record
-          this.axios.get(`/api/${apiRoute}/transfer_products/${recordId}`)
-            .then(response => this.recordProducts = response.data.record)
+          // this.axios.get(`/api/${apiRoute}/transfer_products/${recordId}`)
+          //   .then(response => this.recordProducts = response.data.record)
         })
     },
 

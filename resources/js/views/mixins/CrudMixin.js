@@ -307,8 +307,8 @@ export const CrudMixin = {
           this.axios.get(`api/${this.apiRoute}/transfer_products/${id}`)
             .then(response => {
               this.recordProducts = response.data.record
-              this[loader] = false
             })
+          this[loader] = false
         })
     }
   }

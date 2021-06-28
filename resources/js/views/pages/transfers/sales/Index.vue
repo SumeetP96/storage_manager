@@ -605,7 +605,7 @@
 
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
-                @click="viewRecordDialog = true; customFetchTransfer(record.id)">
+                @click="viewRecordDialog = true; loadRecord(record.id)">
                   <td class="subtitle-1 text-center font-weight-bold">
                     {{ record.date | moment('DD/MM/YYYY') }}
                   </td>
@@ -793,22 +793,24 @@
               <th class="text-left right-round-top"></th>
             </tr>
 
-            <tr v-for="(product, index) in recordProducts" :key="index"
+            <tr v-for="(product, index) in record.inputProducts" :key="index"
               :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
               <td class="border text-left"
-                :class="(index == recordProducts.length - 1) ? 'left-round-bottom' : ''">
+                :class="(index == record.inputProducts.length - 1) ? 'left-round-bottom' : ''">
                 {{ index + 1 }}
               </td>
-              <td class="border text-left font-weight-bold">{{ product.name }}</td>
-              <td class="border text-right font-weight-bold">{{ product.lotNumber ? product.lotNumber : '-' }}</td>
+              <td class="border text-left font-weight-bold">{{ product.details.name }}</td>
+              <td class="border text-right font-weight-bold">{{ product.lot_number ? product.lot_number : '-' }}</td>
               <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
               <td class="border text-right">{{ product.loading ? formatQuantity(product.loading, 1) : '-' }}</td>
               <td class="border text-right">{{ product.unloading ? formatQuantity(product.unloading, 1) : '-' }}</td>
               <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantity, 2) }}</td>
               <td class="border">
-                {{ product.unit }}<span class="subtitle-2 pl-1">({{ formatQuantity(product.packing, 0) }})</span>
+                {{ product.details.unit }}<span class="subtitle-2 pl-1">({{ product.details.packingRaw }})</span>
               </td>
-              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantityKgs, 2) }}</td>
+              <td class="border text-right font-weight-bold">
+                {{ (parseFloat(product.quantityRaw) * parseFloat(product.details.packingRaw)).toFixed(2) }}
+              </td>
               <td class="border">KGS</td>
             </tr>
           </table>
@@ -877,7 +879,7 @@
             <v-btn color="orange darken-1" text tabindex="-1" :disabled="disableExport"
               @click="disableExportButtons(2)"
               :href="`/exports/pdf/sales/delivery_slip/${record.id}`"
-              :download="`${apiRoute}.pdf`">
+              download="delivery_slip.pdf">
                 <v-icon class="text-h6 mr-2">mdi-receipt</v-icon> generate Delivery Slip
             </v-btn>
           </div>

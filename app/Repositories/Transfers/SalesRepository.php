@@ -65,6 +65,7 @@ class SalesRepository
         foreach ($record->inputProducts as $product) {
             $product->details = Product::where('id', $product->id)
                 ->selectRaw('
+                    name,
                     remarks,
                     unit,
                     packing, ROUND(packing / 100, 0) as packingRaw

@@ -184,20 +184,19 @@ export const FilterMixin = {
     },
 
     resetCustomQuery() {
-      console.log(this.customQuery);
       if (this.apiRoute == 'godowns') {
         const isAccountIndex = this.customQuery.indexOf('is_account')
         if (isAccountIndex >= 0) this.customQuery = 'is_account=' + this.customQuery[isAccountIndex + 11]
       }
-      if (this.apiRoute == 'reports/product_movements') {
+      else if (this.apiRoute == 'reports/product_movements') {
         const productIdIndex = this.customQuery.indexOf('product_id')
         if (productIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[productIdIndex + 11]
       }
-      if (this.apiRoute == 'reports/godown_movements') {
+      else if (this.apiRoute == 'reports/godown_movements') {
         const godownIdIndex = this.customQuery.indexOf('account_id')
         if (godownIdIndex >= 0) this.customQuery = 'account_id=' + this.customQuery[godownIdIndex + 11]
       }
-      if (this.apiRoute == 'reports/agent_transfers') {
+      else if (this.apiRoute == 'reports/agent_transfers') {
         const agentIdIndex = this.customQuery.indexOf('agent_id')
         if (agentIdIndex >= 0) this.customQuery = 'agent_id=' + this.customQuery[agentIdIndex + 9]
       }

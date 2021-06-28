@@ -92,7 +92,7 @@
     <table style="margin-top: 10px">
         <tr>
             <td style="width: 60%">
-                <div>Notes / remarks  </div>
+                <div>Delivery Notes / remarks  </div>
                 <div class="bold-text">{{ $record->transport_details ? $record->transport_details : '-' }}</div>
             </td>
             <td class="text-right">

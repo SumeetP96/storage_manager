@@ -557,7 +557,7 @@
 
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
-                @click="viewRecordDialog = true; customFetchTransfer(record.id)">
+                @click="viewRecordDialog = true; loadRecord(record.id)">
                   <td class="subtitle-1 text-center font-weight-bold">
                     {{ record.date | moment('DD/MM/YYYY') }}
                   </td>
@@ -662,18 +662,8 @@
               </div>
             </v-col>
 
-            <!-- Invoice no -->
-            <v-col cols="3" class="px-2">
-              <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
-                <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Invoice no</div>
-                <div class="px-4 py-1">
-                  <div class="font-weight-bold">{{ record.invoice_no ? record.invoice_no : '-' }}</div>
-                </div>
-              </div>
-            </v-col>
-
             <!-- Order no -->
-            <v-col cols="3" class="px-2">
+            <v-col cols="6" class="px-2">
               <div class="px-3 py-1" :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
                 <div class="font-weight-bold grey--text" :class="$vuetify.theme.dark ? '' : 'text--darken-1'">Outward no</div>
                 <div class="px-4 py-1">
@@ -737,22 +727,24 @@
               <th class="text-left right-round-top"></th>
             </tr>
 
-            <tr v-for="(product, index) in recordProducts" :key="index"
+            <tr v-for="(product, index) in record.inputProducts" :key="index"
               :class="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'">
               <td class="border text-left"
-                :class="(index == recordProducts.length - 1) ? 'left-round-bottom' : ''">
+                :class="(index == record.inputProducts.length - 1) ? 'left-round-bottom' : ''">
                 {{ index + 1 }}
               </td>
-              <td class="border text-left font-weight-bold">{{ product.name }}</td>
-              <td class="border text-right font-weight-bold">{{ product.lotNumber ? product.lotNumber : '-' }}</td>
+              <td class="border text-left font-weight-bold">{{ product.details.name }}</td>
+              <td class="border text-right font-weight-bold">{{ product.lot_number ? product.lot_number : '-' }}</td>
               <td class="border text-right">{{ product.rent ? formatQuantity(product.rent, 1) : '-' }}</td>
               <td class="border text-right">{{ product.loading ? formatQuantity(product.loading, 1) : '-' }}</td>
               <td class="border text-right">{{ product.unloading ? formatQuantity(product.unloading, 1) : '-' }}</td>
               <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantity, 2) }}</td>
               <td class="border">
-                {{ product.unit }}<span class="subtitle-2 pl-1">({{ formatQuantity(product.packing, 0) }})</span>
+                {{ product.details.unit }}<span class="subtitle-2 pl-1">({{ product.details.packingRaw }})</span>
               </td>
-              <td class="border text-right font-weight-bold">{{ formatQuantity(product.quantityKgs, 2) }}</td>
+              <td class="border text-right font-weight-bold">
+                {{ (parseFloat(product.quantityRaw) * parseFloat(product.details.packingRaw)).toFixed(2) }}
+              </td>
               <td class="border">KGS</td>
             </tr>
           </table>

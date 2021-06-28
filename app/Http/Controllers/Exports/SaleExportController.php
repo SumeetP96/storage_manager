@@ -140,7 +140,6 @@ class SaleExportController extends Controller
         $products = $details['products'];
         $company = Company::find(1);
         $pdf = PDF::loadView('exports.sales.pdf.deliverySlip', compact('record', 'products', 'company'));
-        return $pdf->stream();
         return $pdf->download('delivery_slip.pdf');
     }
 }
