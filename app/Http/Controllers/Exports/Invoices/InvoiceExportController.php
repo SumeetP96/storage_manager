@@ -10,7 +10,26 @@ use App\Http\Controllers\Controller;
 
 class InvoiceExportController extends Controller
 {
-    public function invoice($month, $godownId)
+    public function invoicePdf($month, $godownId)
+    {
+        $transferType = [
+            'inter_godown' => 1,
+            'purchase' => 2,
+            'sales' => 3
+        ];
+
+        $monthName = (Carbon::createFromFormat('m', $month))->format('F');
+
+        $data = $this->getLotData($month, $godownId);
+        $transfers = $data['transfers'];
+        $totals = $data['totals'];
+
+        $pdf = PDF::loadView('exports.invoices.pdf.invoice', compact('transferType', 'transfers', 'totals', 'month'));
+        // return $pdf->stream();
+        return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
+    }
+
+    public function invoicePrint($month, $godownId)
     {
         $transferType = [
             'inter_godown' => 1,
@@ -22,9 +41,7 @@ class InvoiceExportController extends Controller
         $transfers = $data['transfers'];
         $totals = $data['totals'];
 
-        $pdf = PDF::loadView('exports.invoices.invoice', compact('transferType', 'transfers', 'totals', 'month'));
-        return $pdf->stream();
-        // return $pdf->download('storage_invoice.pdf');
+        return view('exports.invoices.print.invoice', compact('transferType', 'transfers', 'totals', 'month'));
     }
 
     public function getLotData($month, $godownId)
