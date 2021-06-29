@@ -190,7 +190,10 @@ export const FilterMixin = {
       }
       else if (this.apiRoute == 'reports/product_movements') {
         const productIdIndex = this.customQuery.indexOf('product_id')
-        if (productIdIndex >= 0) this.customQuery = 'product_id=' + this.customQuery[productIdIndex + 11]
+        const lotNumberIndex = this.customQuery.indexOf('lot_number')
+        if (productIdIndex >= 0 && lotNumberIndex >= 0) {
+          this.customQuery = 'product_id=' + this.customQuery[productIdIndex + 11] + 'lot_number=' + this.customQuery[productIdIndex + 11]
+        }
       }
       else if (this.apiRoute == 'reports/godown_movements') {
         const godownIdIndex = this.customQuery.indexOf('account_id')

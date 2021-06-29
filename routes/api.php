@@ -104,6 +104,8 @@ Route::prefix('autofills')->group(function () {
     Route::prefix('products')->group(function () {
         Route::get('/all', 'Autofill\ProductAutofillController@all');
         Route::get('/details/{productId}', 'Autofill\ProductAutofillController@details');
+        Route::get('/lot_numbers/transfers/{productId}/{lotNumber}', 'Autofill\ProductAutofillController@lotTransfers');
+        Route::get('/lot_numbers/{productId}', 'Autofill\ProductAutofillController@productMovementLots');
         Route::get('/lot_numbers/{godownId}/{productId}', 'Autofill\ProductAutofillController@lotNumbers');
         Route::get('/lot_stock/{godownId}/{productId}/{lotNumber}', 'Autofill\ProductAutofillController@lotStock');
     });

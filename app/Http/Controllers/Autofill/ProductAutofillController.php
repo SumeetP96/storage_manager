@@ -29,6 +29,16 @@ class ProductAutofillController extends Controller
         return $product;
     }
 
+    public function lotTransfers($productId, $lotNumber)
+    {
+
+    }
+
+    public function productMovementLots($productId)
+    {
+        return GodownProductsStock::where('product_id', $productId)->distinct()->get(['lot_number']);
+    }
+
     /**
      * Fetch lot numbers
      */

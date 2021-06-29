@@ -59,6 +59,7 @@ export const DetailsMixin = {
             .then(response => {
               this.productDetails[index].lotNumbers = response.data
               this.lotNumberLoading = false
+              document.getElementById(`lotBox${index}`).focus()
             })
 
           this.productLoading = false

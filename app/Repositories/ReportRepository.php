@@ -97,9 +97,9 @@ class ReportRepository
     public function fetchProductMovement(Request $request)
     {
         return [
-            'total' => $this->allProductMovement($request, $request->product_id)->count(),
+            'total' => $this->allProductMovement($request)->count(),
 
-            'records' => $this->allProductMovement($request, $request->product_id)
+            'records' => $this->allProductMovement($request)
                 ->skip($request->skip)->limit($request->limit)->get(),
         ];
     }

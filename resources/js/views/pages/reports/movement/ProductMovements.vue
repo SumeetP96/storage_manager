@@ -13,11 +13,10 @@
               :autofocus="$route.params.hasOwnProperty('payload') && $route.params.payload == {}"
               v-model="productId"
               hide-details
-              clearable
               outlined
               placeholder="Select product"
               auto-select-first
-              @input="fetchItemRecords()"
+              @change="fetchLotNumbers()"
               :items="products"
               item-text="name"
               item-value="id"
@@ -31,6 +30,25 @@
                 {{ productDetails.remarks }}
             </div>
           </div>
+
+          <v-autocomplete
+            v-model="lotNumber"
+            hide-details="auto"
+            outlined
+            id="lotBox"
+            :disabled="!productId"
+            :filled="!productId"
+            :loading="lotNumberLoading"
+            placeholder="LOT #"
+            auto-select-first
+            :items="lotNumbers"
+            @change="fetchItemRecords()"
+            item-text="lot_number"
+            item-value="lot_number"
+            :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
+            class="right-input ml-3"
+            dense>
+          </v-autocomplete>
 
           <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
 
@@ -715,6 +733,10 @@ export default {
       products: [],
       productDetails: {},
 
+      lotNumber: '',
+      lotNumbers: [],
+      lotNumberLoading: false,
+
       transferType_FILTER: false,
       transferTypes: [],
       transferTypeSelectOnlyId: [],
@@ -751,11 +773,22 @@ export default {
   },
 
   methods: {
-    fetchItemRecords() {
+    fetchLotNumbers() {
       this.axios.get(`/api/products/${this.productId}/details`)
         .then(response => this.productDetails = response.data)
 
-      this.customQuery = `product_id=${this.productId}`
+      this.lotNumber = []
+      this.lotNumberLoading = true
+      this.axios.get(`/api/autofills/products/lot_numbers/${this.productId}`)
+        .then(response => {
+          this.lotNumbers = response.data
+          this.lotNumberLoading = false
+          document.getElementById('lotBox').focus()
+        })
+    },
+
+    fetchItemRecords() {
+      this.customQuery = `product_id=${this.productId}&lot_number=${this.lotNumber}`
       this.loadRecords()
       this.fetchTransferTypesProduct()
       this.fetchToGodownAutofillProduct()
@@ -785,11 +818,7 @@ export default {
 
       this.axios
         .get(`/api/${apiRoute}/${recordId}/show`)
-        .then(response => {
-          this.dbRecord = response.data.record
-          // this.axios.get(`/api/${apiRoute}/transfer_products/${recordId}`)
-          //   .then(response => this.recordProducts = response.data.record)
-        })
+        .then(response => this.dbRecord = response.data.record)
     },
 
     fetchTransferTypesProduct() {
@@ -818,18 +847,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>

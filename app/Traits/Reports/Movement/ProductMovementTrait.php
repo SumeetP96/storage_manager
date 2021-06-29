@@ -13,14 +13,15 @@ trait ProductMovementTrait
      * @param  \Illuminate\Http\Request $request
      * @return Object
      */
-    public function allProductMovement(Request $request, $productId)
+    public function allProductMovement(Request $request)
     {
         $flow = $request->get('flow');
         $search = $request->get('query');
         $sortBy = $request->get('sortBy');
 
         $query = DB::table('stock_transfers as st')
-            ->where('stp.product_id', $productId)
+            ->where('stp.product_id', $request->product_id)
+            ->where('stp.lot_number', $request->lot_number)
             ->leftJoin('stock_transfer_products as stp', 'stp.stock_transfer_id', '=', 'st.id')
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->leftJoin('godowns as tg', 'tg.id', '=', 'st.to_godown_id')

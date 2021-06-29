@@ -71,7 +71,6 @@
                     <v-autocomplete
                       v-model="record.from_godown_id"
                       hide-details="auto"
-                      clearable
                       outlined
                       :disabled="fromLoading"
                       :loading="fromLoading"
@@ -99,7 +98,7 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="record.from_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="record.from_godown_id" dark icon tabindex="-1" small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('accountDialog', 'godowns', record.from_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -119,7 +118,6 @@
                       :disabled="toLoading"
                       :loading="toLoading"
                       auto-select-first
-                      clearable
                       placeholder="Select godown"
                       :items="godowns"
                       @change="fetchGodownDetails()"
@@ -143,7 +141,7 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="record.to_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="record.to_godown_id" tabindex="-1" dark icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog', 'godowns', record.to_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -195,7 +193,6 @@
                     <v-autocomplete
                       v-model="inputProducts[index].id"
                       hide-details="auto"
-                      clearable
                       outlined
                       :disabled="productLoading || !record.from_godown_id"
                       :loading="productLoading"
@@ -204,7 +201,7 @@
                       placeholder="Select product"
                       auto-select-first
                       :items="products"
-                      @change="fetchProductDetails(index, true)"
+                      @change="fetchProductDetails(index)"
                       item-text="name"
                       item-value="id"
                       :error-messages="errors[`product_${index}_id`]"
@@ -218,7 +215,7 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="inputProducts[index].id" dark small icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="inputProducts[index].id" dark small tabindex="-1" icon class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('productDialog', 'products', inputProducts[index].id, index)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -230,8 +227,8 @@
                 <v-autocomplete
                   v-model="inputProducts[index].lot_number"
                   hide-details="auto"
-                  clearable
                   outlined
+                  :id="`lotBox${index}`"
                   :disabled="lotNumberLoading || !inputProducts[index].id"
                   :loading="lotNumberLoading"
                   :filled="!inputProducts[index].id"
@@ -306,8 +303,8 @@
                   hide-details="auto"
                   outlined
                   @blur="inputProducts[index].quantity = setFormatQuantity(inputProducts[index].quantityRaw)"
-                  :disabled="!inputProducts[index].id"
-                  :filled="!inputProducts[index].id"
+                  :disabled="!inputProducts[index].id || !inputProducts[index].lot_number"
+                  :filled="!inputProducts[index].id || !inputProducts[index].lot_number"
                   placeholder="0.00"
                   :error-messages="errors[`product_${index}_quantity`]"
                   :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
