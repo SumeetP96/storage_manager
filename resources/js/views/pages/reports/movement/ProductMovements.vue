@@ -689,7 +689,7 @@
           <div class="d-flex">
             <v-btn :color="$vuetify.theme.dark ? 'primary' : 'indigo'" text
               @click="editFromTable({ name: `${recordApiRoute}.action`,
-                params: { id: dbRecord.id, backRoute: 'reports.product_movements', payload: { productId: productId} } })">
+                params: { id: dbRecord.id, backRoute: 'reports.product_movements', payload: { productId: productId, lotNumber: lotNumber } } })">
                 <v-icon class="text-h6 mr-2">mdi-circle-edit-outline</v-icon> edit {{ recordType }}
             </v-btn>
 
@@ -758,9 +758,13 @@ export default {
     this.axios.get('/api/autofills/products/all')
       .then(response => this.products = response.data)
 
-    if (this.$route.params.payload) this.productId = this.$route.params.payload.productId
+    if (this.$route.params.payload) {
+      this.productId = this.$route.params.payload.productId
+      this.fetchLotNumbers()
+      this.lotNumber = this.$route.params.payload.lotNumber
+    }
     this.apiRoute = 'reports/product_movements'
-    this.customQuery = `product_id=${this.productId}`
+    this.customQuery = `product_id=${this.productId}?lot_number=${this.lotNumber}`
     this.sortBy = 'date'
 
     if (this.products) this.loadRecords()

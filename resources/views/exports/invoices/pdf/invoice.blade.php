@@ -21,6 +21,26 @@
     </style>
 </head>
 <body>
+    <table style="margin-bottom: 10px">
+        <tr>
+            <td style="border: none">
+                <h3 style="margin-bottom: 2px; padding: 0">{{ $godown->name }}</h3>
+                <p style="margin: 0; padding: 0">{{ $godown->address }}</p>
+                <p style="margin: 0; padding: 0">
+                    @if ($godown->contact_1 || $godown->contact_2)
+                        <span>Contact: </span>
+                        <span class="bold-text">{{ $godown->contact_1 }}</span>
+                        <span class="bold-text">{{ ($godown->contact_1 && $godown->contact_2) ? ', ' : '' }}</span>
+                        <span class="bold-text">{{ $godown->contact_2 }}</span>
+                    @endif
+                    <div>{{ $godown->email }}</div>
+                </p>
+            </td>
+            <td style="border: none" class="text-right">
+                <header><h3 style="padding-top: 10px; padding: 0">Storage Invoice</h3></header>
+            </td>
+        </tr>
+    </table>
 
     <table>
         <thead>
@@ -47,7 +67,7 @@
                     <td class="text-right">{{ $trf['index'] }}</td>
                     <td class="text-center bold-text">{{ $key }}</td>
                     <td class="text-left">{{ $trf['name'] }}</td>
-                    <td class="text-right">{{ $trf['quantity'] }}</td>
+                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['quantity'] }}</td>
                     <td class="text-center">{{ $trf['inward_date'] }}</td>
                     <td class="text-center">{{ $trf['outward_date'] }}</td>
                     <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
@@ -83,15 +103,26 @@
                             <td class="text-right" style="border: none">{{ number_format($totals['loading'], 2) }}</td>
                         </tr>
                         <tr>
-                            <td style="border: none; padding-bottom: 6px">Unloading</td>
-                            <td class="text-right" style="border: none; padding-bottom: 6px">{{ number_format($totals['unloading'], 2) }}</td>
+                            <td style="border: none">Unloading</td>
+                            <td class="text-right" style="border: none">{{ number_format($totals['unloading'], 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding-bottom: 8px">Round off</td>
+                            <td class="text-right" style="border: none; padding-bottom: 8px">
+                                @php
+                                    $i = (double) ((int) ($totals['total'] + $totals['loading'] + $totals['unloading']));
+                                    $d = (double) ($totals['total'] + $totals['loading'] + $totals['unloading']);
+                                    $roundOff = $d - $i;
+                                @endphp
+                                {{ number_format($roundOff, 2) }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="bold-text" style="border:none; border-top: 1px solid grey; font-size: 0.8rem">
-                                Bill Amount
+                                Bill amount
                             </td>
                             <td class="bold-text text-right" style="border:none; border-top: 1px solid grey; font-size: 0.8rem">
-                                {{ number_format($totals['total'] + $totals['loading'] + $totals['unloading'], 2) }}
+                                {{ number_format($totals['total'] + $totals['loading'] + $totals['unloading'] + $roundOff, 2) }}
                             </td>
                         </tr>
                     </table>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Exports\Invoices;
 
+use App\Godown;
 use PDF;
 use Carbon\Carbon;
 use App\StockTransferProduct;
@@ -23,9 +24,10 @@ class InvoiceExportController extends Controller
         $data = $this->getLotData($month, $godownId);
         $transfers = $data['transfers'];
         $totals = $data['totals'];
+        $godown = Godown::find($godownId);
 
-        $pdf = PDF::loadView('exports.invoices.pdf.invoice', compact('transferType', 'transfers', 'totals', 'month'));
-        // return $pdf->stream();
+        $pdf = PDF::loadView('exports.invoices.pdf.invoice', compact('transferType', 'transfers', 'totals', 'month', 'godown'));
+        return $pdf->stream();
         return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
     }
 
@@ -40,8 +42,9 @@ class InvoiceExportController extends Controller
         $data = $this->getLotData($month, $godownId);
         $transfers = $data['transfers'];
         $totals = $data['totals'];
+        $godown = Godown::find($godownId);
 
-        return view('exports.invoices.print.invoice', compact('transferType', 'transfers', 'totals', 'month'));
+        return view('exports.invoices.print.invoice', compact('transferType', 'transfers', 'totals', 'month', 'godown'));
     }
 
     public function getLotData($month, $godownId)
@@ -85,8 +88,8 @@ class InvoiceExportController extends Controller
             'total'     => 0
         ];
 
-        foreach ($lotNumbers as $lot) {
-
+        foreach ($lotNumbers as $c => $lot) {
+            $test[$lot->lot_number] = [];
             $transfers[$lot->lot_number] = [];
 
             $closingStock = 0;

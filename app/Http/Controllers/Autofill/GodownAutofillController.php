@@ -6,6 +6,7 @@ use App\Godown;
 use App\GodownProductsStock;
 use App\Http\Controllers\Controller;
 use App\Product;
+use App\StockTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

@@ -160,6 +160,7 @@ class PurchaseRepository
 
         if (count($request->products) > 0) {
             foreach($request->products as $product) {
+
                 $purchaseItem = StockTransferProduct::where('stock_transfer_id', $id)
                     ->where('product_id', $product['id'])
                     ->where('lot_number', $product['lot_number'])
@@ -167,11 +168,26 @@ class PurchaseRepository
 
                 if (!is_null($purchaseItem)) {
                     $purchaseItem->update([
-                        'rent'              => (int) $product['rent'],
-                        'loading'           => (int) $product['loading'],
-                        'unloading'         => (int) $product['unloading'],
-                        'quantity'          => (int) $product['quantity']
+                        'rent'      => (int) $product['rent'],
+                        'loading'   => (int) $product['loading'],
+                        'unloading' => (int) $product['unloading'],
+                        'quantity'  => (int) $product['quantity']
                     ]);
+
+                    $stp = StockTransferProduct::where('product_id', $product['id'])
+                        ->where('lot_number', $product['lot_number'])
+                        ->get();
+
+                    if (count($stp) > 0) {
+                        foreach ($stp as $tf) {
+                            $tf->update([
+                                'rent'      => (int) $product['rent'],
+                                'loading'   => (int) $product['loading'],
+                                'unloading' => (int) $product['unloading']
+                            ]);
+                        }
+                    }
+
                 } else {
                     StockTransferProduct::create([
                         'stock_transfer_id' => $id,
