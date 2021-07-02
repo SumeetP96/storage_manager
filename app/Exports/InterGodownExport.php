@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-use App\Traits\InterGodownTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Traits\InterGodownTrait;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -19,8 +19,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
 class InterGodownExport implements FromQuery, WithMapping, WithHeadings, WithColumnFormatting, ShouldAutoSize, WithStyles
 {
-    use Exportable;
-    use InterGodownTrait;
+    use Exportable, InterGodownTrait;
 
     public function __construct(Request $request)
     {
@@ -36,12 +35,13 @@ class InterGodownExport implements FromQuery, WithMapping, WithHeadings, WithCol
     {
         return [
             Date::dateTimeToExcel(Carbon::parse($record->date)),
+            $record->inter_godown_no,
             $record->invoiceNo,
             $record->fromName,
             $record->toName,
-            $record->agent,
             $record->remarks,
-            Date::dateTimeToExcel(Carbon::parse($record->updated_at))
+            Date::dateTimeToExcel(Carbon::parse($record->updated_at)),
+            Date::dateTimeToExcel(Carbon::parse($record->created_at))
         ];
     }
 
@@ -49,12 +49,13 @@ class InterGodownExport implements FromQuery, WithMapping, WithHeadings, WithCol
     {
         return [
             'Date',
+            'Transfer no',
             'Invoice no',
             'From godown',
             'To godown',
-            'Agent',
             'Remarks',
-            'Updated at'
+            'Updated at',
+            'Created at'
         ];
     }
 
@@ -63,7 +64,9 @@ class InterGodownExport implements FromQuery, WithMapping, WithHeadings, WithCol
         return [
             'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             'B' => NumberFormat::FORMAT_TEXT,
-            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY
+            'C' => NumberFormat::FORMAT_TEXT,
+            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY
         ];
     }
 
@@ -72,6 +75,8 @@ class InterGodownExport implements FromQuery, WithMapping, WithHeadings, WithCol
         $sheet->getStyle(1)->getFont()->setBold(true);
         $sheet->getStyle('A')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('B')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('C')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 }

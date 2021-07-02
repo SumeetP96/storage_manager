@@ -6,80 +6,91 @@
 
       <div class="py-4 text-h5">Product Movement</div>
 
-      <v-row align="start">
-        <v-col cols="12" md="8" class="text-h5 d-flex align-start">
-          <div style="width: 100%">
-            <v-autocomplete
-              :autofocus="$route.params.hasOwnProperty('payload') && $route.params.payload == {}"
-              v-model="productId"
-              hide-details
-              outlined
-              placeholder="Select product"
-              auto-select-first
-              @change="fetchLotNumbers()"
-              :items="products"
-              item-text="name"
-              item-value="id"
-              prepend-inner-icon="mdi-shape-outline"
-              class="left-input"
-              :class="$vuetify.theme.dark ? '' : 'white'"
-              dense>
-            </v-autocomplete>
-            <div v-if="productDetails.remarks"
-              :class="$vuetify.theme.dark ? '' : 'white'" class="subtitle-2 px-3 py-1 rounded">
-                {{ productDetails.remarks }}
-            </div>
-          </div>
+      <v-row align="top">
+        <v-col cols="12" md="8">
 
-          <v-autocomplete
-            v-model="lotNumber"
-            hide-details="auto"
-            outlined
-            id="lotBox"
-            :disabled="!productId"
-            :filled="!productId"
-            :loading="lotNumberLoading"
-            placeholder="LOT #"
-            auto-select-first
-            :items="lotNumbers"
-            @change="fetchItemRecords()"
-            item-text="lot_number"
-            item-value="lot_number"
-            :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
-            class="right-input ml-3"
-            dense>
-          </v-autocomplete>
+          <v-row no-gutters align="top">
+            <!-- Product -->
+            <v-col cols="4">
+              <v-autocomplete
+                :autofocus="$route.params.hasOwnProperty('payload') && $route.params.payload == {}"
+                v-model="productId"
+                hide-details
+                outlined
+                clearable
+                placeholder="Select product"
+                auto-select-first
+                @change="fetchLotNumbers()"
+                :items="products"
+                item-text="name"
+                item-value="id"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-autocomplete>
+              <div v-if="productDetails.remarks"
+                :class="$vuetify.theme.dark ? '' : 'white'" class="subtitle-2 px-3 py-1 rounded">
+                  {{ productDetails.remarks }}
+              </div>
+            </v-col>
 
-          <div class="grey--text text--lighten-1 mx-4 font-weight-thin" style="font-size: 1.5rem">|</div>
+            <!-- Lot number -->
+            <v-col cols="2">
+              <v-autocomplete
+                v-model="lotNumber"
+                hide-details="auto"
+                outlined
+                clearable
+                id="lotBox"
+                style="width: 250px !important"
+                :disabled="!productId"
+                :filled="!productId"
+                :loading="lotNumberLoading"
+                placeholder="LOT #"
+                auto-select-first
+                :items="lotNumbers"
+                @change="fetchItemRecords()"
+                item-text="lot_number"
+                item-value="lot_number"
+                :class="$vuetify.theme.dark ? 'grey darken-4' : 'white'"
+                class="right-input ml-3"
+                dense>
+              </v-autocomplete>
+            </v-col>
 
-          <!-- PDF -->
-          <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
-            @click="disableExportButtons()" :loading="refreshLoading"
-            v-shortkey="['alt', 's']" @shortkey="focusSearch()"
-            :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
-            :href="`/exports/pdf/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-            :download="`${apiRoute}.pdf`">
-              <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
-          </v-btn>
+            <!-- Export -->
+            <v-col cols="5" class="d-flex align-center">
+              <div class="grey--text text--lighten-1 pl-5 pr-2 font-weight-thin" style="font-size: 1.5rem">|</div>
 
-          <!-- Excel -->
-          <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
-            @click="disableExportButtons()" :loading="refreshLoading"
-            :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
-            :href="`/exports/excel/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
-            :download="`${apiRoute}.xlsx`">
-              <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
-          </v-btn>
+              <!-- PDF -->
+              <v-btn tabindex="-1" style="width: 120px" :disabled="disableExport || records.length == 0"
+                @click="disableExportButtons()" :loading="refreshLoading"
+                v-shortkey="['alt', 's']" @shortkey="focusSearch()"
+                :color="$vuetify.theme.dark ? 'error--text' : 'white error--text'"
+                :href="`/exports/pdf/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+                :download="`${apiRoute}.pdf`">
+                  <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
+              </v-btn>
 
-          <!-- Print -->
-          <v-btn tabindex="-1" class="ml-2" style="width: 120px"
-            :loading="refreshLoading"
-            :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
-            :disabled="disableExport || records.length == 0" @click="disableExportButtons();
-              printPage('all-print', `/exports/print/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
-              <v-icon class="mr-2">mdi-printer</v-icon> Print
-          </v-btn>
-          <iframe id="all-print" style="display: none"></iframe>
+              <!-- Excel -->
+              <v-btn tabindex="-1" class="ml-2" style="width: 120px" :disabled="disableExport || records.length == 0"
+                @click="disableExportButtons()" :loading="refreshLoading"
+                :color="$vuetify.theme.dark ? 'success--text' : 'white success--text'"
+                :href="`/exports/excel/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`"
+                :download="`${apiRoute}.xlsx`">
+                  <v-icon class="text-h6 mr-2">mdi-file-excel</v-icon> excel
+              </v-btn>
+
+              <!-- Print -->
+              <v-btn tabindex="-1" class="ml-2" style="width: 120px"
+                :loading="refreshLoading"
+                :color="$vuetify.theme.dark ? 'primary--text' : 'white indigo--text'"
+                :disabled="disableExport || records.length == 0" @click="disableExportButtons();
+                  printPage('all-print', `/exports/print/reports/product_movement?query=${query}&sortBy=${sortBy}&flow=${flow}&${customQuery}`)">
+                  <v-icon class="mr-2">mdi-printer</v-icon> Print
+              </v-btn>
+              <iframe id="all-print" style="display: none"></iframe>
+            </v-col>
+          </v-row>
 
         </v-col>
 
@@ -761,7 +772,6 @@ export default {
     if (this.$route.params.payload) {
       this.productId = this.$route.params.payload.productId
       this.fetchLotNumbers()
-      this.lotNumber = this.$route.params.payload.lotNumber
     }
     this.apiRoute = 'reports/product_movements'
     this.customQuery = `product_id=${this.productId}?lot_number=${this.lotNumber}`
@@ -786,6 +796,10 @@ export default {
       this.axios.get(`/api/autofills/products/lot_numbers/${this.productId}`)
         .then(response => {
           this.lotNumbers = response.data
+          if (this.$route.params.payload) {
+            this.lotNumber = this.$route.params.payload.lotNumber
+            this.fetchItemRecords()
+          }
           this.lotNumberLoading = false
           document.getElementById('lotBox').focus()
         })

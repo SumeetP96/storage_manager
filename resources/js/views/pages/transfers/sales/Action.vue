@@ -545,7 +545,7 @@
             </v-col>
           </v-row>
 
-          <v-row align="start" no-gutters class="mt-6">
+          <v-row align="top" no-gutters class="mt-6">
             <v-col cols="2">
               <label class="subtitle-1">Unit
                 <span class="red--text text-h6">*</span>

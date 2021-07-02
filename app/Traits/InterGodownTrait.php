@@ -22,14 +22,12 @@ trait InterGodownTrait
 
         $query = DB::table('stock_transfers as st')
             ->where('st.transfer_type_id', StockTransfer::INTER_GODOWN)
-            ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id');
 
         return $this->getFilteredQuery($query, $request)
             ->where(function ($query) use ($search) {
                 $query->where('fg.name', 'like', '%' . $search . '%')
-                    ->orWhere('ag.name', 'like', '%' . $search . '%')
                     ->orWhere('st.invoice_no', 'like', '%' . $search . '%')
                     ->orWhere('st.inter_godown_no', 'like', '%' . $search . '%')
                     ->orWhere('tg.name', 'like', '%' . $search . '%');
@@ -41,7 +39,6 @@ trait InterGodownTrait
                 st.inter_godown_no,
                 fg.name as fromName,
                 tg.name as toName,
-                ag.name as agent,
                 st.remarks,
                 st.updated_at,
                 st.created_at
@@ -73,12 +70,6 @@ trait InterGodownTrait
         if ($invoiceNo == 'without') $query->where(function ($query) {
             $query->whereNull('st.invoice_no')->orWhere('st.invoice_no', '');
         });
-
-        // Agent only except
-        $agentOnlyId = $request->get('agentOnlyId');
-        if (!is_null($agentOnlyId)) $query->whereIn('st.agent_id', explode(',', $agentOnlyId));
-        $agentExceptId = $request->get('agentExceptId');
-        if (!is_null($agentExceptId)) $query->whereNotIn('st.agent_id', explode(',', $agentExceptId));
 
         // From godown only except
         $fromGodownOnlyId = $request->get('fromGodownOnlyId');

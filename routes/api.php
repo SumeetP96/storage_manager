@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::prefix('company')->group(function () {
+    Route::get('/', 'CompanyController@index');
+    Route::post('/update', 'CompanyController@update');
+});
+
 Route::prefix('godowns')->group(function () {
     Route::get('/', 'GodownController@index');
     Route::get('/{id}/show', 'GodownController@show');

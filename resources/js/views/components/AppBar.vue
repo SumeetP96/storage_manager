@@ -67,6 +67,14 @@
 
         <v-list dense>
 
+          <v-list-item link
+            @click="openCompanyDialog(); toggleSettingMenu()">
+            <v-list-item-icon><v-icon>mdi-store</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title class="pr-5">Company profile</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item link v-shortkey.once="['alt', 'k']"
             @shortkey="keyboardShortcutDialog = true; toggleSettingMenu()"
             @click="keyboardShortcutDialog = true; toggleSettingMenu()">
@@ -84,13 +92,6 @@
               <v-list-item-title>Backup data</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-
-          <!-- <v-list-item link @click="changeTransactionLockDate(); toggleSettingMenu()">
-            <v-list-item-icon><v-icon>mdi-lock</v-icon></v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Lock transactions</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item> -->
 
           <v-list-item link @click="changePassword(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-form-textbox-password</v-icon></v-list-item-icon>
@@ -113,99 +114,116 @@
 
     </v-app-bar>
 
-    <!-- Backup Dialog -->
-    <v-dialog v-model="backupDialog" max-width="600"
-      @click:outside="restrictPathEdit = true; errors.path = []"
-      @keydown.esc="restrictPathEdit = true; errors.path = []">
-      <v-card>
+    <!-- Company Dialog -->
+    <v-dialog v-model="companyDialog" max-width="1000"
+      @click:outside="closeCompanyDialog()" @keydown.esc="closeCompanyDialog()">
+      <v-card :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
         <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>Backup Data</div>
-          <v-btn icon
-            @click="backupDialog = false; restrictPathEdit = true; errors.path = []">
-              <v-icon>mdi-close</v-icon>
+          <div>Update Company</div>
+          <v-btn icon @click="companyDialog = false; closeCompanyDialog()">
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
 
-        <v-card-text class="py-5">
-          <div class="subtitle-1 pb-2" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">
-            You data will be backed up in this location
-          </div>
+        <v-card-text class="pt-2 pb-5">
 
-          <v-text-field
-            v-model="backupPath"
-            id="backupPath"
-            outlined
-            dense
-            :filled="restrictPathEdit"
-            :readonly="restrictPathEdit"
-            :error-messages="errors.path"
-            placeholder="Path e.x. C:\Users\username\Desktop">
-          </v-text-field>
+          <v-row>
+            <v-col cols="12">
+              <label class="subtitle-1">Name
+                <span class="red--text text-h6">*</span>
+              </label>
+              <v-text-field
+                ref="nameBox"
+                v-model="company.name"
+                hide-details="auto"
+                outlined
+                autofocus
+                placeholder="Enter company name"
+                :error-messages="companyErrors.name"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
 
-          <div class="d-flex align-center justify-center mt-5">
-            <v-btn dark color="error" class="mr-2"
-              @click="changePath()">
-                change path
-            </v-btn>
-            <v-btn dark color="indigo" class="ml-2"
-              :loading="backupLoading" @click="backupData()">
-                <v-icon class="mr-3 text-h6">mdi-cloud-upload</v-icon>
-                run backup
-            </v-btn>
-          </div>
+            <v-col cols="12">
+              <label class="subtitle-1">Address
+                <span class="red--text text-h6"></span>
+              </label>
+              <v-text-field
+                v-model="company.address"
+                hide-details="auto"
+                outlined
+                placeholder="Enter company address"
+                :error-messages="companyErrors.address"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="3">
+              <label class="subtitle-1">Contact 1
+                <span class="red--text text-h6"></span>
+              </label>
+              <v-text-field
+                v-model="company.contact_1"
+                hide-details="auto"
+                outlined
+                placeholder="Enter contact 1"
+                :error-messages="companyErrors.contact_1"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="3">
+              <label class="subtitle-1">Contact 2
+                <span class="red--text text-h6"></span>
+              </label>
+              <v-text-field
+                v-model="company.contact_2"
+                hide-details="auto"
+                outlined
+                placeholder="Enter contact 2"
+                :error-messages="companyErrors.contact_2"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="6">
+              <label class="subtitle-1">Email
+                <span class="red--text text-h6"></span>
+              </label>
+              <v-text-field
+                v-model="company.email"
+                hide-details="auto"
+                outlined
+                placeholder="Enter company email"
+                :error-messages="companyErrors.email"
+                :class="$vuetify.theme.dark ? '' : 'white'"
+                dense>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
         </v-card-text>
 
-      </v-card>
-    </v-dialog> <!-- / Backup Dialog End -->
-
-    <!-- Transaction Lock Dialog -->
-    <v-dialog v-model="transactionLockDialog" max-width="700"
-      @click:outside="restrictDateEdit = true"
-      @keydown.esc="restrictDateEdit = true">
-      <v-card>
-        <v-card-title class="headline d-flex justify-space-between align-center">
-          <div>Update Transaction Lock Date</div>
-          <v-btn icon
-            @click="transactionLockDialog = false; restrictDateEdit = true;">
-              <v-icon>mdi-close</v-icon>
+        <v-card-actions class="d-flex justify-space-between">
+          <v-btn text dark :loading="companyUpdateButton"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'"
+            @click="updateCompany()">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update company
           </v-btn>
-        </v-card-title>
 
-        <v-card-text class="py-5">
-          <v-alert type="info" border="left" prominent text>
-            Please note that, all the data (masters, invoices, transfers & reports), prior to the transaction lock date will be inaccesible. To access that data again you have to update the transaction lock date accordingly.
-          </v-alert>
-
-          <div class="subtitle-1 pb-1 mt-2" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">
-            Set transaction lock date
-          </div>
-
-          <v-text-field
-            v-model="record.lockDateRaw"
-            id="lockDateRaw"
-            @blur="formatDate('lockDateRaw'); record.lockDate = flipToYMD(record.lockDateRaw)"
-            outlined
-            dense
-            :filled="restrictDateEdit"
-            :readonly="restrictDateEdit"
-            :error-messages="errors.date"
-            placeholder="DD-MM-YYYY">
-          </v-text-field>
-
-          <div class="d-flex align-center justify-center mt-5">
-            <v-btn dark color="error" class="mr-2" @click="changeDate()">
-              change date
-            </v-btn>
-            <v-btn dark color="indigo" class="ml-2"
-              :loading="lockDateLoading" @click="updateLockDate()">
-                <v-icon class="mr-3 text-h6">mdi-lock</v-icon>
-                lock transactions
-            </v-btn>
-          </div>
-        </v-card-text>
+          <v-btn color="error" text @click="closeCompanyDialog();">
+            <v-icon class="text-h6 mr-2">mdi-close</v-icon> cancel
+          </v-btn>
+        </v-card-actions>
 
       </v-card>
-    </v-dialog> <!-- / Transaction Lock Dialog End -->
+    </v-dialog> <!-- / Company Dialog End -->
 
     <!-- Keyboard Shortct Dialog -->
     <v-dialog v-model="keyboardShortcutDialog" max-width="1000">
@@ -332,6 +350,51 @@
       </v-card>
     </v-dialog> <!-- / Backup Dialog End -->
 
+    <!-- Backup Dialog -->
+    <v-dialog v-model="backupDialog" max-width="600"
+      @click:outside="restrictPathEdit = true; errors.path = []"
+      @keydown.esc="restrictPathEdit = true; errors.path = []">
+      <v-card>
+        <v-card-title class="headline d-flex justify-space-between align-center">
+          <div>Backup Data</div>
+          <v-btn icon
+            @click="backupDialog = false; restrictPathEdit = true; errors.path = []">
+              <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="py-5">
+          <div class="subtitle-1 pb-2" :class="$vuetify.theme.dark ? 'white--text' : 'black--text'">
+            You data will be backed up in this location
+          </div>
+
+          <v-text-field
+            v-model="backupPath"
+            id="backupPath"
+            outlined
+            dense
+            :filled="restrictPathEdit"
+            :readonly="restrictPathEdit"
+            :error-messages="errors.path"
+            placeholder="Path e.x. C:\Users\username\Desktop">
+          </v-text-field>
+
+          <div class="d-flex align-center justify-center mt-5">
+            <v-btn dark color="error" class="mr-2"
+              @click="changePath()">
+                change path
+            </v-btn>
+            <v-btn dark color="indigo" class="ml-2"
+              :loading="backupLoading" @click="backupData()">
+                <v-icon class="mr-3 text-h6">mdi-cloud-upload</v-icon>
+                run backup
+            </v-btn>
+          </div>
+        </v-card-text>
+
+      </v-card>
+    </v-dialog> <!-- / Backup Dialog End -->
+
   </div>
 </template>
 
@@ -346,7 +409,6 @@ export default {
 
   mounted() {
     this.setApplicationTheme()
-    // this.fetchTransactionDate()
   },
 }
 </script>

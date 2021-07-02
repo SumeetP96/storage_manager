@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Exports;
 
 use PDF;
-use App\Traits\SaleTrait;
-use App\Exports\SaleExport;
 use Illuminate\Http\Request;
+use App\Traits\InterGodownTrait;
 use Illuminate\Support\Facades\DB;
+use App\Exports\InterGodownExport;
 use App\Http\Controllers\Controller;
 
 class InterGodownExportController extends Controller
 {
-    use SaleTrait;
+    use InterGodownTrait;
 
     /**
      * Export to PDF
@@ -34,7 +34,7 @@ class InterGodownExportController extends Controller
      */
     public function allExcel(Request $request)
     {
-        return (new SaleExport($request))->download('inter_godowns.xlsx');
+        return (new InterGodownExport($request))->download('inter_godowns.xlsx');
     }
 
     /**
@@ -89,7 +89,6 @@ class InterGodownExportController extends Controller
         $record = DB::table('stock_transfers as st')->where('st.id', $id)
             ->leftJoin('godowns as fg', 'st.from_godown_id', '=', 'fg.id')
             ->leftJoin('godowns as tg', 'st.to_godown_id', '=', 'tg.id')
-            ->leftJoin('agents as ag', 'st.agent_id', '=', 'ag.id')
             ->selectRaw('
                 st.*,
                 DATE_FORMAT(st.date, "%d-%m-%Y") as dateRaw,
@@ -102,8 +101,7 @@ class InterGodownExportController extends Controller
                 tg.address as toAddress,
                 tg.contact_1 as toContact1,
                 tg.contact_2 as toContact2,
-                tg.email as toEmail,
-                ag.name as agentName
+                tg.email as toEmail
             ')
             ->first();
 
@@ -111,13 +109,16 @@ class InterGodownExportController extends Controller
             ->where('stp.stock_transfer_id', $id)
             ->leftJoin('products as pr', 'pr.id', '=', 'stp.product_id')
             ->selectRaw('
-                stp.quantity div 100 as quantityRaw,
-                pr.compound_unit as compoundUnit,
-                stp.compound_quantity as compoundQuantity,
-                stp.compound_quantity div 100 as compoundQuantityRaw,
+                stp.quantity,
+                ROUND(stp.quantity / 100, 2) as quantityRaw,
+                stp.rent,
+                stp.loading,
+                stp.unloading,
+                pr.packing,
+                (stp.quantity * pr.packing) / 10000 as quantityKgs,
                 pr.name as name,
                 pr.unit as unit,
-                pr.lot_number as lotNumber
+                stp.lot_number as lotNumber
             ')
             ->get();
 

@@ -7,11 +7,11 @@
     <thead>
         <tr>
             <th class="text-center" style="width: 1%">#</th>
-            <th class="text-left">Purc no</th>
             <th class="text-left">Invoice</th>
+            <th class="text-left">Purc no</th>
             <th class="text-left" style="min-width: 150px">From account</th>
             <th class="text-left" style="min-width: 150px">To godown</th>
-            <th class="text-left" style="min-width: 125px">Agent & remarks</th>
+            <th class="text-left" style="min-width: 120px">Agent & remarks</th>
             <th class="text-right">Updated at</th>
         </tr>
     </thead>
@@ -19,11 +19,11 @@
         @foreach ($records as $index => $record)
         <tr>
             <td class="text-center">{{ $index + 1 }}</td>
-            <td class="text-left font-bold">{{ $record->purchase_no }}</td>
             <td class="text-left">
                 <div class="font-bold">{{ date('d/m/Y', strtotime($record->date)) }}</div>
                 <div class="grey-text">{{ $record->invoiceNo }}</div>
             </td>
+            <td>{{ $record->purchase_no }}</td>
             <td class="text-left">{{ $record->fromName }}</td>
             <td class="text-left">{{ $record->toName }}</td>
             <td class="text-left">

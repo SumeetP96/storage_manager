@@ -6,7 +6,7 @@
 
       <div class="py-4 text-h5">Godown Movement</div>
 
-      <v-row align="start">
+      <v-row align="top">
         <v-col cols="12" md="8" class="text-h5 d-flex align-start">
           <div style="width: 100%">
             <v-autocomplete

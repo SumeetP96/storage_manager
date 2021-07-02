@@ -624,11 +624,11 @@
                   <td class="subtitle-1 font-weight-bold">{{ record.toName }}</td>
 
                   <td v-if="selectedColumns.indexOf('agent') >= 0" class="subtitle-1">
-                    {{ record.agent }}
+                    {{ record.agent ? record.agent : '-' }}
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
-                    {{ record.remarks }}
+                    {{ record.remarks ? record.remarks : '-' }}
                   </td>
 
                   <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>
