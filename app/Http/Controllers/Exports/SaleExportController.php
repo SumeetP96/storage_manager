@@ -116,16 +116,13 @@ class SaleExportController extends Controller
             ->selectRaw('
                 stp.quantity,
                 ROUND(stp.quantity / 100, 2) as quantityRaw,
-                ROUND(pr.packing / 100, 0) as packing,
                 stp.rent,
-                ROUND(stp.rent / 100, 2) as rentRaw,
                 stp.loading,
-                ROUND(stp.loading / 100, 2) as loadingRaw,
                 stp.unloading,
-                ROUND(stp.unloading / 100, 2) as unloadingRaw,
-                pr.id as productId,
+                pr.packing,
+                (stp.quantity * pr.packing) / 10000 as quantityKgs,
                 pr.name as name,
-                pr.unit,
+                pr.unit as unit,
                 stp.lot_number as lotNumber
             ')
             ->get();

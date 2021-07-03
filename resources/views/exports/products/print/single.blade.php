@@ -6,7 +6,7 @@
 <table>
     <tr>
         <th class="text-left" style="width: 20%">Name</th>
-        <td>{{ $record->name }}</td>
+        <td class="font-bold">{{ $record->name }}</td>
     </tr>
 
     <tr>
@@ -20,16 +20,11 @@
     </tr>
 
     <tr>
-        <th class="text-left">Compound unit</th>
-        <td>{{ $record->compound_unit ? $record->compound_unit : '-' }}</td>
-    </tr>
-
-    <tr>
         <th class="text-left">Packing</th>
         @if ($record->packing)
         <td>
-            {{ $record->packing / 100 }}
-            <small class="grey-text">({{ $record->unit }})</small>
+            <span class="font-bold">{{ number_format($record->packing / 100) }}</span>
+            <span>(KGS)</span>
         </td>
         @else
         <td>-</td>

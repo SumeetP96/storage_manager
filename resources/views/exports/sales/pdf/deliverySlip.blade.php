@@ -83,7 +83,7 @@
             <td>{{ $product->name }}</td>
             <td class="text-right bold-text">{{ $product->quantityRaw ? $product->quantityRaw : '-' }}</td>
             <td class="text-left">{{ $product->unit }}</td>
-            <td class="text-right bold-text">{{ number_format($product->quantityRaw * $product->packing, 2) }}</td>
+            <td class="text-right bold-text">{{ number_format($product->quantityRaw * $product->packing / 100, 2) }}</td>
             <td class="text-left">KGS</td>
         </tr>
         @endforeach
@@ -92,7 +92,7 @@
     <table style="margin-top: 10px">
         <tr>
             <td style="width: 60%">
-                <div>Delivery Notes / remarks  </div>
+                <div>Delivery Instructions  </div>
                 <div class="bold-text">{{ $record->transport_details ? $record->transport_details : '-' }}</div>
             </td>
             <td class="text-right">

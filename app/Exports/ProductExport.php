@@ -37,8 +37,7 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
             $product->name,
             $product->alias,
             $product->unit,
-            $product->compound_unit,
-            $product->packing / 100,
+            number_format($product->packing / 100, 0) . ' (KGS)',
             $product->remarks,
             Date::dateTimeToExcel(Carbon::parse($product->updated_at)),
             Date::dateTimeToExcel(Carbon::parse($product->created_at))
@@ -51,7 +50,6 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
             'Name',
             'Alias',
             'Unit',
-            'Compound unit',
             'Packing',
             'Remarks',
             'Updated at',
@@ -62,16 +60,16 @@ class ProductExport implements FromQuery, WithMapping, WithHeadings, WithColumnF
     public function columnFormats(): array
     {
         return [
-            'E' => NumberFormat::FORMAT_TEXT,
-            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY
+            'D' => NumberFormat::FORMAT_TEXT,
+            'F' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         $sheet->getStyle(1)->getFont()->setBold(true);
+        $sheet->getStyle('F')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 }

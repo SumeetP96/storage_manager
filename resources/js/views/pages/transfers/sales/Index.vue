@@ -267,7 +267,7 @@
 
                             <v-combobox v-model="fromGodownSelectOnlyId"
                               :items="fromGodowns"
-                              label="Accounts to show"
+                              label="Godowns to show"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -285,7 +285,7 @@
                               :items="fromGodowns"
                               :disabled="fromGodownSelectOnlyId.length > 0 || filterLoading"
                               :loading="filterLoading"
-                              label="Accounts to hide"
+                              label="Godowns to hide"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -337,7 +337,7 @@
 
                             <v-combobox v-model="toGodownSelectOnlyId"
                               :items="toGodowns"
-                              label="Godowns to show"
+                              label="Accounts to show"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -355,7 +355,7 @@
                               :items="toGodowns"
                               :disabled="toGodownSelectOnlyId.length > 0 || filterLoading"
                               :loading="filterLoading"
-                              label="Godowns to hide"
+                              label="Accounts to hide"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -628,7 +628,7 @@
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
-                    {{ record.remarks }}
+                    {{ record.remarks ? record.remarks : '-' }}
                   </td>
 
                   <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>

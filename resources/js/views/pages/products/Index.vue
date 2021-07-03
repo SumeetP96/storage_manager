@@ -461,7 +461,7 @@
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
                 @click="viewRecordDialog = true; loadRecord(record.id)">
-                  <td class="subtitle-1">{{ record.name }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.name }}</td>
 
                   <td class="subtitle-1">{{ record.alias ? record.alias : '-' }}</td>
 
@@ -472,7 +472,7 @@
                   </td>
 
                   <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">
-                    {{ record.remarks }}
+                    {{ record.remarks ? record.remarks : '-' }}
                   </td>
 
                   <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>

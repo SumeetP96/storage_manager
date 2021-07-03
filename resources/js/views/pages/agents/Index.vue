@@ -126,7 +126,7 @@
                 </th>
 
                 <!-- Alias -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'alias' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'alias' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('alias')">Alias</span>
                     <span v-if="sortBy == 'alias'">
@@ -175,7 +175,7 @@
                 </th>
 
                 <!-- Contact 1 -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'contact_1' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'contact_1' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'contact_1' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('contact_1')">Contact 1</span>
                     <span v-if="sortBy == 'contact_1'">
@@ -224,7 +224,7 @@
                 </th>
 
                 <!-- Contact 2 -->
-                <th class="subtitle-2 text-center" :class="sortBy == 'contact_2' ? 'pink--text font-weight-bold' : ''"
+                <th class="subtitle-2" :class="sortBy == 'contact_2' ? 'pink--text font-weight-bold' : ''"
                   :style="sortBy == 'contact_2' ? 'font-size: 1rem !important' : ''">
                     <span class="sort-link" @click="sortRecords('contact_2')">Contact 2</span>
                     <span v-if="sortBy == 'contact_2'">
@@ -474,16 +474,16 @@
             <tbody v-if="records.length > 0">
               <tr v-for="record in records" :key="record.name" style="cursor: pointer"
                 @click="viewRecordDialog = true; loadRecord(record.id)">
-                  <td class="subtitle-1">{{ record.name }}</td>
+                  <td class="subtitle-1 font-weight-bold">{{ record.name }}</td>
 
-                  <td class="subtitle-1 text-center">{{ record.alias }}</td>
+                  <td class="subtitle-1">{{ record.alias }}</td>
 
-                  <td class="subtitle-1 text-center">
+                  <td class="subtitle-1">
                     <span v-if="record.contact_1">{{ record.contact_1 }}</span>
                     <span v-else>-</span>
                   </td>
 
-                  <td class="subtitle-1 text-center">
+                  <td class="subtitle-1">
                     <span v-if="record.contact_2">{{ record.contact_2 }}</span>
                     <span v-else>-</span>
                   </td>
@@ -493,7 +493,7 @@
                     <span v-else>-</span>
                   </td>
 
-                  <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">{{ record.remarks }}</td>
+                  <td v-if="selectedColumns.indexOf('remarks') >= 0" class="subtitle-1">{{ record.remarks ? record.remarks : '-' }}</td>
 
                   <td class="subtitle-1 grey--text">{{ record.updated_at | moment('dddd, DD/MM/YYYY') }}</td>
 

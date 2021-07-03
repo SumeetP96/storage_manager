@@ -72,7 +72,7 @@ class PurchaseExport implements FromQuery, WithMapping, WithHeadings, WithColumn
             'I' => NumberFormat::FORMAT_DATE_DDMMYYYY
         ];
     }
-
+ 
     public function styles(Worksheet $sheet)
     {
         $sheet->getStyle(1)->getFont()->setBold(true);

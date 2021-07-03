@@ -219,7 +219,7 @@
 
                             <v-combobox v-model="fromGodownSelectOnlyId"
                               :items="fromGodowns"
-                              label="Accounts to show"
+                              label="Godowns to show"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -237,7 +237,7 @@
                               :items="fromGodowns"
                               :disabled="fromGodownSelectOnlyId.length > 0 || filterLoading"
                               :loading="filterLoading"
-                              label="Accounts to hide"
+                              label="Godowns to hide"
                               item-value="id"
                               item-text="name"
                               multiple
@@ -897,18 +897,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .right-input >>> input {
-    text-align: right
-  }
-
-  .center-input >>> input {
-    text-align: center;
-    padding-left: 2px;
-  }
-
-  .left-input >>> input {
-    padding-left: 10px;
-  }
-</style>

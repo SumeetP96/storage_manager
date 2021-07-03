@@ -8,9 +8,11 @@
         <tr>
             <th class="text-center" style="width: 1%">#</th>
             <th class="text-left">Invoice</th>
-            <th class="text-left" style="width: 25%">From godown</th>
-            <th class="text-left" style="width: 25%">To account</th>
-            <th class="text-left">Agent & remarks</th>
+            <th class="text-left" style="width: 1%">Sale no</th>
+            <th class="text-left" style="min-width: 200px">From account</th>
+            <th class="text-left" style="min-width: 200px">To godown</th>
+            <th class="text-left" style="min-width: 150px">Agent & remarks</th>
+            <th class="text-right" style="width: 1%">Updated at</th>
         </tr>
     </thead>
     <tbody>
@@ -18,9 +20,10 @@
         <tr>
             <td class="text-center">{{ $index + 1 }}</td>
             <td class="text-left">
-                {{ date('d/m/Y', strtotime($record->date)) }}
+                <div class="font-bold">{{ date('d/m/Y', strtotime($record->date)) }}</div>
                 <div class="grey-text">{{ $record->invoiceNo }}</div>
             </td>
+            <td>{{ $record->sale_no }}</td>
             <td class="text-left">{{ $record->fromName }}</td>
             <td class="text-left">{{ $record->toName }}</td>
             <td class="text-left">
@@ -31,6 +34,7 @@
                 -
                 @endif
             </td>
+            <td class="text-right">{{ date('d/m/Y', strtotime($record->updated_at)) }}</td>
         </tr>
         @endforeach
     </tbody>

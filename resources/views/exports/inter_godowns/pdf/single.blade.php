@@ -22,13 +22,17 @@
 
     <table>
         <tr>
-            <td style="width: 50%" colspan="2">
+            <td style="width: 25%">
                 <div class="heading">Transfer no</div>
                 <div class="font-bold">{{ $record->inter_godown_no }}</div>
             </td>
-            <td style="width: 50%" colspan="2">
+            <td style="width: 25%">
                 <div class="heading">Date</div>
                 <div class="font-bold">{{ date('d-m-Y', strtotime($record->created_at)) }}</div>
+            </td>
+            <td style="width: 50%" colspan="2">
+                <div class="heading">Outward no</div>
+                <div class="font-bold">{{ $record->order_no ? $record->order_no : '-' }}</div>
             </td>
         </tr>
 
@@ -72,35 +76,52 @@
             <td class="text-right font-bold">Quantity (Kgs)</td>
             <td class="text-left font-bold" style="width: 1%">Unit</td>
         </tr>
+
+        @php
+            $totalQty = 0;
+            $totalKgs = 0;
+        @endphp
         @foreach ($products as $index => $product)
-        <tr>
-            <td class="font-bold">{{ $index + 1 }}</td>
-            <td class="font-bold">{{ $product->name }}</td>
-            <td class="text-center font-bold">{{ $product->lotNumber }}</td>
-            <td class="text-right">{{ $product->rent ? number_format($product->rent / 100, 1) : '-' }}</td>
-            <td class="text-right">{{ $product->loading ? number_format($product->loading / 100, 1) : '-' }}</td>
-            <td class="text-right">{{ $product->unloading ? number_format($product->unloading / 100, 1) : '-' }}</td>
-            <td class="text-right font-bold">{{ number_format($product->quantityRaw, 2) }}</td>
-            <td class="text-left">
-                {{ $product->unit }} <span>({{ number_format($product->packing / 100, 0) }})</span>
-            </td>
-            <td class="text-right font-bold">{{ number_format($product->quantityKgs, 2) }}</td>
-            <td class="text-left">{{ $product->unit }}</td>
-        </tr>
+            @php
+                $totalQty += $product->quantityRaw;
+                $totalKgs += $product->quantityKgs;
+            @endphp
+            <tr>
+                <td class="font-bold">{{ $index + 1 }}</td>
+                <td class="font-bold">{{ $product->name }}</td>
+                <td class="text-center font-bold">{{ $product->lotNumber }}</td>
+                <td class="text-right">{{ $product->rent ? number_format($product->rent / 100, 1) : '-' }}</td>
+                <td class="text-right">{{ $product->loading ? number_format($product->loading / 100, 1) : '-' }}</td>
+                <td class="text-right">{{ $product->unloading ? number_format($product->unloading / 100, 1) : '-' }}</td>
+                <td class="text-right font-bold">{{ number_format($product->quantityRaw, 2) }}</td>
+                <td class="text-left">
+                    {{ $product->unit }} <span>({{ number_format($product->packing / 100, 0) }})</span>
+                </td>
+                <td class="text-right font-bold">{{ number_format($product->quantityKgs, 2) }}</td>
+                <td class="text-left">{{ $product->unit }}</td>
+            </tr>
         @endforeach
+        <tr>
+            <td></td>
+            <td colspan="5" class="font-bold">Total</td>
+            <td class="text-right font-bold">{{ number_format($totalQty, 2) }}</td>
+            <td></td>
+            <td class="text-right font-bold">{{ number_format($totalKgs, 2) }}</td>
+            <td></td>
+        </tr>
     </table>
 
     <table style="margin-top: 10px">
         <tr>
             <td>
-                <div class="font-bold">Transport details</div>
-                <div class="">{{ $record->transport_details ? $record->transport_details : '-' }}</div>
+                <span class="font-bold">Transport : </span>
+                <span class="">{{ $record->transport_details ? $record->transport_details : '-' }}</span>
             </td>
         </tr>
         <tr>
             <td>
-                <div class="font-bold">Remarks </div>
-                <div>{{ $record->remarks ? $record->remarks : '-' }}</div>
+                <span class="font-bold">Remarks : </span>
+                <span>{{ $record->remarks ? $record->remarks : '-' }}</span>
             </td>
         </tr>
     </table>

@@ -6,6 +6,10 @@
 <table>
     <tr>
         <td style="width: 25%">
+            <div class="heading">Sale no</div>
+            <div class="font-bold">{{ $record->sale_no }}</div>
+        </td>
+        <td style="width: 25%">
             <div class="heading">Date</div>
             <div class="font-bold">{{ date('d-m-Y', strtotime($record->created_at)) }}</div>
         </td>
@@ -14,18 +18,14 @@
             <div class="font-bold">{{ $record->invoice_no ? $record->invoice_no : '-' }}</div>
         </td>
         <td style="width: 25%">
-            <div class="heading">Order no</div>
+            <div class="heading">Outward no</div>
             <div class="font-bold">{{ $record->order_no ? $record->order_no : '-' }}</div>
-        </td>
-        <td style="width: 25%">
-            <div class="heading">Eway Bill no</div>
-            <div class="font-bold">{{ $record->eway_bill_no ? chunk_split($record->eway_bill_no, 4, ' ') : '-' }}</div>
         </td>
     </tr>
 
     <tr>
         <td style="width: 50%" colspan="2">
-            <div class="heading">From Godown</div>
+            <div class="heading">From Account</div>
             <div class="font-bold">{{ $record->fromName }}</div>
             <div>{{ $record->fromAddress }}</div>
             <div>
@@ -37,7 +37,7 @@
         </td>
 
         <td style="width: 50%" colspan="2">
-            <div class="heading">To Account</div>
+            <div class="heading">To Godown</div>
             <div class="font-bold">{{ $record->toName }}</div>
             <div>{{ $record->toAddress }}</div>
             <div>
@@ -62,35 +62,59 @@
         <td class="font-bold" style="width: 1%">#</td>
         <td class="font-bold" style="width: 30%">Products</td>
         <td class="text-center font-bold">Lot number</td>
-        <td class="text-right font-bold">C Quantity</td>
-        <td class="text-left font-bold" style="width: 1%">Unit</td>
-        <td class="text-right font-bold">Quantity</td>
+        <td class="text-center font-bold">Rent</td>
+        <td class="text-center font-bold">Loading</td>
+        <td class="text-center font-bold">Unloading</td>
+        <td class="text-right font-bold">Quantity (Nos)</td>
+        <td class="text-left font-bold">Unit</td>
+        <td class="text-right font-bold">Quantity (Kgs)</td>
         <td class="text-left font-bold" style="width: 1%">Unit</td>
     </tr>
+
+    @php
+        $totalQty = 0;
+        $totalKgs = 0;
+    @endphp
     @foreach ($products as $index => $product)
-    <tr>
-        <td class="font-bold">{{ $index + 1 }}</td>
-        <td class="font-bold">{{ $product->name }}</td>
-        <td class="text-center">{{ $product->lotNumber ? $product->lotNumber : '-' }}</td>
-        <td class="text-right font-bold">{{ $product->compoundQuantityRaw ? $product->compoundQuantityRaw : '-' }}</td>
-        <td class="text-left">{{ $product->compoundUnit ? $product->compoundUnit : '-' }}</td>
-        <td class="text-right font-bold">{{ number_format($product->quantityRaw, 2) }}</td>
-        <td class="text-left">{{ $product->unit }}</td>
-    </tr>
+        @php
+            $totalQty += $product->quantityRaw;
+            $totalKgs += $product->quantityKgs;
+        @endphp
+        <tr>
+            <td class="font-bold">{{ $index + 1 }}</td>
+            <td class="font-bold">{{ $product->name }}</td>
+            <td class="text-center font-bold">{{ $product->lotNumber }}</td>
+            <td class="text-right">{{ $product->rent ? number_format($product->rent / 100, 1) : '-' }}</td>
+            <td class="text-right">{{ $product->loading ? number_format($product->loading / 100, 1) : '-' }}</td>
+            <td class="text-right">{{ $product->unloading ? number_format($product->unloading / 100, 1) : '-' }}</td>
+            <td class="text-right font-bold">{{ number_format($product->quantityRaw, 2) }}</td>
+            <td class="text-left">
+                {{ $product->unit }} <span>({{ number_format($product->packing / 100, 0) }})</span>
+            </td>
+            <td class="text-right font-bold">{{ number_format($product->quantityKgs, 2) }}</td>
+            <td class="text-left">{{ $product->unit }}</td>
+        </tr>
     @endforeach
+    <tr>
+        <td></td>
+        <td colspan="5" class="font-bold">Total</td>
+        <td class="text-right font-bold">{{ number_format($totalQty, 2) }}</td>
+        <td></td>
+        <td class="text-right font-bold">{{ number_format($totalKgs, 2) }}</td>
+        <td></td>
+    </tr>
 </table>
 
 <table style="margin-top: 10px">
     <tr>
         <td>
-            <div class="heading">Transport details</div>
-            <div>Delivery slip : <span class="font-bold">{{ $record->delivery_slip_no ? $record->delivery_slip_no : '-' }}</span></div>
-            <div>Delivered by : <span class="font-bold">{{ $record->transport_details ? $record->transport_details : '-' }}</span></div>
+            <span class="font-bold">Transport : </span>
+            <span class="">{{ $record->transport_details ? $record->transport_details : '-' }}</span>
         </td>
     </tr>
     <tr>
         <td>
-            <span class="font-bold">Remarks :  </span>
+            <span class="font-bold">Remarks : </span>
             <span>{{ $record->remarks ? $record->remarks : '-' }}</span>
         </td>
     </tr>
