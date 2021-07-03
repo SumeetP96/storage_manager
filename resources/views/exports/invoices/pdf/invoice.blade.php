@@ -62,23 +62,26 @@
         <tbody>
             @foreach ($transfers as $key => $transfer)
 
-                @foreach ($transfer as $trf)
-                <tr>
-                    <td class="text-right">{{ $trf['index'] }}</td>
-                    <td class="text-center bold-text">{{ $key }}</td>
-                    <td class="text-left">{{ $trf['name'] }}</td>
-                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['quantity'] }}</td>
-                    <td class="text-center">{{ $trf['inward_date'] }}</td>
-                    <td class="text-center">{{ $trf['outward_date'] }}</td>
-                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
-                    <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
-                    <td class="text-right">{{ $trf['packing'] }}</td>
-                    <td class="text-right">{{ $trf['rent'] }}</td>
-                    <td class="text-right">{{ $trf['amount'] }}</td>
-                </tr>
-                @endforeach
+                @if (count($transfer) > 0)
+                    @foreach ($transfer as $trf)
+                    <tr>
+                        <td class="text-right">{{ $trf['index'] }}</td>
+                        <td class="text-center bold-text">{{ $key }}</td>
+                        <td class="text-left">{{ $trf['name'] }}</td>
+                        <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['quantity'] }}</td>
+                        <td class="text-center">{{ $trf['inward_date'] }}</td>
+                        <td class="text-center">{{ $trf['outward_date'] }}</td>
+                        <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
+                        <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
+                        <td class="text-right">{{ $trf['packing'] }}</td>
+                        <td class="text-right">{{ $trf['rent'] }}</td>
+                        <td class="text-right">{{ $trf['amount'] }}</td>
+                    </tr>
+                    @endforeach
+                    
+                    <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                @endif
 
-                <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             @endforeach
 
             <tr>

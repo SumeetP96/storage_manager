@@ -28,7 +28,7 @@ class InvoiceExportController extends Controller
 
         $pdf = PDF::loadView('exports.invoices.pdf.invoice', compact('transferType', 'transfers', 'totals', 'month', 'godown'));
         return $pdf->stream();
-        return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
+        // return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
     }
 
     public function invoicePrint($month, $godownId)
@@ -49,6 +49,10 @@ class InvoiceExportController extends Controller
 
     public function getLotData($month, $godownId)
     {
+        $customRent = (double) request()->get('cst_rent');
+        $customLoading = (double) request()->get('cst_loading');
+        $customUnloading = (double) request()->get('cst_unloading');
+
         $cDate = Carbon::createFromFormat('m', $month);
         $lastDate = $cDate->endOfMonth()->toDateString(); // Y-m-d
         $lastMonthDate = $this->getLastMonthDate($month);  // Y-m-d
@@ -88,7 +92,7 @@ class InvoiceExportController extends Controller
             'total'     => 0
         ];
 
-        foreach ($lotNumbers as $c => $lot) {
+        foreach ($lotNumbers as $lot) {
             $test[$lot->lot_number] = [];
             $transfers[$lot->lot_number] = [];
 
@@ -100,6 +104,10 @@ class InvoiceExportController extends Controller
             // If no sales or transfers only purchase
             if (count($lot->transfers) == 1 && $lot->transfers[0]->transferType == 2) {
                 $trf = $lot->transfers[0];
+
+                // Custom loading unloading
+                $loadingRate = !empty($customLoading) ? $customLoading : $trf->loading;
+                $unloadingRate = !empty($customUnloading) ? $customUnloading : $trf->unloading;
 
                 $closingStock = $trf->quantity;
                 $monthRangeStart = strtotime(date('Y') . '/' . (strlen($month) == 1 ? '0' . $month : $month) . '/' . '01');
@@ -167,12 +175,16 @@ class InvoiceExportController extends Controller
                     'amount'        => number_format($monthCount * $closingStock * $trf->rent, 2)
                 ]);
 
-                if ($firstInvoice) $totals['unloading'] += ($closingStock * $trf->packing / 100) * $trf->unloading;
+                if ($firstInvoice) $totals['unloading'] += ($closingStock * $trf->packing / 100) * $unloadingRate;
                 $totals['quantity'] += $closingStock;
                 $totals['total'] += $monthCount * $closingStock * $trf->rent;
 
             } else {
                 foreach ($lot->transfers as $i => $trf) { // Each transfer under lot number
+
+                    // Custom loading unloading
+                    $loadingRate = !empty($customLoading) ? $customLoading : $trf->loading;
+                    $unloadingRate = !empty($customUnloading) ? $customUnloading : $trf->unloading;
 
                     if ($trf->transferType != '2') { // If not purchase
 
@@ -211,9 +223,9 @@ class InvoiceExportController extends Controller
 
                         if (strtotime($trf->date) >= $monthRangeStart && strtotime($trf->date) <= $monthRangeEnd) {
 
-                            if ($firstInvoice) $totals['unloading'] += ($trf->quantity * $trf->packing / 100) * $trf->unloading;
+                            if ($firstInvoice) $totals['unloading'] += ($trf->quantity * $trf->packing / 100) * $unloadingRate;
                             $totals['quantity'] += $trf->quantity;
-                            $totals['loading'] += ($trf->quantity * $trf->packing / 100) * $trf->loading;
+                            $totals['loading'] += ($trf->quantity * $trf->packing / 100) * $loadingRate;
                             $totals['total'] += $monthCount * $trf->quantity * $trf->rent;
 
                             // Transfer stock
@@ -266,7 +278,7 @@ class InvoiceExportController extends Controller
                                 'amount'        => number_format($monthCount * $closingStock * $trf->rent, 2)
                             ]);
 
-                            if ($firstInvoice) $totals['unloading'] += ($closingStock * $trf->packing / 100) * $trf->unloading;
+                            if ($firstInvoice) $totals['unloading'] += ($closingStock * $trf->packing / 100) * $unloadingRate;
                             $totals['quantity'] += $closingStock;
                             $totals['total'] += $monthCount * $closingStock * $trf->rent;
                         }

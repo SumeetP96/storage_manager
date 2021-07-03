@@ -2,17 +2,12 @@
   <div>
     <AppBar backRoute="home" />
 
-    <v-col cols="4" class="mx-auto">
+    <v-col cols="6" class="mx-auto">
 
-      <v-skeleton-loader v-if="showRecordLoading" v-bind="attrs" class="mt-5"
-        type="list-item-three-line, card-heading, list-item-three-line, card-heading, image, actions">
-      </v-skeleton-loader>
-
-      <div v-else class="rounded elevation-1 pa-5 mt-8"
-        :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'">
+      <div class="rounded elevation-1 pa-5 mt-8"
+        :class="$vuetify.theme.dark ? 'grey darken-3' : 'blue-grey lighten-4'" style="width: 100%">
 
         <div class="text-h5">Generate storage invoice</div>
-
 
         <div class="mt-6 subtitle-1">Godown</div>
         <v-autocomplete
@@ -42,12 +37,50 @@
           dense
         ></v-combobox>
 
-        <div class="d-flex justify-space-between mt-2">
+        <div class="overline mt-5 pb-1" :class="$vuetify.theme.dark ? '' : 'error--text text--darken-2'"
+          style="font-size: 0.9rem !important">
+          only fill if changed
+        </div>
+
+        <v-row>
+          <v-col cols="4">
+            <div class="subtitle-1">Loading</div>
+            <v-text-field v-model="customLoading"
+            placeholder="0.0"
+            type="number"
+            solo
+            dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="4">
+            <div class="subtitle-1">Unloading</div>
+            <v-text-field v-model="customUnloading"
+            placeholder="0.0"
+            solo
+            type="number"
+            dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="4">
+            <div class="subtitle-1">Rent</div>
+            <v-text-field v-model="customRent"
+            placeholder="0.0"
+            solo
+            type="number"
+            dense>
+            </v-text-field>
+          </v-col>
+        </v-row>
+
+        <div class="d-flex justify-space-between mt-5">
           <!-- PDF -->
           <v-btn :dark="$vuetify.theme.dark"
             :disabled="disableExport || !month.id || !godownId"
             @click="disableExportButtons()" color="error"
-            :href="`/exports/pdf/invoices/${month.id}/${godownId}`"
+            :href="`/exports/pdf/invoices/${month.id}/${godownId}?
+              cst_loading=${customLoading}&cst_unloading=${customUnloading}&cst_rent=${customRent}`"
             download="storage_invoice.pdf"
             style="width: 125px">
               <v-icon class="text-h6 mr-2">mdi-file-pdf</v-icon> PDF
@@ -58,7 +91,8 @@
             tabindex="-1" style="width: 125px" color="indigo white--text"
             :disabled="disableExport || !month.id || !godownId"
             @click="disableExportButtons();
-            printPage('all-print', `/exports/print/invoices/${month.id}/${godownId}`)">
+            printPage('all-print', `/exports/print/invoices/${month.id}/${godownId}?
+              cst_loading=${customLoading}&cst_unloading=${customUnloading}&cst_rent=${customRent}`)">
               <v-icon class="mr-2">mdi-printer</v-icon> Print
           </v-btn>
           <iframe id="all-print" style="display: none"></iframe>
@@ -66,6 +100,7 @@
       </div>
 
     </v-col>
+
   </div>
 </template>
 
@@ -81,6 +116,10 @@ export default {
 
   data() {
     return {
+      customRent: '',
+      customLoading: '',
+      customUnloading: '',
+
       godownId: '',
       godowns: [],
       godownLoading: false,
