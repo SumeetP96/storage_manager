@@ -115,11 +115,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="!record.from_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!record.from_godown_id" dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('accountDialog')">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('accountDialog', 'godowns', record.from_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -163,11 +163,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="!record.to_godown_id" dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!record.to_godown_id" dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog')">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog', 'godowns', record.to_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -242,11 +242,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="!inputProducts[index].id" dark small icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!inputProducts[index].id" dark tabindex="-1" small icon class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('productDialog', '', '', index)">
                       <v-icon>mdi-plus</v-icon>
                   </v-btn>
-                  <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-else dark tabindex="-1" small icon class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('productDialog', 'products', inputProducts[index].id, index)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -411,11 +411,11 @@
                 dense>
               </v-autocomplete>
 
-              <v-btn v-if="!record.agent_id" dark small icon class="indigo white--text ml-1" elevation="1"
+              <v-btn v-if="!record.agent_id" dark tabindex="-1" small icon class="indigo white--text ml-1" elevation="1"
                 @click="openDialog('agentDialog')">
                   <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-btn v-else dark small icon class="indigo white--text ml-1" elevation="1"
+              <v-btn v-else dark tabindex="-1" small icon class="indigo white--text ml-1" elevation="1"
                 @click="openDialog('agentDialog', 'agents', record.agent_id)">
                   <v-icon>mdi-circle-edit-outline</v-icon>
               </v-btn>
