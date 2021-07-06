@@ -64,7 +64,7 @@
           2021-{{ $currentYear }}
         @endif
         Rameshwar Trading Company. All rights reserved.
-        <a class="text-light" href="/terms_of_use.html">Terms of use.</a>
+        {{-- <a class="text-light" href="/terms_of_use.html">Terms of use.</a> --}}
       </small>
     </div>
   </div>
