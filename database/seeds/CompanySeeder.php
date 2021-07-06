@@ -13,7 +13,7 @@ class CompanySeeder extends Seeder
     public function run()
     {
         Company::create([
-            'name'      => 'Aadhyan Distribution Co.',
+            'name'      => 'Aadhya Distribution Co.',
             'address'   => 'Shop no. 1, Tirupati Complex, Chokha Bajar, Kalupur - 380002',
             'contact_1' => '9726555500'
         ]);
