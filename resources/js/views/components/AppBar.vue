@@ -34,13 +34,6 @@
 
       <v-app-bar-title class="ml-2 ml-sm-0">
         {{ title ? title : 'Storage Manager' }}
-        <!-- <span v-if="transactionDate" class="pl-2">
-          ( from :
-            <span :class="$vuetify.theme.dark ? 'primary--text' : 'indigo--text'">
-              {{ transactionDate | moment('DD-MM-YYYY') }}
-            </span>
-          )
-        </span> -->
       </v-app-bar-title>
 
       <v-spacer></v-spacer>
@@ -84,14 +77,14 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item link v-shortkey.once="['alt', 'b']"
+          <!-- <v-list-item link v-shortkey.once="['alt', 'b']"
             @shortkey="openBackupDialog(); toggleSettingMenu()"
             @click="openBackupDialog(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-cloud-upload</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>Backup data</v-list-item-title>
             </v-list-item-content>
-          </v-list-item>
+          </v-list-item> -->
 
           <v-list-item link @click="changePassword(); toggleSettingMenu()">
             <v-list-item-icon><v-icon>mdi-form-textbox-password</v-icon></v-list-item-icon>

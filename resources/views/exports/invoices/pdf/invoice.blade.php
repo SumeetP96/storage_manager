@@ -37,7 +37,11 @@
                 </p>
             </td>
             <td style="border: none" class="text-right">
-                <header><h3 style="padding-top: 10px; padding: 0">Storage Invoice</h3></header>
+                <h2 style="padding: 0; margin: 0; padding-top: 10px">Storage Invoice</h2>
+                <h3 style="padding: 0; margin: 0; padding-top: 15px">
+                    <span>Date: </span>
+                    {{ date('d-m-Y', strtotime((\Carbon\Carbon::createFromFormat('m', $month))->endOfMonth()->toDateString())) }}
+                </h3>
             </td>
         </tr>
     </table>
@@ -74,11 +78,11 @@
                         <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
                         <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
                         <td class="text-right">{{ $trf['packing'] }}</td>
-                        <td class="text-right">{{ $trf['rent'] }}</td>
+                        <td class="text-right">{{ number_format($trf['rent'], 1) }}</td>
                         <td class="text-right">{{ $trf['amount'] }}</td>
                     </tr>
                     @endforeach
-                    
+
                     <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 @endif
 

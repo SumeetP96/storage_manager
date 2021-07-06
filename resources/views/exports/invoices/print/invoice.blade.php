@@ -23,7 +23,7 @@
     <script>window.print()</script>
 </head>
 <body>
-    <table>
+    <table style="margin-bottom: 10px">
         <tr>
             <td style="border: none">
                 <h3 style="margin-bottom: 2px; padding: 0">{{ $godown->name }}</h3>
@@ -39,7 +39,11 @@
                 </p>
             </td>
             <td style="border: none" class="text-right">
-                <header><h3 style="padding-top: 10px; padding: 0">Storage Invoice</h3></header>
+                <h2 style="padding: 0; margin: 0; padding-top: 10px">Storage Invoice</h2>
+                <h3 style="padding: 0; margin: 0; padding-top: 15px">
+                    <span>Date: </span>
+                    {{ date('d-m-Y', strtotime((\Carbon\Carbon::createFromFormat('m', $month))->endOfMonth()->toDateString())) }}
+                </h3>
             </td>
         </tr>
     </table>
@@ -64,23 +68,26 @@
         <tbody>
             @foreach ($transfers as $key => $transfer)
 
-                @foreach ($transfer as $trf)
-                <tr>
-                    <td class="text-right">{{ $trf['index'] }}</td>
-                    <td class="text-center bold-text">{{ $key }}</td>
-                    <td class="text-left">{{ $trf['name'] }}</td>
-                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['quantity'] }}</td>
-                    <td class="text-center">{{ $trf['inward_date'] }}</td>
-                    <td class="text-center">{{ $trf['outward_date'] }}</td>
-                    <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
-                    <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
-                    <td class="text-right">{{ $trf['packing'] }}</td>
-                    <td class="text-right">{{ $trf['rent'] }}</td>
-                    <td class="text-right">{{ $trf['amount'] }}</td>
-                </tr>
-                @endforeach
+                @if (count($transfer) > 0)
+                    @foreach ($transfer as $trf)
+                    <tr>
+                        <td class="text-right">{{ $trf['index'] }}</td>
+                        <td class="text-center bold-text">{{ $key }}</td>
+                        <td class="text-left">{{ $trf['name'] }}</td>
+                        <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['quantity'] }}</td>
+                        <td class="text-center">{{ $trf['inward_date'] }}</td>
+                        <td class="text-center">{{ $trf['outward_date'] }}</td>
+                        <td class="text-right {{ $trf['outward_no'] == 'Balance' ? 'bold-text' : '' }}">{{ $trf['outward_no'] }}</td>
+                        <td class="text-right">{{ number_format($trf['month'], 1, '.', '') }}</td>
+                        <td class="text-right">{{ $trf['packing'] }}</td>
+                        <td class="text-right">{{ number_format($trf['rent'], 1) }}</td>
+                        <td class="text-right">{{ $trf['amount'] }}</td>
+                    </tr>
+                    @endforeach
 
-                <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="break"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                @endif
+
             @endforeach
 
             <tr>
