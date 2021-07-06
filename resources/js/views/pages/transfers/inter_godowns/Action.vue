@@ -72,6 +72,7 @@
                       v-model="record.from_godown_id"
                       hide-details="auto"
                       outlined
+                      clearable
                       :disabled="fromLoading"
                       :loading="fromLoading"
                       placeholder="Select godown"
@@ -114,6 +115,7 @@
                     <v-autocomplete
                       v-model="record.to_godown_id"
                       hide-details="auto"
+                      clearable
                       outlined
                       :disabled="toLoading"
                       :loading="toLoading"
@@ -141,7 +143,11 @@
                     </div>
                   </div>
 
-                  <v-btn v-if="record.to_godown_id" tabindex="-1" dark icon small class="indigo white--text ml-1" elevation="1"
+                  <v-btn v-if="!record.to_godown_id" dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
+                    @click="openDialog('godownDialog')">
+                      <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                  <v-btn v-else dark tabindex="-1" icon small class="indigo white--text ml-1" elevation="1"
                     @click="openDialog('godownDialog', 'godowns', record.to_godown_id)">
                       <v-icon>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -194,6 +200,7 @@
                       v-model="inputProducts[index].id"
                       hide-details="auto"
                       outlined
+                      clearable
                       :disabled="productLoading || !record.from_godown_id"
                       :loading="productLoading"
                       :filled="!record.from_godown_id"
@@ -228,6 +235,7 @@
                   v-model="inputProducts[index].lot_number"
                   hide-details="auto"
                   outlined
+                  clearable
                   :id="`lotBox${index}`"
                   :disabled="lotNumberLoading || !inputProducts[index].id"
                   :loading="lotNumberLoading"
@@ -720,13 +728,8 @@
         </v-card-title>
 
         <v-card-text class="pt-2 pb-8">
-          <div v-if="!record.to_godown_id">
-            <input type="hidden" v-model="dialogRecord.is_account">
-            <span style="display: none">{{ dialogRecord.is_account = false }}</span>
-          </div>
-
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" md="9">
               <label class="subtitle-1">Name
                 <span class="red--text text-h6">*</span></label>
               <v-text-field
@@ -832,10 +835,22 @@
           <v-btn v-if="record.to_godown_id" text dark :loading="dialogUpdateButton"
             @click="updateDialogRecord(record.to_godown_id, {
               apiRoute: 'godowns', dialog: 'godownDialog',
-              varName: 'to_godown_id', afMethod: 'fetchToAutofill'
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill',
+              detailsMethod: 'fetchAccountDetails'
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
               <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> update record
+          </v-btn>
+
+          <v-btn v-else text dark :loading="dialogCreateButton"
+            @click="createDialogRecord({
+              apiRoute: 'godowns', dialog: 'godownDialog',
+              varName: 'to_godown_id', afMethod: 'fetchToAutofill',
+              detailsMethod: 'fetchAccountDetails',
+              isAccount: false
+            })"
+            :color="$vuetify.theme.dark ? 'primary' : 'indigo'">
+              <v-icon class="text-h6 mr-2">mdi-content-save-outline</v-icon> save record
           </v-btn>
 
           <v-btn color="error" text @click="closeDialog('godownDialog')">

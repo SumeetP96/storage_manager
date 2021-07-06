@@ -759,7 +759,7 @@
             @click="createDialogRecord({
               apiRoute: 'godowns', dialog: 'accountDialog',
               varName: 'from_godown_id', afMethod: 'fetchFromAutofill',
-              detailsMethod: 'fetchGodownDetails',
+              detailsMethod: 'fetchAccountDetails',
               isAccount: true
             })"
             :color="$vuetify.theme.dark ? 'primary' : 'indigo'">

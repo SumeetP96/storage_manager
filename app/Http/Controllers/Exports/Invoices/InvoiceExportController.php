@@ -27,8 +27,8 @@ class InvoiceExportController extends Controller
         $godown = Godown::find($godownId);
 
         $pdf = PDF::loadView('exports.invoices.pdf.invoice', compact('transferType', 'transfers', 'totals', 'month', 'godown'));
-        // return $pdf->stream();
-        return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
+        return $pdf->stream();
+        // return $pdf->download(strtolower($monthName) . '_storage_invoice.pdf');
     }
 
     public function invoicePrint($month, $godownId)

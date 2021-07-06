@@ -1,1 +1,166 @@
-@font-face{font-family:Roboto;font-style:light;font-weight:300;font-display:swap;src:url(/public/fonts/vendor/roboto/Roboto-Light.ttf) format("ttf");unicode-range:U+0460-052f,U+1c80-1c88,U+20b4,U+2de0-2dff,U+a640-a69f,U+fe2e-fe2f}.fade-enter-active,.fade-leave-active{transition:opacity .2s}.fade-enter,.fade-leave-to{opacity:0}html{overflow:auto!important;scrollbar-width:none;-ms-overflow-style:none}body{font-family:Roboto,sans-serif}body .content{position:absolute;top:0;left:0;height:100%;width:100%}body .v-text-field__details{margin-bottom:0!important;padding:0 3px!important}body .v-text-field__details .v-messages__message{font-size:.8rem!important;padding-bottom:2px!important}body .smaller-input .v-input__control .v-input__slot{padding:0 7px!important;min-height:18px!important}body .smaller-input .v-input__control .v-input__slot .v-input__append-inner,body .smaller-input .v-input__control .v-input__slot .v-input__prepend-inner{margin-top:4px!important}body .left-input .v-input__control .v-input__slot .v-input__prepend-inner{margin-right:8px!important}body .right-input .v-input__control .v-input__slot .v-text-field__slot input,body .right-input .v-input__control .v-messages{text-align:right!important}body .center-input .v-input__control .v-input__slot .v-text-field__slot input{text-align:center!important}body .sort-link:focus,body .sort-link:hover{text-decoration:underline}body .view-record-table{width:100%;border-collapse:collapse}body .view-record-table td{border-bottom:1px solid #cfd8dc;padding:10px 12px}body .inter-view-table{width:100%!important;border-collapse:collapse!important}body .inter-view-table td{border-bottom:none!important;padding:1px 8px!important}body .keyboard-shortcut-table{width:100%;border-collapse:collapse}body .keyboard-shortcut-table td{border-bottom:1px solid #cfd8dc;padding:10px 12px}body .invoice-table{width:100%;border-collapse:collapse}body .invoice-table td{padding:8px 12px;vertical-align:top}body .invoice-table th{padding:2px 12px}body .invoice-table .left-round{border-bottom-left-radius:6px;border-top-left-radius:6px}body .invoice-table .right-round{border-bottom-right-radius:6px;border-top-right-radius:6px}body .invoice-table .footer-th{padding:4px 5px}body .left-round-top{border-top-left-radius:6px}body .right-round-top{border-top-right-radius:6px}body .left-round-bottom{border-bottom-left-radius:6px}body .right-round-bottom{border-bottom-right-radius:6px}body .invoice-record-table{width:100%;border-collapse:collapse}body .invoice-record-table td{padding:4px 8px;vertical-align:top}body .invoice-record-table th{padding:2px 12px}
+@font-face {
+  font-family: "Roboto";
+  font-style: light;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/public/fonts/vendor/roboto/Roboto-Light.ttf") format("ttf");
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+html {
+  overflow: auto !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+body .content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body .v-text-field__details {
+  margin-bottom: 0 !important;
+  padding: 0 3px !important;
+}
+
+body .v-text-field__details .v-messages__message {
+  font-size: 0.8rem !important;
+  padding-bottom: 2px !important;
+}
+
+body .smaller-input .v-input__control .v-input__slot {
+  padding: 0 7px !important;
+  min-height: 18px !important;
+}
+
+body .smaller-input .v-input__control .v-input__slot .v-input__prepend-inner,
+body .smaller-input .v-input__control .v-input__slot .v-input__append-inner {
+  margin-top: 4px !important;
+}
+
+body .left-input .v-input__control .v-input__slot .v-input__prepend-inner {
+  margin-right: 8px !important;
+}
+
+body .right-input .v-input__control .v-input__slot .v-text-field__slot input {
+  text-align: right !important;
+}
+
+body .right-input .v-input__control .v-messages {
+  text-align: right !important;
+}
+
+body .center-input .v-input__control .v-input__slot .v-text-field__slot input {
+  text-align: center !important;
+}
+
+body .sort-link:focus,
+body .sort-link:hover {
+  text-decoration: underline;
+}
+
+body .view-record-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .view-record-table td {
+  border-bottom: 1px solid #CFD8DC;
+  padding: 10px 12px;
+}
+
+body .inter-view-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+body .inter-view-table td {
+  border-bottom: none !important;
+  padding: 1px 8px !important;
+}
+
+body .keyboard-shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .keyboard-shortcut-table td {
+  border-bottom: 1px solid #CFD8DC;
+  padding: 10px 12px;
+}
+
+body .invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .invoice-table td {
+  padding: 8px 12px;
+  vertical-align: top;
+}
+
+body .invoice-table th {
+  padding: 2px 12px;
+}
+
+body .invoice-table .left-round {
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+body .invoice-table .right-round {
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+body .invoice-table .footer-th {
+  padding: 4px 5px;
+}
+
+body .left-round-top {
+  border-top-left-radius: 6px;
+}
+
+body .right-round-top {
+  border-top-right-radius: 6px;
+}
+
+body .left-round-bottom {
+  border-bottom-left-radius: 6px;
+}
+
+body .right-round-bottom {
+  border-bottom-right-radius: 6px;
+}
+
+body .invoice-record-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body .invoice-record-table td {
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+body .invoice-record-table th {
+  padding: 2px 12px;
+}
+
